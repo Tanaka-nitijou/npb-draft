@@ -137,10 +137,12 @@
   <!-- LOBBY / CONNECTION PANEL -->
   <div id="lobbyView">
     <div class="panel">
-      <h2>1. 選手データベース状態 (12球団×6人＝72人固定)</h2>
-      <div style="font-size:13px; color:#cbd5e1;">
-        登録選手数: <strong id="dbCount">0</strong> 名（12球団×各投手3・野手3名）
+      <h2>1. 選手データベース状態・追加</h2>
+      <div style="font-size:13px; color:#cbd5e1; margin-bottom:8px;">
+        登録選手数: <strong id="dbCount">0</strong> 名
       </div>
+      <div style="font-size:12px; color:var(--muted); margin-bottom:6px;">JSONファイル（選手データ）を読み込んで追加・上書きする</div>
+      <input type="file" id="jsonFileInput" accept=".json" style="width:100%; font-size:13px; padding:6px;">
     </div>
 
     <div class="panel">
@@ -159,7 +161,7 @@
           <select id="totalPicksInput" style="width:100%;">
             <option value="18">18人（1軍ベンチ級）</option>
             <option value="24">24人（フル戦力）</option>
-            <option value="36" selected>36人（72人完全コンプリート対決）</option>
+            <option value="36" selected>36人（フルコンプ対決）</option>
           </select>
         </div>
       </div>
@@ -192,7 +194,7 @@
     <div id="poolDiag" class="badge-diag"></div>
 
     <div class="tabs" style="margin-top:10px;">
-      <div class="tab active" data-tab="pool">候補リスト (<span id="remCount">72</span>)</div>
+      <div class="tab active" data-tab="pool">候補リスト (<span id="remCount">0</span>)</div>
       <div class="tab" data-tab="myTeam">自チーム (<span id="myCount">0</span>)</div>
       <div class="tab" data-tab="oppTeam">相手チーム (<span id="oppCount">0</span>)</div>
       <div class="tab" data-tab="lineup">オーダー診断</div>
@@ -266,9 +268,9 @@
 
 <script>
 // ============================================================================
-// 1. 12球団×各6人（投手3・野手3）＝計72人の少し弱め・厳選パワプロデータベース
+// デフォルトの選手データベース（初期値）
 // ============================================================================
-const ALL_PLAYERS = [
+let ALL_PLAYERS = [
   // --- 読売ジャイアンツ (6名) ---
   { id:"g1", name:"戸郷 翔征", team:"巨人", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:480, stats:"152km コC68 スB78 スラ4 フォーク5", abilities:["奪三振","打たれ強さB"] },
   { id:"g2", name:"大勢", team:"巨人", role:"P", mainPos:"抑え", subPos:["中継ぎ"], peakYear:"2022", star:465, stats:"157km コD58 スD52 スラ3 フォーク4", abilities:["剛球","奪三振"] },
@@ -369,18 +371,31 @@ const ALL_PLAYERS = [
 const TEAMS = ["巨人","阪神","DeNA","広島","ヤクルト","中日","ソフトバンク","日本ハム","ロッテ","楽天","オリックス","西武"];
 
 // ============================================================================
-// 2. 12球団×各6人（計72人）完全保証生成エンジン
+// JSONファイルインポート処理
 // ============================================================================
-function generateBalanced72Pool() {
-  // すでに12球団×各6人＝72人固定のバランス配列になっているためそのまま返却
-  return {
-    pool: [...ALL_PLAYERS],
-    diag: "【72名編成完了】12球団×各6名（投手3・野手3）全盛期パワプロ査定（絶妙バランス版）"
+document.getElementById("jsonFileInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const imported = JSON.parse(event.target.result);
+      if (Array.isArray(imported) && imported.length > 0) {
+        ALL_PLAYERS = imported;
+        document.getElementById("dbCount").textContent = ALL_PLAYERS.length;
+        alert(`JSONファイルから ${imported.length} 名の選手データを正常に読み込みました！`);
+      } else {
+        alert("有効な選手データの配列が見つかりませんでした。");
+      }
+    } catch (err) {
+      alert("JSONのパースに失敗しました。ファイル形式を確認してください。\n" + err);
+    }
   };
-}
+  reader.readAsText(file);
+});
 
 // ============================================================================
-// 3. P2P リアルタイム通信（PeerJS）＆ ドラフト進行ステートマシン
+// P2P リアルタイム通信（PeerJS）＆ ドラフト進行ステートマシン
 // ============================================================================
 let peer = null;
 let conn = null;
@@ -498,7 +513,6 @@ function handleHostMessage(msg) {
     oppName = msg.name || "監督B";
     const simRounds = parseInt(document.getElementById("simRoundsInput").value, 10);
     const totalPicks = parseInt(document.getElementById("totalPicksInput").value, 10);
-    const generated = generateBalanced72Pool();
 
     gameState = {
       started: true,
@@ -508,8 +522,8 @@ function handleHostMessage(msg) {
       phase: "SIMULTANEOUS",
       rebidTarget: null,
       snakeTurn: "HOST",
-      pool: generated.pool,
-      diag: generated.diag,
+      pool: [...ALL_PLAYERS],
+      diag: `【選手登録数: ${ALL_PLAYERS.length名}】全盛期パワプロ査定データベース`,
       hostName: myName,
       guestName: oppName,
       hostTeam: [],
@@ -642,7 +656,7 @@ function advanceRound() {
 }
 
 // ============================================================================
-// 4. UI レンダリング ＆ ベストオーダー自動編成
+// UI レンダリング
 // ============================================================================
 function renderAll() {
   if (!gameState.started) return;
@@ -671,7 +685,7 @@ function renderAll() {
     titleEl.textContent = `第${gameState.currentRound}巡 / 全${gameState.totalPicks}巡【同時出しフェーズ】`;
     if (myLocked) {
       const lp = gameState.pool.find(p => p.id === myLocked);
-      subEl.textContent = `「${lp.name}」でロック済み。${oppLocked ? "集計中..." : "相手の選択待ちです..."}`;
+      subEl.textContent = `「${lp ? lp.name : ''}」でロック済み。${oppLocked ? "集計中..." : "相手の選択待ちです..."}`;
       canPick = false;
     } else {
       subEl.textContent = oppLocked ? "相手は選択完了！選手を選んで確定してください。" : "リストから欲しい選手を1名選んで確定してください。";
@@ -800,7 +814,7 @@ function buildBestLineupHTML(teamName, idList) {
 
   const pitchers = players.filter(p => p.role === "P").sort((a,b) => b.star - a.star);
   const batters = players.filter(p => p.role === "B").sort((a,b) => b.star - a.star);
-  const avgStar = Math.round(players.reduce((s,p) => s + p.star, 0) / players.length);
+  const avgStar = players.length ? Math.round(players.reduce((s,p) => s + p.star, 0) / players.length) : 0;
 
   return `
     <div class="panel">
