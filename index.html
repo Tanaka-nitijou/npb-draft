@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NPB全盛期パワプロ 2人リアルタイムドラフト（2026年度・最低保証版）</title>
+<title>NPB全盛期パワプロ 2人リアルタイムドラフト（2026年度・均等＆最低保証版）</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
   :root {
@@ -58,7 +58,6 @@
   button.accent { background: var(--accent); color: #0f172a; }
   button.sm { padding: 5px 9px; font-size: 11px; }
 
-  /* 最低保証設定ボックス */
   .quota-box {
     background: rgba(15,23,42,0.65); border: 1px solid var(--border);
     border-radius: 10px; padding: 10px; margin: 8px 0;
@@ -101,7 +100,6 @@
   .filters select, .filters input[type="text"] { padding: 6px 8px; font-size: 12px; }
   .chk-label { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #cbd5e1; cursor: pointer; user-select: none; }
 
-  /* 72人全体マップ（球団別12グリッド） */
   .matrix-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
   .team-box { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
   .team-box-title {
@@ -118,7 +116,6 @@
   .mini-item.taken-my { background: rgba(37,99,235,0.28); color: #93c5fd; text-decoration: line-through; }
   .mini-item.taken-opp { background: rgba(220,38,38,0.25); color: #fca5a5; text-decoration: line-through; }
 
-  /* シンプル一覧表 */
   .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
   table.p-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   table.p-table th {
@@ -166,7 +163,7 @@
   .modal h3 { margin-top: 0; font-size: 18px; color: var(--accent); }
   .badge-diag {
     font-size: 11px; background: rgba(16,185,129,0.14); border: 1px solid #10b981;
-    color: #6ee7b7; padding: 6px 8px; border-radius: 6px; margin-top: 8px;
+    color: #6ee7b7; padding: 6px 8px; border-radius: 6px; margin-top: 8px; line-height: 1.5;
   }
   .lineup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 640px) { .lineup-grid { grid-template-columns: 1fr; } }
@@ -193,10 +190,29 @@
         読込DB総数: <strong id="rawDbCount">72</strong> 名 → ドラフト対象プール: <strong id="poolCount" style="color:var(--accent);">72</strong> 名
       </div>
 
+      <!-- 球団バランス＆抽出モード -->
+      <div class="row" style="margin-bottom:8px;">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:11px; color:var(--muted);">球団偏り防止設定</label>
+          <select id="teamBalanceMode" style="width:100%;">
+            <option value="EQUAL_6" selected>12球団均等（各球団6名 × 12球団 ＝ 72名）</option>
+            <option value="MAX_8">偏り抑制（各球団最大8名まで）</option>
+            <option value="NONE">球団制限なし（完全ランダム）</option>
+          </select>
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <label style="font-size:11px; color:var(--muted);">抽出モード</label>
+          <select id="poolBuildMode" style="width:100%;">
+            <option value="GUARANTEED_72" selected>最低保証＋残りランダム72名抽出（800名JSON対応）</option>
+            <option value="EXACT_ALL">JSONデータをそのまま全件使用（72名自作JSON向け）</option>
+          </select>
+        </div>
+      </div>
+
       <!-- ポジション最低保証人数設定 -->
       <div class="quota-box">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
-          <strong style="font-size:12px; color:#93c5fd;">🛡️ ポジション最低保証人数（72名中・残りは完全ランダム抽出）</strong>
+          <strong style="font-size:12px; color:#93c5fd;">🛡️ ポジション最低保証人数（72名中・残りはランダム抽出）</strong>
           <span id="quotaCalcLabel" style="font-size:11px; color:#fde047; font-weight:700;">保証計: 46名 ＋ ランダム枠: 26名 ＝ 72名</span>
         </div>
         <div class="quota-grid">
@@ -210,11 +226,7 @@
       </div>
 
       <div class="row" style="margin-bottom:8px;">
-        <select id="poolBuildMode" style="flex:1; min-width:200px;">
-          <option value="GUARANTEED_72" selected>最低保証＋残りランダム72名抽出モード（800名JSON対応）</option>
-          <option value="EXACT_ALL">JSONデータをそのまま全件使用（72名自作JSON向け）</option>
-        </select>
-        <button id="reshufflePoolBtn" class="accent">🔄 最低保証つきで72名を再抽出</button>
+        <button id="reshufflePoolBtn" class="accent" style="flex:1;">🔄 条件どおりに72名を再抽出</button>
       </div>
 
       <div style="margin-bottom:8px;">
@@ -224,7 +236,7 @@
         </label>
       </div>
 
-      <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">外部JSONファイル（NPB支配下800名や自作リスト）を読み込む（能力項目は自動省略・軽量化）:</div>
+      <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">外部JSONファイル（NPB支配下800名や自作リスト）を読み込む（球団名・ポジション表記ゆれ自動補正）:</div>
       <input type="file" id="jsonFileInput" accept=".json" style="width:100%; font-size:12px; padding:6px; background:var(--bg); border-radius:8px; border:1px solid var(--border); color:var(--text);">
       <div id="poolBalanceSummary" class="badge-diag"></div>
     </div>
@@ -483,6 +495,7 @@ const MLB_2026_PLAYERS = [
 
 let RAW_DB = [...DEFAULT_NPB_2026_72];
 let ACTIVE_POOL = [...DEFAULT_NPB_2026_72];
+let importDiagNote = "";
 let lobbyPreviewMode = "TEAM";
 let currentViewMode = "matrix";
 
@@ -500,25 +513,169 @@ function shuffleArray(arr) {
 }
 
 // ============================================================================
-// 超軽量データ正規化＆「ポジション最低保証＋残りランダム72名抽出」エンジン
+// 球団名・ポジション表記ゆれ完全吸収パーサー
 // ============================================================================
-function normalizeLightPlayer(raw, idx) {
-  const name = (raw.name || raw.playerName || `選手${idx + 1}`).trim();
-  const team = (raw.team || raw.club || "巨人").trim();
-  let mainPos = (raw.mainPos || raw.pos || raw.position || "外").trim();
-  if (mainPos === "投手") mainPos = "先発";
-  if (mainPos === "捕手") mainPos = "捕";
-  if (mainPos === "外野手") mainPos = "外";
-  const role = raw.role || (["先発", "中継ぎ", "抑え"].includes(mainPos) ? "P" : "B");
-  const subPos = Array.isArray(raw.subPos) ? raw.subPos : (Array.isArray(raw.subPositions) ? raw.subPositions : []);
-  const league = (raw.league || "NPB").toUpperCase();
+function normalizeTeamName(rawTeam) {
+  if (!rawTeam) return "巨人";
+  const s = String(rawTeam).trim();
+  const upper = s.toUpperCase();
 
-  return { id: raw.id || `p_${idx}`, name, team, role, mainPos, subPos, league };
+  // 1〜2文字コードの完全一致判定
+  const exactMap = {
+    "G": "巨人", "YG": "巨人", "巨": "巨人",
+    "T": "阪神", "HT": "阪神", "神": "阪神",
+    "DB": "DeNA", "YB": "DeNA", "DE": "DeNA", "横": "DeNA",
+    "C": "広島", "HC": "広島", "広": "広島",
+    "S": "ヤクルト", "YS": "ヤクルト", "ヤ": "ヤクルト",
+    "D": "中日", "CD": "中日", "中": "中日",
+    "H": "ソフトバンク", "SB": "ソフトバンク", "SH": "ソフトバンク", "ソ": "ソフトバンク",
+    "F": "日本ハム", "FS": "日本ハム", "日": "日本ハム", "ハ": "日本ハム",
+    "M": "ロッテ", "CLM": "ロッテ", "ロ": "ロッテ",
+    "E": "楽天", "RE": "楽天", "楽": "楽天",
+    "B": "オリックス", "BS": "オリックス", "OB": "オリックス", "オ": "オリックス",
+    "L": "西武", "SL": "西武", "西": "西武"
+  };
+  if (exactMap[upper]) return exactMap[upper];
+
+  // 部分一致判定
+  if (s.includes("巨人") || s.includes("読売") || upper.includes("GIANT")) return "巨人";
+  if (s.includes("阪神") || upper.includes("TIGER")) return "阪神";
+  if (upper.includes("DENA") || s.includes("横浜") || s.includes("ベイスターズ") || upper.includes("BAYSTAR")) return "DeNA";
+  if (s.includes("広島") || s.includes("カープ") || upper.includes("CARP")) return "広島";
+  if (s.includes("ヤクルト") || s.includes("スワローズ") || upper.includes("SWALLOW")) return "ヤクルト";
+  if (s.includes("中日") || s.includes("ドラゴンズ") || upper.includes("DRAGON")) return "中日";
+  if (s.includes("ソフトバンク") || s.includes("ホークス") || upper.includes("HAWKS")) return "ソフトバンク";
+  if (s.includes("日本ハム") || s.includes("日ハム") || s.includes("ファイターズ") || upper.includes("FIGHTER")) return "日本ハム";
+  if (s.includes("ロッテ") || s.includes("マリーンズ") || upper.includes("MARINE")) return "ロッテ";
+  if (s.includes("楽天") || s.includes("イーグルス") || upper.includes("EAGLE")) return "楽天";
+  if (s.includes("オリックス") || s.includes("バファローズ") || upper.includes("BUFFALO")) return "オリックス";
+  if (s.includes("西武") || s.includes("ライオンズ") || upper.includes("LION")) return "西武";
+
+  return TEAMS.includes(s) ? s : "巨人";
+}
+
+function normalizePosToken(token) {
+  if (!token) return null;
+  const s = String(token).trim();
+  if (!s) return null;
+  const u = s.toUpperCase();
+
+  // 投手系
+  if (u === "SP" || u === "STARTER" || s === "先発" || s.includes("先発")) return "先発";
+  if (u === "RP" || u === "RELIEVER" || s === "中継ぎ" || s === "中継" || s.includes("中継") || s.includes("セットアップ")) return "中継ぎ";
+  if (u === "CP" || u === "CL" || u === "CLOSER" || s === "抑え" || s.includes("抑え") || s.includes("クローザー") || s.includes("守護神")) return "抑え";
+  if (u === "P" || u === "PITCHER" || s === "投" || s === "投手") return "投手";
+
+  // 捕手
+  if (u === "C" || u === "CATCHER" || s === "捕" || s === "捕手" || s.includes("キャッチャー")) return "捕";
+
+  // 一塁
+  if (u === "1B" || u === "FIRST" || s === "一" || s === "一塁" || s === "一塁手" || s.includes("ファースト")) return "一";
+
+  // 二塁
+  if (u === "2B" || u === "SECOND" || s === "二" || s === "二塁" || s === "二塁手" || s.includes("セカンド")) return "二";
+
+  // 三塁
+  if (u === "3B" || u === "THIRD" || s === "三" || s === "三塁" || s === "三塁手" || s.includes("サード")) return "三";
+
+  // 遊撃
+  if (u === "SS" || u === "SHORT" || u === "SHORTSTOP" || s === "遊" || s === "遊撃" || s === "遊撃手" || s.includes("ショート")) return "遊";
+
+  // 外野
+  if (["OF","LF","CF","RF","LEFT","CENTER","RIGHT","OUTFIELDER"].includes(u) ||
+      ["外","外野","外野手","左","中","右","左翼","中堅","右翼","左翼手","中堅手","右翼手"].includes(s) ||
+      s.includes("外野") || s.includes("レフト") || s.includes("センター") || s.includes("ライト")) {
+    return "外";
+  }
+
+  // ざっくり「内野手」としか書かれていない場合
+  if (u === "IF" || u === "INFIELDER" || s === "内野" || s === "内野手") return "内野";
+
+  return null;
+}
+
+function extractPosList(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) {
+    return val.flatMap(v => extractPosList(v));
+  }
+  // "二/遊", "遊・三", "捕,一", "一塁/三塁" などを分割
+  const parts = String(val).split(/[\/・,、|&\s ]+/);
+  return parts.map(normalizePosToken).filter(Boolean);
+}
+
+function normalizeLightPlayer(raw, idx) {
+  // 名前候補キーを網羅
+  const nameRaw = raw.name || raw.playerName || raw.player_name || raw.fullName || raw.選手名 || raw.名前 || `選手${idx + 1}`;
+  const name = String(nameRaw).trim();
+
+  // 球団候補キーを網羅
+  const teamRaw = raw.team || raw.club || raw.teamName || raw.team_name || raw.球団 || raw.チーム || raw.所属 || "";
+  const team = normalizeTeamName(teamRaw);
+
+  // ポジション候補キーを網羅
+  const posCandidates = [
+    raw.mainPos, raw.main_pos, raw.mainPosition, raw.primaryPos,
+    raw.pos, raw.pos1, raw.position, raw.守備, raw.守備位置, raw.ポジション, raw.メイン守備, raw.本職
+  ];
+  const subCandidates = [
+    raw.subPos, raw.sub_pos, raw.subPositions, raw.secondaryPos,
+    raw.pos2, raw.pos3, raw.サブ, raw.サブポジ, raw.サブ守備, raw.適正, raw.適性
+  ];
+  const roleHintCandidates = [
+    raw.role, raw.pitcherRole, raw.pitcherType, raw.type, raw.category, raw.役割, raw.起用, raw.投打
+  ];
+
+  let allPos = [];
+  for (const c of posCandidates) {
+    if (c !== undefined && c !== null && c !== "") {
+      allPos.push(...extractPosList(c));
+    }
+  }
+  for (const sc of subCandidates) {
+    if (sc !== undefined && sc !== null && sc !== "") {
+      allPos.push(...extractPosList(sc));
+    }
+  }
+
+  // 役割ヒント（例：pos="投手" だが role="先発" や type="抑え" の場合を救済）
+  const roleHints = [];
+  for (const rh of roleHintCandidates) {
+    if (rh !== undefined && rh !== null && rh !== "") {
+      roleHints.push(...extractPosList(rh));
+    }
+  }
+
+  // 重複除去しつつ順序維持
+  const uniquePos = [...new Set(allPos)];
+  let mainPos = uniquePos[0] || roleHints[0] || "外";
+  let subPos = uniquePos.slice(1);
+
+  // 「投手」だけだった場合、役割ヒントに先発/中継ぎ/抑えがあればそちらを採用
+  if (mainPos === "投手") {
+    const specificP = roleHints.find(r => ["先発", "中継ぎ", "抑え"].includes(r));
+    mainPos = specificP || "先発";
+  }
+  // 「内野」だけだった場合は「二」にしつつ他の内野をサブ付与
+  if (mainPos === "内野") {
+    mainPos = "二";
+    subPos = [...new Set([...subPos, "一", "三", "遊"])];
+  }
+  // サブポジ内の「投手」「内野」掃除
+  subPos = subPos.map(sp => sp === "投手" ? "中継ぎ" : sp).filter(sp => sp !== mainPos && sp !== "内野");
+
+  const role = ["先発", "中継ぎ", "抑え"].includes(mainPos) ? "P" : "B";
+  const league = String(raw.league || raw.リーグ || "NPB").toUpperCase();
+
+  return {
+    id: raw.id || raw.playerId || `p_${idx}`,
+    name, team, role, mainPos, subPos, league
+  };
 }
 
 function isEligible2026Npb(p) {
   if (!document.getElementById("excludeMlbChk").checked) return true;
-  if (p.league && p.league !== "NPB") return false;
+  if (p.league && p.league !== "NPB" && p.league !== "セ" && p.league !== "パ" && p.league !== "CENTRAL" && p.league !== "PACIFIC") return false;
   const compact = p.name.replace(/[\s ・.]/g, "");
   return !MLB_2026_PLAYERS.some(ng => compact.includes(ng));
 }
@@ -575,8 +732,12 @@ function getMinimumQuotas() {
   ];
 }
 
+// ============================================================================
+// 12球団均等配分 ＋ ポジション最低保証 抽出エンジン
+// ============================================================================
 function rebuildActivePool(forceReshuffle = false) {
   const mode = document.getElementById("poolBuildMode").value;
+  const balanceMode = document.getElementById("teamBalanceMode").value;
   const filtered = RAW_DB.filter(isEligible2026Npb);
   const quotas = getMinimumQuotas();
 
@@ -586,42 +747,65 @@ function rebuildActivePool(forceReshuffle = false) {
     return;
   }
 
-  // 1) ポジション最低保証枠をシャッフルした候補から確実に確保（本職優先 → 不足時はサブポジ補完）
+  const maxPerTeam = (balanceMode === "EQUAL_6") ? 6 : (balanceMode === "MAX_8" ? 8 : 999);
   const usedIds = new Set();
   const picked = [];
+  const teamCounts = {};
+  TEAMS.forEach(t => teamCounts[t] = 0);
 
+  // 選出数が少ない球団を優先しつつ、同数の球団内ではランダム順にするソーター
+  const pickBalancedCandidate = (candidates) => {
+    const valid = candidates.filter(p => !usedIds.has(p.id) && (teamCounts[p.team] || 0) < maxPerTeam);
+    if (!valid.length) return null;
+    // シャッフルした上で「現在の選出数が少ない球団」順に並べる
+    const shuffled = shuffleArray(valid);
+    shuffled.sort((a, b) => (teamCounts[a.team] || 0) - (teamCounts[b.team] || 0));
+    return shuffled[0];
+  };
+
+  // 1) ポジション最低保証枠を球団バランスを保ちながら確保
   for (const q of quotas) {
     if (q.count <= 0) continue;
     let added = 0;
 
-    // 第1段階：本職ポジションからランダムピック
-    const primaryCandidates = shuffleArray(filtered.filter(p => !usedIds.has(p.id) && q.primaryMatch(p)));
-    for (const p of primaryCandidates) {
-      if (added >= q.count || picked.length >= 72) break;
-      picked.push(p);
-      usedIds.add(p.id);
+    // 本職ポジションからピック
+    while (added < q.count && picked.length < 72) {
+      const cand = pickBalancedCandidate(filtered.filter(q.primaryMatch));
+      if (!cand) break;
+      picked.push(cand);
+      usedIds.add(cand.id);
+      teamCounts[cand.team] = (teamCounts[cand.team] || 0) + 1;
       added++;
     }
 
-    // 第2段階：本職だけで足りなければサブポジション持ちからランダム補完
-    if (added < q.count && picked.length < 72) {
-      const fallbackCandidates = shuffleArray(filtered.filter(p => !usedIds.has(p.id) && q.fallbackMatch(p)));
-      for (const p of fallbackCandidates) {
-        if (added >= q.count || picked.length >= 72) break;
-        picked.push(p);
-        usedIds.add(p.id);
-        added++;
-      }
+    // 本職だけで足りなければサブポジション持ちから補完
+    while (added < q.count && picked.length < 72) {
+      const cand = pickBalancedCandidate(filtered.filter(q.fallbackMatch));
+      if (!cand) break;
+      picked.push(cand);
+      usedIds.add(cand.id);
+      teamCounts[cand.team] = (teamCounts[cand.team] || 0) + 1;
+      added++;
     }
   }
 
-  // 2) 72名に満たない残り枠は、未選出の全選手から完全ランダムで抽出
+  // 2) 72名に満たない残り枠を、各球団が均等（6名ずつ等）になるようランダム充填
+  while (picked.length < 72) {
+    const cand = pickBalancedCandidate(filtered);
+    if (!cand) break;
+    picked.push(cand);
+    usedIds.add(cand.id);
+    teamCounts[cand.team] = (teamCounts[cand.team] || 0) + 1;
+  }
+
+  // 3) 万が一特定球団の登録人数自体が6名未満で72名に届かなかった場合の安全補完
   if (picked.length < 72) {
-    const remainingCandidates = shuffleArray(filtered.filter(p => !usedIds.has(p.id)));
-    for (const p of remainingCandidates) {
+    const rest = shuffleArray(filtered.filter(p => !usedIds.has(p.id)));
+    for (const p of rest) {
       if (picked.length >= 72) break;
       picked.push(p);
       usedIds.add(p.id);
+      teamCounts[p.team] = (teamCounts[p.team] || 0) + 1;
     }
   }
 
@@ -636,13 +820,16 @@ function getPoolSummaryText(list) {
   const mi = list.filter(p => p.mainPos === "二" || p.mainPos === "遊").length;
   const ci = list.filter(p => p.mainPos === "一" || p.mainPos === "三").length;
   const of = list.filter(p => p.mainPos === "外").length;
-  return `プール内訳【計${list.length}名】 先発:${sp} | 救援:${rp} | 捕手:${c} | 二遊間:${mi} | 一・三塁:${ci} | 外野:${of}`;
+  const teamDist = TEAMS.map(t => `${t.slice(0,2)}:${list.filter(p => p.team === t).length}`).join(" ");
+  return `【計${list.length}名】 先発:${sp} | 救援:${rp} | 捕手:${c} | 二遊間:${mi} | 一・三塁:${ci} | 外野:${of}\n球団別人数: ${teamDist}`;
 }
 
 function updateLobbyUI() {
   document.getElementById("rawDbCount").textContent = RAW_DB.length;
   document.getElementById("poolCount").textContent = ACTIVE_POOL.length;
-  document.getElementById("poolBalanceSummary").textContent = getPoolSummaryText(ACTIVE_POOL);
+  const summaryEl = document.getElementById("poolBalanceSummary");
+  summaryEl.style.whiteSpace = "pre-line";
+  summaryEl.textContent = getPoolSummaryText(ACTIVE_POOL) + (importDiagNote ? `\n${importDiagNote}` : "");
 
   const grid = document.getElementById("lobbyPreviewGrid");
   if (lobbyPreviewMode === "TEAM") {
@@ -696,8 +883,13 @@ document.getElementById("jsonFileInput").addEventListener("change", (e) => {
       const arr = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.players) ? parsed.players : null);
       if (arr && arr.length > 0) {
         RAW_DB = arr.map((item, i) => normalizeLightPlayer(item, i));
+        const dbP = RAW_DB.filter(p => p.role === "P").length;
+        const dbC = RAW_DB.filter(p => p.mainPos === "捕").length;
+        const dbI = RAW_DB.filter(p => ["一","二","三","遊"].includes(p.mainPos)).length;
+        const dbO = RAW_DB.filter(p => p.mainPos === "外").length;
+        importDiagNote = `✅ JSON読込診断（全${RAW_DB.length}名認識）: 投手${dbP} / 捕手${dbC} / 内野${dbI} / 外野${dbO}`;
         rebuildActivePool(true);
-        alert(`JSONから ${RAW_DB.length} 名を読み込み、ポジション最低保証つきで ${ACTIVE_POOL.length} 名を抽出しました！`);
+        alert(`JSONから ${RAW_DB.length} 名を読み込みました！\n（認識内訳：投手${dbP}・捕手${dbC}・内野${dbI}・外野${dbO}）`);
       } else {
         alert("有効な選手データの配列が見つかりませんでした。");
       }
@@ -711,6 +903,7 @@ document.getElementById("jsonFileInput").addEventListener("change", (e) => {
 ["qSP", "qRP", "qC", "qMI", "qCI", "qOF"].forEach(id => {
   document.getElementById(id).addEventListener("change", () => rebuildActivePool(true));
 });
+document.getElementById("teamBalanceMode").addEventListener("change", () => rebuildActivePool(true));
 document.getElementById("poolBuildMode").addEventListener("change", () => rebuildActivePool(true));
 document.getElementById("excludeMlbChk").addEventListener("change", () => rebuildActivePool(true));
 document.getElementById("reshufflePoolBtn").addEventListener("click", () => rebuildActivePool(true));
@@ -730,7 +923,6 @@ document.getElementById("exportPoolBtn").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-// 初期表示
 getMinimumQuotas();
 updateLobbyUI();
 
@@ -857,7 +1049,7 @@ function handleHostMessage(msg) {
       rebidTarget: null,
       snakeTurn: "HOST",
       pool: lightPool,
-      diag: getPoolSummaryText(lightPool),
+      diag: getPoolSummaryText(lightPool).split("\n")[0],
       hostName: myName,
       guestName: oppName,
       hostTeam: [],
