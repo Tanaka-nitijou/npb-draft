@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -101,7 +101,6 @@
     font-size: 10px; padding: 1px 6px; border-radius: 4px;
     background: rgba(59,130,246,0.22); border: 1px solid rgba(59,130,246,0.5); color: #bfdbfe;
   }
-  .abil.gold { background: rgba(245,158,11,0.25); border-color: #f59e0b; color: #fde047; }
   .bottom-bar {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: rgba(15,23,42,0.96); border-top: 1px solid var(--border);
@@ -137,11 +136,11 @@
   <!-- LOBBY / CONNECTION PANEL -->
   <div id="lobbyView">
     <div class="panel">
-      <h2>1. 選手データベース状態・追加</h2>
+      <h2>1. 選手データベース管理</h2>
       <div style="font-size:13px; color:#cbd5e1; margin-bottom:8px;">
-        登録選手数: <strong id="dbCount">0</strong> 名
+        現在登録中の選手数: <strong id="dbCount">0</strong> 名
       </div>
-      <div style="font-size:12px; color:var(--muted); margin-bottom:6px;">JSONファイル（選手データ）を読み込んで追加・上書きする</div>
+      <div style="font-size:12px; color:var(--muted); margin-bottom:6px;">追加・拡張用のJSONファイルを選択して一括読み込み</div>
       <input type="file" id="jsonFileInput" accept=".json" style="width:100%; font-size:13px; padding:6px;">
     </div>
 
@@ -268,10 +267,9 @@
 
 <script>
 // ============================================================================
-// デフォルトの選手データベース（初期値）
+// 初期標準選手データベース（72人）
 // ============================================================================
 let ALL_PLAYERS = [
-  // --- 読売ジャイアンツ (6名) ---
   { id:"g1", name:"戸郷 翔征", team:"巨人", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:480, stats:"152km コC68 スB78 スラ4 フォーク5", abilities:["奪三振","打たれ強さB"] },
   { id:"g2", name:"大勢", team:"巨人", role:"P", mainPos:"抑え", subPos:["中継ぎ"], peakYear:"2022", star:465, stats:"157km コD58 スD52 スラ3 フォーク4", abilities:["剛球","奪三振"] },
   { id:"g3", name:"山﨑 伊織", team:"巨人", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:440, stats:"151km コC69 スB74 スラ3 フォーク3", abilities:["ゴロピッチャー","緩急○"] },
@@ -279,7 +277,6 @@ let ALL_PLAYERS = [
   { id:"g5", name:"吉川 尚輝", team:"巨人", role:"B", mainPos:"二", subPos:["外"], peakYear:"2024", star:470, stats:"弾2 ミB75 パD56 走A84 肩C68 守A82 捕B75", abilities:["守備職人","走塁B"] },
   { id:"g6", name:"丸 佳浩", team:"巨人", role:"B", mainPos:"外", subPos:[], peakYear:"2018", star:510, stats:"弾3 ミB79 パB78 走C68 肩C68 守B76 捕B75", abilities:["選球眼","チャンスB"] },
 
-  // --- 阪神タイガース (6名) ---
   { id:"t1", name:"才木 浩人", team:"阪神", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:475, stats:"154km コC68 スB76 スラ3 フォーク5", abilities:["ノビB","奪三振"] },
   { id:"t2", name:"村上 頌樹", team:"阪神", role:"P", mainPos:"先発", subPos:[], peakYear:"2023", star:470, stats:"150km コB75 スB74 カット3 フォーク3", abilities:["キレ○","打たれ強さB"] },
   { id:"t3", name:"岩崎 優", team:"阪神", role:"P", mainPos:"抑え", subPos:["中継ぎ"], peakYear:"2023", star:450, stats:"147km コB74 スD50 スラ3 チェンジ3", abilities:["対ピンチB","ポーカーフェイス"] },
@@ -287,7 +284,6 @@ let ALL_PLAYERS = [
   { id:"t5", name:"佐藤 輝明", team:"阪神", role:"B", mainPos:"三", subPos:["外"], peakYear:"2025", star:485, stats:"弾4 ミD58 パA82 走C68 肩B76 守D55 捕D52", abilities:["パワーヒッター","初球○","三振"] },
   { id:"t6", name:"中野 拓夢", team:"阪神", role:"B", mainPos:"二", subPos:["遊"], peakYear:"2023", star:460, stats:"弾2 ミB74 パE48 走A84 肩C66 守A80 捕B74", abilities:["盗塁B","守備職人"] },
 
-  // --- 横浜DeNAベイスターズ (6名) ---
   { id:"db1", name:"東 克樹", team:"DeNA", role:"P", mainPos:"先発", subPos:[], peakYear:"2023", star:490, stats:"149km コB78 スB78 スラ3 チェンジ4", abilities:["精密機械","対ピンチB"] },
   { id:"db2", name:"山﨑 康晃", team:"DeNA", role:"P", mainPos:"抑え", subPos:[], peakYear:"2018", star:460, stats:"152km コC68 スD50 ツーシーム5 スラ3", abilities:["奪三振","ノビB"] },
   { id:"db3", name:"伊勢 大夢", team:"DeNA", role:"P", mainPos:"中継ぎ", subPos:[], peakYear:"2022", star:440, stats:"153km コC68 スD52 スラ3 フォーク3", abilities:["鉄腕","ノビB"] },
@@ -295,7 +291,6 @@ let ALL_PLAYERS = [
   { id:"db5", name:"宮﨑 敏郎", team:"DeNA", role:"B", mainPos:"三", subPos:["一"], peakYear:"2023", star:510, stats:"弾3 ミA86 パB74 走E42 肩C62 守C64 捕B74", abilities:["安打製造機","広角打法","粘り打ち"] },
   { id:"db6", name:"佐野 恵太", team:"DeNA", role:"B", mainPos:"外", subPos:["一"], peakYear:"2020", star:475, stats:"弾3 ミB78 パB74 走D52 肩C62 守C62 捕C65", abilities:["流し打ち","固め打ち"] },
 
-  // --- 広島東洋カープ (6名) ---
   { id:"c1", name:"森下 暢仁", team:"広島", role:"P", mainPos:"先発", subPos:[], peakYear:"2020", star:480, stats:"152km コC68 スB76 カット3 チェンジ4", abilities:["奪三振","打たれ強さB"] },
   { id:"c2", name:"床田 寛樹", team:"広島", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:465, stats:"149km コC68 スB77 ツーシーム3 パーム3", abilities:["ゴロピッチャー","打たれ強さB"] },
   { id:"c3", name:"栗林 良吏", team:"広島", role:"P", mainPos:"抑え", subPos:[], peakYear:"2021", star:475, stats:"153km コC69 スD52 カット3 フォーク5", abilities:["奪三振","対ピンチA"] },
@@ -303,7 +298,6 @@ let ALL_PLAYERS = [
   { id:"c5", name:"菊池 涼介", team:"広島", role:"B", mainPos:"二", subPos:["三","遊"], peakYear:"2016", star:490, stats:"弾2 ミC68 パD56 走A82 肩B76 守S95 捕A85", abilities:["魔術師","バント職人"] },
   { id:"c6", name:"小園 海斗", team:"広島", role:"B", mainPos:"遊", subPos:["三"], peakYear:"2024", star:460, stats:"弾2 ミB74 パC62 走B76 肩C68 守B74 捕C66", abilities:["アベレージヒッター","チャンスB"] },
 
-  // --- 東京ヤクルトスワローズ (6名) ---
   { id:"s1", name:"小川 泰弘", team:"ヤクルト", role:"P", mainPos:"先発", subPos:[], peakYear:"2013", star:465, stats:"149km コC68 スB78 スラ3 フォーク3", abilities:["奪三振","スタミナ○"] },
   { id:"s2", name:"清水 昇", team:"ヤクルト", role:"P", mainPos:"中継ぎ", subPos:[], peakYear:"2021", star:450, stats:"152km コC68 スD52 フォーク4 スラ3", abilities:["鉄腕","奪三振"] },
   { id:"s3", name:"高橋 奎二", team:"ヤクルト", role:"P", mainPos:"先発", subPos:[], peakYear:"2022", star:435, stats:"153km D50 スB72 スラ3 チェンジ3", abilities:["ノビA","闘志"] },
@@ -311,7 +305,6 @@ let ALL_PLAYERS = [
   { id:"s5", name:"塩見 泰隆", team:"ヤクルト", role:"B", mainPos:"外", subPos:[], peakYear:"2021", star:480, stats:"弾3 ミC68 パB74 走A86 肩C68 守B78 捕B74", abilities:["盗塁B","走塁A"] },
   { id:"s6", name:"長岡 秀樹", team:"ヤクルト", role:"B", mainPos:"遊", subPos:[], peakYear:"2024", star:465, stats:"弾2 ミB75 パC62 走B74 肩C68 守A82 捕B76", abilities:["守備職人","固め打ち"] },
 
-  // --- 中日ドラゴンズ (6名) ---
   { id:"d1", name:"髙橋 宏斗", team:"中日", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:495, stats:"156km コC68 スB78 スプリット5 カット3", abilities:["奪三振","対ピンチA"] },
   { id:"d2", name:"大野 雄大", team:"中日", role:"P", mainPos:"先発", subPos:[], peakYear:"2020", star:485, stats:"151km コB77 スB79 ツーシーム4 フォーク3", abilities:["対ピンチB","打たれ強さB"] },
   { id:"d3", name:"松山 晋也", team:"中日", role:"P", mainPos:"抑え", subPos:["中継ぎ"], peakYear:"2024", star:455, stats:"157km コD58 スD52 フォーク5", abilities:["剛球","奪三振"] },
@@ -319,7 +312,6 @@ let ALL_PLAYERS = [
   { id:"d5", name:"細川 成也", team:"中日", role:"B", mainPos:"外", subPos:["一"], peakYear:"2024", star:480, stats:"弾4 ミC68 パA82 走C62 肩C68 守C62 捕C62", abilities:["パワーヒッター","初球○"] },
   { id:"d6", name:"岡林 勇希", team:"中日", role:"B", mainPos:"外", subPos:[], peakYear:"2022", star:470, stats:"弾2 ミB75 D50 走A86 肩B76 守A84 捕B76", abilities:["レーザービーム","守備職人"] },
 
-  // --- 福岡ソフトバンクホークス (6名) ---
   { id:"h1", name:"L.モイネロ", team:"ソフトバンク", role:"P", mainPos:"先発", subPos:["中継ぎ"], peakYear:"2024", star:510, stats:"155km コC69 スB78 カーブ5 チェンジ4", abilities:["ドクターK","対ピンチA"] },
   { id:"h2", name:"R.オスナ", team:"ソフトバンク", role:"P", mainPos:"抑え", subPos:[], peakYear:"2023", star:490, stats:"156km コB78 スD52 チェンジ4 スラ3", abilities:["精密機械","対ピンチA"] },
   { id:"h3", name:"大関 友久", team:"ソフトバンク", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:450, stats:"150km コC68 スB74 フォーク3 スラ3", abilities:["緩急○"] },
@@ -327,7 +319,6 @@ let ALL_PLAYERS = [
   { id:"h5", name:"近藤 健介", team:"ソフトバンク", role:"B", mainPos:"外", subPos:[], peakYear:"2023", star:530, stats:"弾3 ミA89 パB78 走C65 肩C65 守B74 捕B75", abilities:["安打製造機","選球眼","チャンスA"] },
   { id:"h6", name:"山川 穂高", team:"ソフトバンク", role:"B", mainPos:"一", subPos:[], peakYear:"2018", star:510, stats:"弾4 D58 パS92 走E42 肩C62 守C62 捕C65", abilities:["アーチスト","プルヒッター"] },
 
-  // --- 北海道日本ハムファイターズ (6名) ---
   { id:"f1", name:"伊藤 大海", team:"日本ハム", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:480, stats:"153km コC68 スB77 スラ4 フォーク4", abilities:["奪三振","闘志"] },
   { id:"f2", name:"有原 航平", team:"日本ハム", role:"P", mainPos:"先発", subPos:[], peakYear:"2019", star:485, stats:"152km コC68 スB78 ツーシーム4 フォーク3", abilities:["打たれ強さB","ゴロピッチャー"] },
   { id:"f3", name:"宮西 尚生", team:"日本ハム", role:"P", mainPos:"中継ぎ", subPos:[], peakYear:"2016", star:455, stats:"145km コC69 スD50 スラ5", abilities:["鉄腕","対ピンチA"] },
@@ -335,7 +326,6 @@ let ALL_PLAYERS = [
   { id:"f5", name:"F.レイエス", team:"日本ハム", role:"B", mainPos:"一", subPos:[], peakYear:"2024", star:480, stats:"弾4 D56 パA85 走E40 肩C62 守D52 捕D52", abilities:["アーチスト","広角打法"] },
   { id:"f6", name:"田宮 裕涼", team:"日本ハム", role:"B", mainPos:"捕", subPos:[], peakYear:"2024", star:460, stats:"弾2 ミB75 D54 走B76 肩A82 守B75 捕B74", abilities:["バズーカ送球","走塁B"] },
 
-  // --- 千葉ロッテマリーンズ (6名) ---
   { id:"m1", name:"種市 篤暉", team:"ロッテ", role:"P", mainPos:"先発", subPos:[], peakYear:"2023", star:465, stats:"153km C65 スB74 フォーク5", abilities:["ドクターK","ノビB"] },
   { id:"m2", name:"益田 直也", team:"ロッテ", role:"P", mainPos:"抑え", subPos:[], peakYear:"2021", star:450, stats:"150km C68 D50 シンカー5", abilities:["鉄腕","対ピンチB"] },
   { id:"m3", name:"小島 和哉", team:"ロッテ", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:450, stats:"149km C68 B75 スラ3 チェンジ3", abilities:["打たれ強さB"] },
@@ -343,7 +333,6 @@ let ALL_PLAYERS = [
   { id:"m5", name:"G.ポランコ", team:"ロッテ", role:"B", mainPos:"外", subPos:[], peakYear:"2023", star:480, stats:"弾4 C64 パA82 走C60 肩C65 守D52 捕D52", abilities:["パワーヒッター","初球○"] },
   { id:"m6", name:"佐藤 都志也", team:"ロッテ", role:"B", mainPos:"捕", subPos:["一"], peakYear:"2024", star:465, stats:"弾2 ミB74 C62 走C65 肩C68 守B74 捕B74", abilities:["アベレージヒッター","キャッチャーC"] },
 
-  // --- 東北楽天ゴールデンイーグルス (6名) ---
   { id:"e1", name:"則本 昂大", team:"楽天", role:"P", mainPos:"先発", subPos:[], peakYear:"2017", star:500, stats:"156km C68 A82 スラ4 フォーク4", abilities:["ドクターK","闘志"] },
   { id:"e2", name:"岸 孝之", team:"楽天", role:"P", mainPos:"先発", subPos:[], peakYear:"2018", star:485, stats:"149km B76 A80 カーブ5 チェンジ3", abilities:["精密機械","緩急○"] },
   { id:"e3", name:"早川 隆久", team:"楽天", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:470, stats:"153km C68 B76 カット3 チェンジ4", abilities:["奪三振","対ピンチB"] },
@@ -351,7 +340,6 @@ let ALL_PLAYERS = [
   { id:"e5", name:"辰己 涼介", team:"楽天", role:"B", mainPos:"外", subPos:[], peakYear:"2024", star:495, stats:"弾2 ミB76 C62 走A84 肩A86 守S92 捕A82", abilities:["レーザービーム","守備職人"] },
   { id:"e6", name:"小深田 大翔", team:"楽天", role:"B", mainPos:"二", subPos:["遊"], peakYear:"2023", star:460, stats:"弾2 C66 D52 走A86 肩C65 守B76 捕B74", abilities:["盗塁A","走塁A"] },
 
-  // --- オリックス・バファローズ (6名) ---
   { id:"b1", name:"宮城 大弥", team:"オリックス", role:"P", mainPos:"先発", subPos:[], peakYear:"2023", star:490, stats:"152km B76 A80 スラ4 チェンジ4", abilities:["精密機械","緩急○"] },
   { id:"b2", name:"山下 舜平大", team:"オリックス", role:"P", mainPos:"先発", subPos:[], peakYear:"2023", star:470, stats:"158km D54 B76 カーブ4 フォーク4", abilities:["怪童","重い球"] },
   { id:"b3", name:"A.マチャド", team:"オリックス", role:"P", mainPos:"抑え", subPos:[], peakYear:"2024", star:460, stats:"160km D52 D50 チェンジ4", abilities:["剛球","ノビA"] },
@@ -359,7 +347,6 @@ let ALL_PLAYERS = [
   { id:"b5", name:"西川 龍馬", team:"オリックス", role:"B", mainPos:"外", subPos:[], peakYear:"2023", star:500, stats:"弾3 ミA84 パB74 走B70 肩C62 守C65 捕B72", abilities:["安打製造機","流し打ち"] },
   { id:"b6", name:"頓宮 裕真", team:"オリックス", role:"B", mainPos:"一", subPos:[], peakYear:"2023", star:480, stats:"弾4 ミB78 パB76 走E44 肩C65 守C62 捕C65", abilities:["アベレージヒッター","パワーヒッター"] },
 
-  // --- 埼玉西武ライオンズ (6名) ---
   { id:"l1", name:"今井 達也", team:"西武", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:490, stats:"157km D58 A82 スラ5 チェンジ3", abilities:["ドクターK","ノビA"] },
   { id:"l2", name:"平良 海馬", team:"西武", role:"P", mainPos:"先発", subPos:["中継ぎ"], peakYear:"2023", star:485, stats:"158km C68 A78 カット4 チェンジ3", abilities:["剛球","奪三振"] },
   { id:"l3", name:"隅田 知一郎", team:"西武", role:"P", mainPos:"先発", subPos:[], peakYear:"2024", star:465, stats:"150km C68 B76 チェンジ4 スラ3", abilities:["緩急○","打たれ強さB"] },
@@ -371,7 +358,7 @@ let ALL_PLAYERS = [
 const TEAMS = ["巨人","阪神","DeNA","広島","ヤクルト","中日","ソフトバンク","日本ハム","ロッテ","楽天","オリックス","西武"];
 
 // ============================================================================
-// JSONファイルインポート処理
+// JSONファイル一括インポート処理
 // ============================================================================
 document.getElementById("jsonFileInput").addEventListener("change", (e) => {
   const file = e.target.files[0];
@@ -383,12 +370,12 @@ document.getElementById("jsonFileInput").addEventListener("change", (e) => {
       if (Array.isArray(imported) && imported.length > 0) {
         ALL_PLAYERS = imported;
         document.getElementById("dbCount").textContent = ALL_PLAYERS.length;
-        alert(`JSONファイルから ${imported.length} 名の選手データを正常に読み込みました！`);
+        alert(`ファイルから ${imported.length} 名の選手データを正常に読み込みました！`);
       } else {
         alert("有効な選手データの配列が見つかりませんでした。");
       }
     } catch (err) {
-      alert("JSONのパースに失敗しました。ファイル形式を確認してください。\n" + err);
+      alert("JSONのパースに失敗しました。\n" + err);
     }
   };
   reader.readAsText(file);
@@ -409,7 +396,7 @@ let gameState = {
   simultaneousRounds: 5,
   totalPicks: 36,
   currentRound: 1,
-  phase: "SIMULTANEOUS", // SIMULTANEOUS | REBID | SNAKE | FINISHED
+  phase: "SIMULTANEOUS",
   rebidTarget: null,
   snakeTurn: "HOST",
   pool: [],
@@ -434,7 +421,6 @@ function generateRoomCode() {
 
 document.getElementById("dbCount").textContent = ALL_PLAYERS.length;
 
-// ホスト：ルーム作成
 document.getElementById("createRoomBtn").addEventListener("click", () => {
   isHost = true;
   myName = document.getElementById("hostNameInput").value.trim() || "監督A";
@@ -454,11 +440,10 @@ document.getElementById("createRoomBtn").addEventListener("click", () => {
     setupConnection();
   });
   peer.on("error", (err) => {
-    alert("通信エラーが発生しました。再読み込みしてお試しください。\n" + err.type);
+    alert("通信エラーが発生しました。\n" + err.type);
   });
 });
 
-// ゲスト：ルーム参加
 document.getElementById("joinRoomBtn").addEventListener("click", () => {
   isHost = false;
   myName = document.getElementById("guestNameInput").value.trim() || "監督B";
@@ -476,7 +461,7 @@ document.getElementById("joinRoomBtn").addEventListener("click", () => {
   });
   peer.on("error", (err) => {
     document.getElementById("joinRoomBtn").disabled = false;
-    alert("ルームが見つかりません。コードを確認してください。");
+    alert("ルームが見つかりません。");
   });
 });
 
@@ -523,7 +508,7 @@ function handleHostMessage(msg) {
       rebidTarget: null,
       snakeTurn: "HOST",
       pool: [...ALL_PLAYERS],
-      diag: `【選手登録数: ${ALL_PLAYERS.length名}】全盛期パワプロ査定データベース`,
+      diag: `【登録選手数: ${ALL_PLAYERS.length}名】リアルタイムドラフト開始`,
       hostName: myName,
       guestName: oppName,
       hostTeam: [],
@@ -575,8 +560,8 @@ function processPick(who, playerId) {
         gameState.guestLockedPick = null;
         gameState.lastModal = {
           id: Date.now() + Math.random(),
-          title: `第${gameState.currentRound}巡 同時出し結果（重複なし！）`,
-          body: `【${gameState.hostName}】 ${hPlayer.name}（${hPlayer.team}）獲得！\n【${gameState.guestName}】 ${gPlayer.name}（${gPlayer.team}）獲得！`
+          title: `第${gameState.currentRound}巡 同時出し結果（重複なし）`,
+          body: `【${gameState.hostName}】 ${hPlayer ? hPlayer.name : ''} 獲得！\n【${gameState.guestName}】 ${gPlayer ? gPlayer.name : ''} 獲得！`
         };
         advanceRound();
       } else {
@@ -596,8 +581,8 @@ function processPick(who, playerId) {
 
         gameState.lastModal = {
           id: Date.now() + Math.random(),
-          title: `🎯 第${gameState.currentRound}巡 指名重複！くじ引き結果`,
-          body: `「${hPlayer.name}（${hPlayer.team}）」で両者が重複！\n\n🎉 当選：${winnerName}\n💦 ハズレ：${loserName}\n\n${loserName}はハズレ再入札を行ってください。`
+          title: `🎯 第${gameState.currentRound}巡 指名重複！抽選結果`,
+          body: `「${hPlayer ? hPlayer.name : ''}」で両者競合！\n\n🎉 当選：${winnerName}\n💦 外れ：${loserName}\n\n${loserName}は再入札を行ってください。`
         };
       }
     }
@@ -611,8 +596,8 @@ function processPick(who, playerId) {
     const rebidderName = who === "HOST" ? gameState.hostName : gameState.guestName;
     gameState.lastModal = {
       id: Date.now() + Math.random(),
-      title: `第${gameState.currentRound}巡 ハズレ再入札確定`,
-      body: `【${rebidderName}】 ${pObj.name}（${pObj.team}）を獲得しました！`
+      title: `第${gameState.currentRound}巡 再入札確定`,
+      body: `【${rebidderName}】 ${pObj ? pObj.name : ''} を獲得しました！`
     };
     gameState.rebidTarget = null;
     advanceRound();
@@ -627,7 +612,7 @@ function processPick(who, playerId) {
       gameState.lastModal = {
         id: Date.now() + Math.random(),
         title: "🏆 ドラフト全巡目終了！",
-        body: `両チーム${gameState.totalPicks}名の指名が完了しました！\n「オーダー診断」タブからベストオーダーを確認できます。`
+        body: `両チーム${gameState.totalPicks}名の指名が完了しました！`
       };
     } else {
       const minLen = Math.min(gameState.hostTeam.length, gameState.guestTeam.length);
@@ -655,9 +640,6 @@ function advanceRound() {
   }
 }
 
-// ============================================================================
-// UI レンダリング
-// ============================================================================
 function renderAll() {
   if (!gameState.started) return;
   document.getElementById("lobbyView").classList.add("hidden");
@@ -688,16 +670,16 @@ function renderAll() {
       subEl.textContent = `「${lp ? lp.name : ''}」でロック済み。${oppLocked ? "集計中..." : "相手の選択待ちです..."}`;
       canPick = false;
     } else {
-      subEl.textContent = oppLocked ? "相手は選択完了！選手を選んで確定してください。" : "リストから欲しい選手を1名選んで確定してください。";
+      subEl.textContent = oppLocked ? "相手は選択完了！選手を選んで確定してください。" : "リストから欲しい選手を選んで確定してください。";
       canPick = true;
     }
   } else if (gameState.phase === "REBID") {
-    titleEl.textContent = `第${gameState.currentRound}巡【くじ引きハズレ再入札】`;
+    titleEl.textContent = `第${gameState.currentRound}巡【抽選外れ・再入札】`;
     if (gameState.rebidTarget === myRole) {
-      subEl.textContent = "あなたの番です！残りの候補から1名を選んでください。";
+      subEl.textContent = "あなたの番です！選手を選んでください。";
       canPick = true;
     } else {
-      subEl.textContent = "相手がハズレ再入札を選んでいます...";
+      subEl.textContent = "相手が再入札を行っています...";
       canPick = false;
     }
   } else if (gameState.phase === "SNAKE") {
@@ -750,12 +732,12 @@ function createPlayerCardHTML(p, isTaken, isSelected) {
         <div>
           <span class="p-team">${p.team}</span>
           <span class="p-name">${p.name}</span>
-          <span style="font-size:11px; color:#94a3b8;">(${p.peakYear}年)</span>
+          <span style="font-size:11px; color:#94a3b8;">(${p.peakYear || '全盛期'}年)</span>
         </div>
-        <div class="p-star">★${p.star}</div>
+        <div class="p-star">★${p.star || 450}</div>
       </div>
       <div class="p-meta">守備位置: <strong>${posStr}</strong></div>
-      <div class="p-stats">${p.stats}</div>
+      <div class="p-stats">${p.stats || ''}</div>
       <div class="p-abils">${abilsHtml}</div>
     </div>
   `;
@@ -777,9 +759,9 @@ function renderPoolList(takenSet, canPick) {
   else if (fPos !== "ALL") list = list.filter(p => hasPos(p, fPos));
 
   if (sOrder === "star") {
-    list.sort((a, b) => (takenSet.has(a.id) - takenSet.has(b.id)) || (b.star - a.star));
+    list.sort((a, b) => (takenSet.has(a.id) - takenSet.has(b.id)) || ((b.star || 0) - (a.star || 0)));
   } else {
-    list.sort((a, b) => (takenSet.has(a.id) - takenSet.has(b.id)) || (TEAMS.indexOf(a.team) - TEAMS.indexOf(b.team)) || (b.star - a.star));
+    list.sort((a, b) => (takenSet.has(a.id) - takenSet.has(b.id)) || (TEAMS.indexOf(a.team) - TEAMS.indexOf(b.team)) || ((b.star || 0) - (a.star || 0)));
   }
 
   const container = document.getElementById("poolList");
@@ -812,17 +794,17 @@ function buildBestLineupHTML(teamName, idList) {
   const players = idList.map(id => gameState.pool.find(p => p.id === id)).filter(Boolean);
   if (!players.length) return `<div class="panel"><h2>${teamName}</h2><p style="font-size:13px; color:var(--muted);">選手獲得後に表示されます</p></div>`;
 
-  const pitchers = players.filter(p => p.role === "P").sort((a,b) => b.star - a.star);
-  const batters = players.filter(p => p.role === "B").sort((a,b) => b.star - a.star);
-  const avgStar = players.length ? Math.round(players.reduce((s,p) => s + p.star, 0) / players.length) : 0;
+  const pitchers = players.filter(p => p.role === "P").sort((a,b) => (b.star||0) - (a.star||0));
+  const batters = players.filter(p => p.role === "B").sort((a,b) => (b.star||0) - (a.star||0));
+  const avgStar = players.length ? Math.round(players.reduce((s,p) => s + (p.star||0), 0) / players.length) : 0;
 
   return `
     <div class="panel">
       <h2>${teamName}（獲得${players.length}名 / 平均★${avgStar}）</h2>
       <div style="font-size:12px; font-weight:700; margin-bottom:4px; color:#93c5fd;">【投手陣】</div>
-      ${pitchers.map(p => `<div style="font-size:12px; padding:2px 0;">${p.name}（${p.team}）★${p.star}</div>`).join("") || 'なし'}
+      ${pitchers.map(p => `<div style="font-size:12px; padding:2px 0;">${p.name}（${p.team}）★${p.star||''}</div>`).join("") || 'なし'}
       <div style="font-size:12px; font-weight:700; margin-top:8px; margin-bottom:4px; color:#93c5fd;">【野手陣】</div>
-      ${batters.map(p => `<div style="font-size:12px; padding:2px 0;">${p.name}（${p.team} / ${p.mainPos}）★${p.star}</div>`).join("") || 'なし'}
+      ${batters.map(p => `<div style="font-size:12px; padding:2px 0;">${p.name}（${p.team} / ${p.mainPos}）★${p.star||''}</div>`).join("") || 'なし'}
     </div>
   `;
 }
