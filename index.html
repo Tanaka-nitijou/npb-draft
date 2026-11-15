@@ -3,3071 +3,1507 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NPB 2026 リアルプロ野球ドラフト会議（オンライン対戦・12球団×6人＝72人版）</title>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<title>NPB 2026 リアルプロ野球ドラフト会議（2026年11月最新名簿版）</title>
 <style>
-:root {
---bg: #0b1120;
---panel: #162032;
---panel-light: #26334d;
---text: #f8fafc;
---text-muted: #94a3b8;
---accent: #3b82f6;
---accent-hover: #2563eb;
---gold: #f59e0b;
---danger: #ef4444;
---success: #10b981;
---border: #2e3c56;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-background: var(--bg);
-color: var(--text);
-line-height: 1.5;
-}
-header {
-background: linear-gradient(135deg, #060913 0%, #162032 100%);
-padding: 14px 24px;
-border-bottom: 2px solid var(--gold);
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 10px;
-}
-header h1 {
-font-size: 1.25rem;
-font-weight: 800;
-letter-spacing: 0.03em;
-display: flex;
-align-items: center;
-gap: 10px;
-flex-wrap: wrap;
-}
-header h1 span.badge {
-background: var(--gold);
-color: #000;
-font-size: 0.72rem;
-padding: 2px 9px;
-border-radius: 999px;
-font-weight: 900;
-}
-.header-controls {
-display: flex;
-gap: 8px;
-align-items: center;
-flex-wrap: wrap;
-}
-.net-badge {
-font-size: 0.78rem;
-padding: 4px 10px;
-border-radius: 999px;
-font-weight: 800;
-background: #065f46;
-color: #6ee7b7;
-border: 1px solid #10b981;
-}
-.net-badge.disconnected {
-background: #7f1d1d;
-color: #fca5a5;
-border-color: #ef4444;
-}
-.container {
-max-width: 1540px;
-margin: 0 auto;
-padding: 16px;
-}
-.btn {
-background: var(--accent);
-color: #fff;
-border: none;
-padding: 8px 16px;
-border-radius: 6px;
-font-weight: 700;
-cursor: pointer;
-font-size: 0.88rem;
-transition: 0.15s;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 6px;
-}
-.btn:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
-.btn:disabled { opacity: 0.42; cursor: not-allowed; }
-.btn-gold { background: var(--gold); color: #000; }
-.btn-gold:hover:not(:disabled) { background: #d97706; }
-.btn-success { background: var(--success); color: #042f2e; }
-.btn-success:hover:not(:disabled) { background: #059669; color: #fff; }
-.btn-danger { background: var(--danger); }
-.btn-danger:hover:not(:disabled) { background: #dc2626; }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-outline:hover:not(:disabled) { background: var(--panel-light); }
-.btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+  :root {
+    --bg-dark: #090e1a;
+    --bg-panel: #111827;
+    --bg-card: #1a2336;
+    --bg-hover: #243049;
+    --gold: #f59e0b;
+    --gold-light: #fcd34d;
+    --accent: #3b82f6;
+    --danger: #ef4444;
+    --success: #10b981;
+    --text-main: #f3f4f6;
+    --text-sub: #9ca3af;
+    --border: #2d3748;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    background: radial-gradient(circle at top, #162238 0%, var(--bg-dark) 70%);
+    color: var(--text-main);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  button {
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  input, select {
+    font-family: inherit;
+    background: #0d1322;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--gold); }
 
-/* Setup Screen */
-.setup-card {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 12px;
-padding: 24px;
-max-width: 1060px;
-margin: 12px auto;
-}
-.setup-card h2 {
-font-size: 1.2rem;
-margin-bottom: 16px;
-border-left: 4px solid var(--gold);
-padding-left: 12px;
-}
-.play-mode-tabs {
-display: flex;
-gap: 10px;
-margin-bottom: 18px;
-flex-wrap: wrap;
-}
-.mode-tab-btn {
-flex: 1;
-min-width: 220px;
-padding: 12px 16px;
-border-radius: 10px;
-border: 2px solid var(--border);
-background: var(--bg);
-color: var(--text-muted);
-font-weight: 800;
-font-size: 0.95rem;
-cursor: pointer;
-text-align: left;
-transition: 0.15s;
-}
-.mode-tab-btn.active {
-border-color: var(--gold);
-background: rgba(245, 158, 11, 0.12);
-color: #fff;
-}
-.mode-tab-btn small {
-display: block;
-font-weight: 500;
-font-size: 0.78rem;
-color: var(--text-muted);
-margin-top: 3px;
-}
+  /* Header */
+  header {
+    background: linear-gradient(90deg, #0b1220, #17233b, #0b1220);
+    border-bottom: 2px solid var(--gold);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-badge {
+    background: linear-gradient(135deg, var(--gold), #b45309);
+    color: #000;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .brand h1 {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #fff;
+  }
+  .brand span {
+    font-size: 12px;
+    color: var(--gold-light);
+    display: block;
+  }
+  .header-controls { display: flex; gap: 8px; align-items: center; }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold-light); }
 
-/* Online Lobby Box */
-.online-lobby-box {
-background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(59,130,246,0.14));
-border: 1px solid #10b981;
-border-radius: 10px;
-padding: 16px;
-margin-bottom: 18px;
-}
-.online-role-switch {
-display: flex;
-gap: 8px;
-margin-bottom: 14px;
-flex-wrap: wrap;
-}
-.online-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-gap: 14px;
-align-items: end;
-}
-.room-code-display {
-background: var(--bg);
-border: 2px dashed var(--gold);
-border-radius: 8px;
-padding: 10px 14px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-gap: 8px;
-flex-wrap: wrap;
-margin-top: 10px;
-}
-.room-code-text {
-font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-font-size: 1.25rem;
-font-weight: 900;
-color: var(--gold);
-letter-spacing: 0.08em;
-}
-.online-status-line {
-margin-top: 10px;
-padding: 8px 12px;
-border-radius: 6px;
-background: rgba(11,17,32,0.75);
-font-size: 0.86rem;
-display: flex;
-align-items: center;
-justify-content: space-between;
-flex-wrap: wrap;
-gap: 8px;
-}
+  /* Setup Screen */
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .setup-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 960px;
+    margin: 20px auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  }
+  .setup-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--gold-light);
+    margin-bottom: 16px;
+    border-left: 4px solid var(--gold);
+    padding-left: 12px;
+  }
+  .setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .form-group select { width: 100%; font-size: 14px; padding: 10px; }
 
-.setup-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
-gap: 14px;
-margin-bottom: 18px;
-}
-.form-group label {
-display: block;
-font-size: 0.8rem;
-color: var(--text-muted);
-margin-bottom: 5px;
-font-weight: 700;
-}
-.form-group select, .form-group input[type="number"], .form-group input[type="text"] {
-width: 100%;
-padding: 8px 11px;
-background: var(--bg);
-border: 1px solid var(--border);
-border-radius: 6px;
-color: var(--text);
-font-size: 0.9rem;
-}
-.pool-config-box {
-background: rgba(11, 17, 32, 0.7);
-border: 1px solid var(--gold);
-border-radius: 10px;
-padding: 16px;
-margin-bottom: 18px;
-}
-.pool-config-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 8px;
-margin-bottom: 12px;
-}
-.pool-config-header h3 {
-font-size: 0.98rem;
-color: var(--gold);
-}
-.pos-quota-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
-gap: 10px;
-}
-.quota-item {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 6px;
-padding: 8px;
-text-align: center;
-}
-.quota-item label {
-display: block;
-font-size: 0.76rem;
-color: var(--text-muted);
-margin-bottom: 4px;
-}
-.quota-item input {
-width: 72px;
-text-align: center;
-padding: 4px;
-background: var(--bg);
-border: 1px solid var(--border);
-color: var(--text);
-border-radius: 4px;
-font-weight: 800;
-}
-.quota-total-badge {
-margin-top: 10px;
-font-size: 0.84rem;
-display: flex;
-justify-content: space-between;
-flex-wrap: wrap;
-gap: 8px;
-}
-.quick-presets {
-display: flex;
-gap: 8px;
-flex-wrap: wrap;
-margin-bottom: 12px;
-}
-.team-inputs {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-gap: 10px;
-margin-bottom: 20px;
-}
-.team-input-item {
-background: var(--bg);
-padding: 10px 12px;
-border-radius: 8px;
-border: 1px solid var(--border);
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
-.team-input-top {
-display: flex;
-align-items: center;
-gap: 8px;
-}
-.team-input-top span.idx {
-font-weight: 800;
-color: var(--gold);
-min-width: 28px;
-font-size: 0.85rem;
-}
-.team-input-top input {
-flex: 1;
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 5px;
-color: var(--text);
-padding: 6px 8px;
-font-size: 0.9rem;
-}
-.role-toggle {
-display: flex;
-gap: 6px;
-}
-.role-btn {
-flex: 1;
-padding: 5px 8px;
-border-radius: 5px;
-border: 1px solid var(--border);
-background: var(--panel);
-color: var(--text-muted);
-font-size: 0.78rem;
-font-weight: 700;
-cursor: pointer;
-transition: 0.15s;
-}
-.role-btn.active-human {
-background: #1d4ed8;
-border-color: #3b82f6;
-color: #fff;
-}
-.role-btn.active-cpu {
-background: #065f46;
-border-color: #10b981;
-color: #ecfdf5;
-}
+  .team-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .team-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .team-card:hover { transform: translateY(-2px); border-color: #64748b; }
+  .team-card.selected {
+    border-color: var(--gold);
+    background: rgba(245, 158, 11, 0.15);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+  }
+  .team-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin: 0 auto 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 12px;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .team-card .t-name { font-size: 13px; font-weight: 700; }
+  .team-card .t-league { font-size: 10px; color: var(--text-sub); }
+  .team-card .t-need { font-size: 10px; color: var(--gold-light); margin-top: 4px; }
 
-/* Draft Main Layout */
-.pool-summary-bar {
-background: linear-gradient(90deg, rgba(245,158,11,0.12), rgba(59,130,246,0.12));
-border: 1px solid rgba(245,158,11,0.45);
-border-radius: 8px;
-padding: 8px 14px;
-margin-bottom: 12px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 8px;
-font-size: 0.82rem;
-}
-.summary-chips {
-display: flex;
-gap: 8px;
-flex-wrap: wrap;
-align-items: center;
-}
-.s-chip {
-background: var(--panel);
-border: 1px solid var(--border);
-padding: 2px 8px;
-border-radius: 4px;
-}
-.draft-status-bar {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 10px;
-padding: 12px 18px;
-margin-bottom: 14px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 12px;
-}
-.status-highlight {
-font-size: 1.05rem;
-font-weight: 800;
-display: flex;
-align-items: center;
-gap: 10px;
-flex-wrap: wrap;
-}
-.status-highlight .round-tag {
-background: var(--accent);
-padding: 3px 10px;
-border-radius: 6px;
-font-size: 0.88rem;
-}
-.cpu-thinking-badge {
-background: #065f46;
-color: #6ee7b7;
-border: 1px solid #10b981;
-padding: 3px 10px;
-border-radius: 999px;
-font-size: 0.82rem;
-animation: pulse 1.2s infinite;
-}
-@keyframes pulse {
-0%, 100% { opacity: 1; }
-50% { opacity: 0.55; }
-}
-.draft-grid {
-display: grid;
-grid-template-columns: 1.28fr 1fr;
-gap: 16px;
-align-items: start;
-}
-@media (max-width: 1080px) {
-.draft-grid { grid-template-columns: 1fr; }
-}
+  .btn-start {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), #d97706);
+    color: #000;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+  }
+  .btn-start:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
-/* Left: Player Pool */
-.pool-panel {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 10px;
-padding: 14px;
-}
-.filters {
-display: flex;
-flex-wrap: wrap;
-gap: 8px;
-margin-bottom: 10px;
-}
-.filters input, .filters select {
-background: var(--bg);
-border: 1px solid var(--border);
-color: var(--text);
-padding: 7px 10px;
-border-radius: 6px;
-font-size: 0.85rem;
-}
-.filters input { flex: 1; min-width: 140px; }
-.pos-tabs {
-display: flex;
-gap: 6px;
-margin-bottom: 10px;
-flex-wrap: wrap;
-}
-.pos-tab {
-background: var(--bg);
-border: 1px solid var(--border);
-color: var(--text-muted);
-padding: 5px 11px;
-border-radius: 999px;
-font-size: 0.78rem;
-font-weight: 700;
-cursor: pointer;
-}
-.pos-tab.active {
-background: var(--accent);
-color: #fff;
-border-color: var(--accent);
-}
-.player-table-wrap {
-max-height: 650px;
-overflow-y: auto;
-border: 1px solid var(--border);
-border-radius: 8px;
-}
-table {
-width: 100%;
-border-collapse: collapse;
-font-size: 0.85rem;
-}
-thead th {
-position: sticky;
-top: 0;
-background: #0b1120;
-padding: 9px 8px;
-text-align: left;
-font-size: 0.77rem;
-color: var(--text-muted);
-border-bottom: 1px solid var(--border);
-z-index: 2;
-}
-tbody tr {
-border-bottom: 1px solid rgba(46,60,86,0.55);
-transition: background 0.1s;
-}
-tbody tr:hover:not(.drafted) { background: rgba(59,130,246,0.15); }
-tbody tr.drafted {
-opacity: 0.35;
-background: rgba(11,17,32,0.65);
-}
-td { padding: 7px 8px; white-space: nowrap; }
-.rank-badge {
-display: inline-block;
-width: 22px;
-height: 22px;
-line-height: 22px;
-text-align: center;
-border-radius: 4px;
-font-weight: 900;
-font-size: 0.78rem;
-}
-.rank-S { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; }
-.rank-A { background: #ef4444; color: #fff; }
-.rank-B { background: #3b82f6; color: #fff; }
-.rank-C { background: #475569; color: #e2e8f0; }
+  /* Draft Main Layout */
+  .draft-status-bar {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .round-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .round-pill {
+    background: var(--gold);
+    color: #000;
+    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+  }
+  .turn-info { font-size: 15px; font-weight: 700; }
+  .turn-info strong { color: var(--gold-light); }
 
-.team-pill {
-font-size: 0.73rem;
-padding: 2px 6px;
-border-radius: 4px;
-font-weight: 700;
-}
-.pos-tag {
-font-size: 0.75rem;
-padding: 2px 6px;
-border-radius: 4px;
-background: var(--bg);
-border: 1px solid var(--border);
-}
-.subpos-tag {
-font-size: 0.7rem;
-padding: 1px 5px;
-border-radius: 4px;
-background: rgba(59,130,246,0.18);
-color: #93c5fd;
-margin-left: 4px;
-}
+  .order-strip {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .order-chip {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    font-weight: 700;
+  }
+  .order-chip.active {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold-light);
+    transform: scale(1.05);
+  }
+  .order-chip.user { border-bottom: 2px solid #38bdf8; }
+  .order-chip.done { opacity: 0.45; }
 
-/* Right: Rosters & Log */
-.right-column {
-display: flex;
-flex-direction: column;
-gap: 14px;
-}
-.rosters-panel {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 10px;
-padding: 14px;
-max-height: 560px;
-overflow-y: auto;
-}
-.rosters-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-gap: 10px;
-}
-.roster-card {
-background: var(--bg);
-border: 1px solid var(--border);
-border-radius: 8px;
-padding: 10px;
-}
-.roster-card.active-turn {
-border: 2px solid var(--gold);
-box-shadow: 0 0 12px rgba(245,158,11,0.25);
-}
-.roster-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-border-bottom: 1px solid var(--border);
-padding-bottom: 6px;
-margin-bottom: 6px;
-font-weight: 800;
-font-size: 0.9rem;
-gap: 6px;
-}
-.role-chip {
-font-size: 0.68rem;
-padding: 1px 6px;
-border-radius: 4px;
-font-weight: 800;
-}
-.role-chip.human { background: #1d4ed8; color: #fff; }
-.role-chip.cpu { background: #065f46; color: #6ee7b7; }
-.roster-counts {
-display: flex;
-flex-wrap: wrap;
-gap: 5px;
-font-size: 0.72rem;
-color: var(--text-muted);
-margin-bottom: 6px;
-background: var(--panel);
-padding: 4px 6px;
-border-radius: 4px;
-}
-.roster-list {
-list-style: none;
-font-size: 0.79rem;
-max-height: 340px;
-overflow-y: auto;
-}
-.roster-list li {
-padding: 3px 0;
-border-bottom: 1px dashed rgba(46,60,86,0.7);
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
-.roster-list li span.pick-no {
-color: var(--gold);
-font-weight: 700;
-margin-right: 4px;
-font-size: 0.72rem;
-}
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 980px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
 
-/* Log & Chat Panel */
-.log-panel {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 10px;
-padding: 12px 14px;
-}
-.log-panel h3 {
-font-size: 0.88rem;
-color: var(--text-muted);
-margin-bottom: 8px;
-display: flex;
-justify-content: space-between;
-}
-.log-list {
-max-height: 150px;
-overflow-y: auto;
-font-size: 0.8rem;
-display: flex;
-flex-direction: column;
-gap: 4px;
-}
-.log-item {
-background: var(--bg);
-padding: 4px 8px;
-border-radius: 4px;
-border-left: 3px solid var(--accent);
-}
-.log-item.lottery { border-left-color: var(--gold); }
-.log-item.chat { border-left-color: var(--success); background: rgba(16,185,129,0.08); }
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .panel-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--gold-light);
+  }
 
-.chat-bar {
-display: flex;
-gap: 6px;
-margin-top: 8px;
-flex-wrap: wrap;
-}
-.chat-bar input {
-flex: 1;
-min-width: 140px;
-background: var(--bg);
-border: 1px solid var(--border);
-color: var(--text);
-padding: 5px 9px;
-border-radius: 5px;
-font-size: 0.8rem;
-}
-.stamp-row {
-display: flex;
-gap: 5px;
-flex-wrap: wrap;
-margin-top: 6px;
-}
-.stamp-btn {
-background: var(--bg);
-border: 1px solid var(--border);
-color: var(--text-muted);
-font-size: 0.72rem;
-padding: 2px 7px;
-border-radius: 999px;
-cursor: pointer;
-}
-.stamp-btn:hover { border-color: var(--gold); color: #fff; }
+  /* Filters */
+  .filter-bar {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr 0.8fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  @media (max-width: 600px) {
+    .filter-bar { grid-template-columns: 1fr 1fr; }
+  }
 
-/* Simultaneous Bid Panel */
-.bid-panel {
-background: linear-gradient(135deg, #162032 0%, #0b1120 100%);
-border: 2px solid var(--gold);
-border-radius: 10px;
-padding: 14px;
-margin-bottom: 14px;
-}
-.bid-slots {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-gap: 10px;
-margin: 10px 0;
-}
-.bid-slot {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 8px;
-padding: 10px;
-cursor: pointer;
-transition: 0.15s;
-}
-.bid-slot.selected-slot {
-border: 2px solid var(--accent);
-background: rgba(59,130,246,0.14);
-}
-.bid-slot.locked {
-border-color: var(--success);
-}
+  /* Player Table */
+  .table-wrap {
+    overflow-y: auto;
+    max-height: 560px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: #0d1424;
+    color: var(--text-sub);
+    font-weight: 700;
+    text-align: left;
+    padding: 8px 10px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(45, 55, 72, 0.5);
+  }
+  tr:hover td { background: var(--bg-hover); }
+  tr.drafted-row { opacity: 0.35; background: #090d16; }
 
-/* Lottery Mini-Game Modal */
-.modal-backdrop {
-position: fixed;
-inset: 0;
-background: rgba(0,0,0,0.84);
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 100;
-padding: 16px;
-}
-.modal {
-background: var(--panel);
-border: 2px solid var(--gold);
-border-radius: 14px;
-max-width: 640px;
-width: 100%;
-padding: 24px;
-text-align: center;
-box-shadow: 0 20px 50px rgba(0,0,0,0.65);
-}
-.modal h3 { font-size: 1.35rem; color: var(--gold); margin-bottom: 8px; }
-.lottery-target-card {
-background: var(--bg);
-border: 1px solid var(--gold);
-border-radius: 8px;
-padding: 10px 14px;
-margin: 10px 0 16px;
-display: inline-block;
-}
-.envelopes-grid {
-display: flex;
-justify-content: center;
-gap: 16px;
-flex-wrap: wrap;
-margin: 18px 0;
-}
-.envelope-card {
-width: 135px;
-height: 185px;
-background: linear-gradient(160deg, #f8fafc 0%, #e2e8f0 100%);
-color: #0f172a;
-border-radius: 10px;
-border: 3px solid #cbd5e1;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-cursor: pointer;
-position: relative;
-transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
-user-select: none;
-padding: 10px;
-box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-}
-.envelope-card:hover:not(.opened):not(.disabled) {
-transform: translateY(-8px) scale(1.04);
-border-color: var(--gold);
-box-shadow: 0 14px 28px rgba(245,158,11,0.38);
-}
-.envelope-card.disabled { cursor: default; }
-.envelope-seal {
-width: 44px;
-height: 44px;
-border-radius: 50%;
-background: #dc2626;
-color: #fff;
-font-weight: 900;
-font-size: 0.85rem;
-display: flex;
-align-items: center;
-justify-content: center;
-margin-bottom: 10px;
-box-shadow: 0 2px 6px rgba(220,38,38,0.5);
-}
-.envelope-label {
-font-weight: 900;
-font-size: 0.95rem;
-letter-spacing: 0.08em;
-}
-.envelope-card.opened-win {
-background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-border-color: #f59e0b;
-animation: popWin 0.45s ease-out;
-}
-.envelope-card.opened-lose {
-background: #cbd5e1;
-border-color: #94a3b8;
-opacity: 0.78;
-}
-@keyframes popWin {
-0% { transform: scale(0.85); }
-60% { transform: scale(1.1); }
-100% { transform: scale(1); }
-}
-.stamp-win {
-border: 3px solid #dc2626;
-color: #dc2626;
-font-weight: 900;
-font-size: 1.05rem;
-padding: 4px 8px;
-border-radius: 6px;
-transform: rotate(-8deg);
-margin: 6px 0;
-background: rgba(255,255,255,0.85);
-}
-.stamp-lose {
-border: 2px solid #475569;
-color: #475569;
-font-weight: 800;
-font-size: 0.95rem;
-padding: 4px 8px;
-border-radius: 6px;
-margin: 6px 0;
-}
-.lottery-summary-list {
-text-align: left;
-background: var(--bg);
-border-radius: 8px;
-padding: 10px 14px;
-margin-top: 12px;
-font-size: 0.86rem;
-}
-.hidden { display: none !important; }
+  .rank-badge {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: 900;
+    font-size: 12px;
+  }
+  .rank-S { background: linear-gradient(135deg, #f59e0b, #dc2626); color: #fff; }
+  .rank-A { background: #2563eb; color: #fff; }
+  .rank-B { background: #059669; color: #fff; }
+  .rank-C { background: #4b5563; color: #e5e7eb; }
 
-/* Result Screen */
-.result-summary {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 12px;
-padding: 20px;
-}
-.result-actions {
-display: flex;
-gap: 10px;
-margin-bottom: 16px;
-flex-wrap: wrap;
-}
+  .pos-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #1f2937;
+    color: #d1d5db;
+    font-weight: 700;
+  }
+  .team-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn-pick {
+    background: var(--accent);
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .btn-pick:hover:not(:disabled) { background: #2563eb; }
+
+  /* Tabs on Right Panel */
+  .tabs { display: flex; gap: 6px; }
+  .tab-btn {
+    background: var(--bg-card);
+    color: var(--text-sub);
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .tab-btn.active { background: var(--gold); color: #000; }
+
+  .roster-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .pos-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+  }
+  .pos-box .p-lbl { font-size: 11px; color: var(--text-sub); }
+  .pos-box .p-cnt { font-size: 15px; font-weight: 900; color: var(--gold-light); }
+
+  .log-list {
+    overflow-y: auto;
+    max-height: 490px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .log-item {
+    background: var(--bg-card);
+    border-left: 3px solid var(--border);
+    padding: 7px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .log-item.user-pick { border-left-color: var(--gold); background: rgba(245, 158, 11, 0.1); }
+  .log-item.lottery-win { border-left-color: var(--success); }
+  .log-item.lottery-lose { border-left-color: var(--danger); }
+
+  /* Modal for 1st Round Lottery & Final Report */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal-card {
+    background: var(--bg-panel);
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    max-width: 780px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  }
+  .modal-title {
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .lottery-box {
+    background: #0b111e;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .lottery-player {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .lottery-teams { display: flex; flex-wrap: wrap; gap: 6px; }
+  .l-chip {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #1f2937;
+  }
+  .l-chip.winner { background: var(--success); color: #000; font-weight: 900; }
+  .l-chip.loser { background: rgba(239, 68, 68, 0.25); color: #fca5a5; text-decoration: line-through; }
+
+  .grade-banner {
+    text-align: center;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .grade-letter {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1.1;
+  }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
 <header>
-<h1>⚾ NPB 2026 パワプロ用ドラフト会議 <span class="badge">オンライン対戦対応・12球団×6人＝72人・10巡目まで入札</span></h1>
-<div class="header-controls">
-<span id="header-net-badge" class="net-badge hidden">🟢 オンライン接続中</span>
-<button id="btn-reroll-pool" class="btn btn-gold btn-sm hidden" onclick="reroll72Pool()">🔄 72人候補を再抽選</button>
-<button id="btn-speed" class="btn btn-outline btn-sm hidden" onclick="toggleCpuSpeed()">⚡ CPU速度: 標準</button>
-<button id="btn-reset" class="btn btn-outline btn-sm hidden" onclick="confirmReset()">設定に戻る</button>
-</div>
+  <div class="brand">
+    <div class="brand-badge">NPB 2026</div>
+    <div>
+      <h1>プロ野球 12球団リアルドラフト会議</h1>
+      <span>2026年11月時点 NPB支配下登録選手名簿・最新移籍/退団反映版</span>
+    </div>
+  </div>
+  <div class="header-controls">
+    <span id="dbCountBadge" style="font-size:12px;color:var(--gold-light);font-weight:700;"></span>
+    <button class="btn-outline" onclick="resetToSetup()">設定画面へ戻る</button>
+  </div>
 </header>
 
-<div class="container">
-<!-- 1. SETUP SCREEN -->
-<div id="setup-screen" class="setup-card">
-<h2>ドラフト会議 設定（12球団×6人＝72人ピック → 36人ずつ2人ドラフト）</h2>
+<!-- SETUP SCREEN -->
+<div id="setupScreen" class="container">
+  <div class="setup-box">
+    <div class="setup-title">1. ドラフト会議ルール設定</div>
+    <div class="setup-grid">
+      <div class="form-group">
+        <label>開催モード</label>
+        <select id="modeSelect" onchange="onModeChange()">
+          <option value="12team">12球団リアルドラフト（1球団操作＋11球団AI）</option>
+          <option value="2p">2人対戦ドラフト（1P vs 2P / 交互指名）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>指名巡目（ラウンド数）</label>
+        <select id="roundsSelect">
+          <option value="8">8巡目まで（スピード開催）</option>
+          <option value="10" selected>10巡目まで（標準リアル）</option>
+          <option value="12">12巡目まで（じっくり編成）</option>
+          <option value="15">15巡目まで（フルロスター）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>1巡目入札抽選システム</label>
+        <select id="lotterySelect">
+          <option value="on" selected>あり（競合時は抽選・外れ1位入札）</option>
+          <option value="off">なし（完全ウェーバー順）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>指名制限時間</label>
+        <select id="timerSelect">
+          <option value="0" selected>無制限（じっくり検討）</option>
+          <option value="30">30秒（本番緊張モード）</option>
+          <option value="15">15秒（電撃ドラフト）</option>
+        </select>
+      </div>
+    </div>
 
-<!-- 対戦モード切替（オンライン対戦 vs ローカル/CPU対戦） -->
-<div class="play-mode-tabs">
-<button type="button" id="tab-online" class="mode-tab-btn active" onclick="switchPlayMode('online')">
-🌐 友達とオンライン対戦（リアルタイム通信）
-<small>ルームID・招待URLを友達に送って別々のスマホ/PCから同時入札＆くじ引き対戦！</small>
-</button>
-<button type="button" id="tab-local" class="mode-tab-btn" onclick="switchPlayMode('local')">
-💻 ローカル対戦 / CPU対戦（1台の画面）
-<small>1台のPC・スマホを交互に操作、またはCPUとソロ対戦</small>
-</button>
-</div>
+    <div class="setup-title" id="teamSelectTitle">2. あなたが担当する球団を選択</div>
+    <div class="team-select-grid" id="teamSelectGrid"></div>
 
-<!-- オンライン対戦ロビー -->
-<div id="online-lobby-box" class="online-lobby-box">
-<div class="online-role-switch">
-<button type="button" id="btn-role-host" class="btn btn-gold btn-sm" onclick="setOnlineRole('host')">🏠 ルームを作成（ホスト側）</button>
-<button type="button" id="btn-role-guest" class="btn btn-outline btn-sm" onclick="setOnlineRole('guest')">🔗 ルームに参加（ゲスト側）</button>
-</div>
-
-<!-- ホストUI -->
-<div id="online-host-ui">
-<div class="online-grid">
-<div class="form-group">
-<label>あなたのチーム名（ホスト）</label>
-<input type="text" id="host-team-name" value="ホスト球団">
-</div>
-<div class="form-group">
-<label>ルーム作成</label>
-<button type="button" id="btn-create-room" class="btn btn-success" style="width:100%;" onclick="createOnlineRoom()">📡 オンライン部屋を作成してID発行</button>
-</div>
-</div>
-<div id="host-room-info" class="room-code-display hidden">
-<div>
-<div style="font-size:0.75rem; color:var(--text-muted);">友達に伝えるルームID（または招待URL）</div>
-<div id="display-room-id" class="room-code-text">NPB-0000</div>
-</div>
-<div style="display:flex; gap:8px; flex-wrap:wrap;">
-<button type="button" class="btn btn-gold btn-sm" onclick="copyRoomId()">📋 ルームIDをコピー</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="copyInviteUrl()">🔗 招待URLをコピー</button>
-</div>
-</div>
+    <button class="btn-start" onclick="startDraft()">ドラフト会議を開始する</button>
+  </div>
 </div>
 
-<!-- ゲストUI -->
-<div id="online-guest-ui" class="hidden">
-<div class="online-grid">
-<div class="form-group">
-<label>あなたのチーム名（ゲスト）</label>
-<input type="text" id="guest-team-name" value="ゲスト球団">
-</div>
-<div class="form-group">
-<label>ホストから受け取ったルームID</label>
-<input type="text" id="join-room-id" placeholder="例: NPB-4829" style="text-transform:uppercase;">
-</div>
-<div class="form-group">
-<label>接続実行</label>
-<button type="button" id="btn-join-room" class="btn btn-success" style="width:100%;" onclick="joinOnlineRoom()">🚀 このルームに参加する</button>
-</div>
-</div>
+<!-- DRAFT MAIN SCREEN -->
+<div id="draftScreen" class="container hidden">
+  <div class="draft-status-bar">
+    <div class="round-indicator">
+      <span class="round-pill" id="roundBadge">第1巡目</span>
+      <div class="turn-info" id="turnStatusText">指名球団: <strong>---</strong></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span id="timerDisplay" style="font-weight:900;color:var(--gold-light);font-size:15px;"></span>
+      <button class="btn-outline" id="autoPickBtn" onclick="autoPickForUser()">おまかせ指名</button>
+      <button class="btn-outline" id="viewFinalBtn" class="hidden" onclick="openFinalReport()" style="border-color:var(--gold);color:var(--gold-light);display:none;">最終評価レポート</button>
+    </div>
+  </div>
+
+  <div class="order-strip" id="orderStrip"></div>
+
+  <div class="main-grid">
+    <!-- Left: Player Pool -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">2026年11月 NPB支配下選手リスト</div>
+        <div style="font-size:12px;color:var(--text-sub);" id="filteredCountText">表示: 0名</div>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="選手名検索（例: 森浦, 佐藤, 宗山...）" oninput="renderPlayerTable()">
+        <select id="teamFilter" onchange="renderPlayerTable()">
+          <option value="ALL">全12球団</option>
+        </select>
+        <select id="posFilter" onchange="renderPlayerTable()">
+          <option value="ALL">全ポジション</option>
+          <option value="投手">投手</option>
+          <option value="捕手">捕手</option>
+          <option value="内野手">内野手（すべて）</option>
+          <option value="二遊">内野手（二塁・遊撃）</option>
+          <option value="一三">内野手（一塁・三塁）</option>
+          <option value="外野手">外野手</option>
+        </select>
+        <select id="rankFilter" onchange="renderPlayerTable()">
+          <option value="ALL">全ランク</option>
+          <option value="S">ランク S</option>
+          <option value="A">ランク A</option>
+          <option value="B">ランク B</option>
+          <option value="C">ランク C</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:48px;">評価</th>
+              <th>選手名</th>
+              <th>現所属</th>
+              <th>守備</th>
+              <th style="width:74px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="playerTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right: Roster & Logs -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="tabs">
+          <button class="tab-btn active" id="tabRoster" onclick="switchRightTab('roster')">自チーム編成</button>
+          <button class="tab-btn" id="tabLog" onclick="switchRightTab('log')">指名速報ログ</button>
+          <button class="tab-btn" id="tabAllTeams" onclick="switchRightTab('allTeams')">12球団一覧</button>
+        </div>
+        <select id="inspectTeamSelect" onchange="renderRightPanel()" style="padding:4px 8px;font-size:12px;"></select>
+      </div>
+
+      <div id="rightRosterView">
+        <div class="roster-summary" id="rosterSummary"></div>
+        <div class="table-wrap" style="max-height:470px;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:54px;">巡目</th>
+                <th style="width:44px;">評価</th>
+                <th>選手名</th>
+                <th>守備</th>
+                <th>元球団</th>
+              </tr>
+            </thead>
+            <tbody id="rosterTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="rightLogView" class="hidden">
+        <div class="log-list" id="draftLogList"></div>
+      </div>
+
+      <div id="rightAllTeamsView" class="hidden">
+        <div class="table-wrap" style="max-height:520px;" id="allTeamsBoard"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="online-status-line">
-<span id="online-status-text">💡 ホストが「部屋を作成」し、ゲストがルームIDを入力して接続してください。</span>
-<span id="online-peers-count" style="font-weight:800; color:var(--gold);">参加者: 1名（自分のみ）</span>
-</div>
-</div>
-
-<div id="host-settings-wrapper">
-<div class="setup-grid">
-<div class="form-group">
-<label>参加チーム数（2チーム＝36人ずつ推奨）</label>
-<select id="team-count" onchange="onTeamCountChange()">
-<option value="2" selected>2チーム（1対1・36人ずつ）</option>
-<option value="4">4チーム（18人ずつ）</option>
-<option value="6">6チーム（12人ずつ）</option>
-</select>
-</div>
-<div class="form-group">
-<label>指名巡目数（1チームあたりの獲得人数）</label>
-<select id="total-rounds">
-<option value="36" selected>36巡目まで（2人×36人＝72人全員指名）</option>
-<option value="18">18巡目まで（4人×18人＝72人全員指名）</option>
-<option value="12">12巡目まで（6人×12人＝72人全員指名）</option>
-<option value="10">10巡目まで（スピード対戦）</option>
-</select>
-</div>
-<div class="form-group">
-<label>指名方式（入札抽選＆ウェーバー切替）</label>
-<select id="draft-mode" onchange="onDraftModeChange()">
-<option value="bid_10" selected>1〜10巡目 同時入札抽選（競合くじ）＋11巡目以降ウェーバー</option>
-<option value="bid_5">1〜5巡目 同時入札抽選（競合くじ）＋6巡目以降ウェーバー</option>
-<option value="bid_1">1巡目のみ 入札抽選（競合くじ）＋2巡目以降ウェーバー</option>
-<option value="bid_all">全巡目 同時入札抽選（36巡目まで競合くじあり）</option>
-<option value="bid_custom">カスタム巡目まで入札抽選＋以降ウェーバー</option>
-<option value="weber_only">最初から変則ウェーバー（くじなし）</option>
-</select>
-</div>
-<div class="form-group" id="custom-bid-rounds-group">
-<label>入札抽選を行う巡目数（1〜36巡目）</label>
-<input type="number" id="bid-until-round" value="10" min="0" max="36" onchange="syncCustomBidRound()">
-</div>
-</div>
-
-<!-- 72人ピック バランス＆ランク配分設定 -->
-<div id="pool-config-box" class="pool-config-box">
-<div class="pool-config-header">
-<h3>⚖️ 72人（12球団×6人）ポジション＆戦力バランス配分</h3>
-<div style="display:flex; gap:6px; flex-wrap:wrap;">
-<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('balanced')">標準バランス（S14・A24・B28・C6）</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('star')">主力厚め（S16・A26・B24・C6）</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('strict')">S/A控えめ（S10・A20・B36・C6）</button>
-</div>
-</div>
-
-<div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px; font-weight:700;">▼ ポジション人数配分（合計72名／各球団6名ずつ厳密選出）</div>
-<div class="pos-quota-grid" style="margin-bottom:12px;">
-<div class="quota-item">
-<label>投手（先発・救援）</label>
-<input type="number" id="q-pitcher" value="34" min="20" max="44" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約17人</div>
-</div>
-<div class="quota-item">
-<label>捕手</label>
-<input type="number" id="q-catcher" value="6" min="4" max="12" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約3人</div>
-</div>
-<div class="quota-item">
-<label>内野手（二遊間）</label>
-<input type="number" id="q-mi" value="10" min="6" max="16" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約5人</div>
-</div>
-<div class="quota-item">
-<label>内野手（一・三塁）</label>
-<input type="number" id="q-ci" value="8" min="4" max="14" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約4人</div>
-</div>
-<div class="quota-item">
-<label>外野手</label>
-<input type="number" id="q-of" value="14" min="8" max="20" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約7人</div>
-</div>
-</div>
-
-<div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px; font-weight:700;">▼ 全盛期ランク人数配分（合計72名／S+Aで計38名＝各チーム約19名の主力層を確保）</div>
-<div class="pos-quota-grid">
-<div class="quota-item">
-<label>Sランク（超一流）</label>
-<input type="number" id="r-S" value="14" min="2" max="30" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約7人</div>
-</div>
-<div class="quota-item">
-<label>Aランク（主力級）</label>
-<input type="number" id="r-A" value="24" min="4" max="36" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約12人</div>
-</div>
-<div class="quota-item">
-<label>Bランク（一軍戦力）</label>
-<input type="number" id="r-B" value="28" min="10" max="56" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約14人</div>
-</div>
-<div class="quota-item">
-<label>Cランク（当落線上）</label>
-<input type="number" id="r-C" value="6" min="0" max="20" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約3人</div>
-</div>
-</div>
-
-<div class="quota-total-badge">
-<span id="quota-sum-text" style="font-weight:800; color:var(--success);">✅ ポジション合計: 72名 ／ ランク合計: 72名（12球団×各6名）</span>
-<span style="color:var(--text-muted);">※2026年度NPB支配下・トレード移籍反映済データ完全内蔵</span>
-</div>
-</div>
-
-<!-- 参加チーム一覧（ローカルモードまたはCPU補充用） -->
-<div id="local-teams-section" class="form-group" style="margin-bottom:8px;">
-<label>参加チーム設定</label>
-<div id="local-presets-bar" class="quick-presets">
-<button type="button" class="btn btn-outline btn-sm" onclick="applyPreset('all_human')">👥 2人プレイヤー対戦（ローカル）</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="applyPreset('solo_cpu')">👤 あなた vs 🤖 CPU対戦</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="applyPreset('all_cpu')">🤖 CPU同士の観戦テスト</button>
-</div>
-<div id="team-inputs" class="team-inputs"></div>
-</div>
-
-<div style="text-align:center; margin-top:20px;">
-<button id="btn-start-draft" class="btn btn-gold" style="font-size:1.05rem; padding:12px 36px;" onclick="startDraft()">⚾ 72人をピックしてドラフト開始！</button>
-</div>
-</div>
-
-<div id="guest-waiting-banner" class="hidden" style="text-align:center; padding:24px; background:var(--bg); border-radius:10px; border:1px solid var(--gold); margin-top:14px;">
-<div style="font-size:1.1rem; font-weight:800; color:var(--gold); margin-bottom:6px;">🟢 ホストの部屋に接続完了しました！</div>
-<div style="font-size:0.88rem; color:var(--text-muted);">ホストがドラフトを開始すると、自動的にドラフト会議画面に切り替わります...</div>
-</div>
-</div>
-
-<!-- 2. DRAFT SCREEN -->
-<div id="draft-screen" class="hidden">
-<!-- 72人ピック内訳サマリーバー -->
-<div id="pool-summary-bar" class="pool-summary-bar">
-<div class="summary-chips" id="pool-summary-chips"></div>
-<div style="color:var(--text-muted); font-size:0.78rem;">※全12球団から各6名ずつ厳密選出済み</div>
-</div>
-
-<div class="draft-status-bar">
-<div class="status-highlight" id="status-text">準備中...</div>
-<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-<span id="remaining-count" style="font-size:0.84rem; color:var(--text-muted);"></span>
-<button id="btn-auto-skip-cpu" class="btn btn-outline btn-sm hidden" onclick="fastForwardCpu()">⏩ CPUの番を即完了</button>
-<button id="btn-finish-early" class="btn btn-danger btn-sm" onclick="finishDraftEarly()">ドラフト終了・結果へ</button>
-</div>
-</div>
-
-<!-- Simultaneous Bid Panel -->
-<div id="bid-panel" class="bid-panel hidden">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-<div>
-<strong id="bid-phase-title" style="color:var(--gold); font-size:1.02rem;">【同時入札フェーズ】</strong>
-<span id="bid-phase-desc" style="font-size:0.84rem; color:var(--text-muted); margin-left:6px;">下の候補表から選手を選び、「入札を確定」してください（競合時はくじ引き発動！）</span>
-</div>
-<div style="display:flex; gap:8px; flex-wrap:wrap;">
-<button id="btn-lock-my-bid" class="btn btn-success hidden" disabled onclick="lockMyOnlineBid()">🔒 この選手で入札確定</button>
-<button id="btn-reveal-bids" class="btn btn-gold" disabled onclick="revealBids()">🎯 一斉開票・抽選へ進む</button>
-</div>
-</div>
-<div id="bid-slots" class="bid-slots"></div>
-</div>
-
-<div class="draft-grid">
-<!-- Left: Player Pool -->
-<div class="pool-panel">
-<div class="filters">
-<input type="text" id="search-input" placeholder="選手名で検索..." oninput="renderPlayerTable()">
-<select id="team-filter" onchange="renderPlayerTable()">
-<option value="ALL">全12球団</option>
-</select>
-<select id="rank-filter" onchange="renderPlayerTable()">
-<option value="ALL">全ランク</option>
-<option value="S">Sランク（超一流）</option>
-<option value="A">Aランク（主力級）</option>
-<option value="B">Bランク（一軍戦力）</option>
-<option value="C">Cランク（当落線上）</option>
-</select>
-<label style="display:flex; align-items:center; gap:4px; font-size:0.8rem; color:var(--text-muted); cursor:pointer;">
-<input type="checkbox" id="hide-drafted" checked onchange="renderPlayerTable()"> 指名済を隠す
-</label>
-</div>
-<div class="pos-tabs" id="pos-tabs">
-<button class="pos-tab active" data-pos="ALL" onclick="setPosFilter('ALL', this)">すべて</button>
-<button class="pos-tab" data-pos="投手" onclick="setPosFilter('投手', this)">投手</button>
-<button class="pos-tab" data-pos="捕手" onclick="setPosFilter('捕手', this)">捕手</button>
-<button class="pos-tab" data-pos="二遊間" onclick="setPosFilter('二遊間', this)">内野(二遊)</button>
-<button class="pos-tab" data-pos="一三塁" onclick="setPosFilter('一三塁', this)">内野(一三)</button>
-<button class="pos-tab" data-pos="外野手" onclick="setPosFilter('外野手', this)">外野手</button>
-</div>
-<div class="player-table-wrap">
-<table>
-<thead>
-<tr>
-<th>ランク</th>
-<th>選手名</th>
-<th>所属球団</th>
-<th>守備</th>
-<th>状態 / 操作</th>
-</tr>
-</thead>
-<tbody id="player-tbody"></tbody>
-</table>
-</div>
-</div>
-
-<!-- Right: Team Rosters & Log/Chat -->
-<div class="right-column">
-<div class="rosters-panel">
-<h3 style="font-size:0.95rem; margin-bottom:10px; color:var(--text-muted);">獲得選手一覧（36人編成目安：投17・捕3・二遊5・一三4・外7）</h3>
-<div id="rosters-grid" class="rosters-grid"></div>
-</div>
-<div class="log-panel">
-<h3><span>📋 ドラフト速報ログ＆チャット</span><span id="log-count">0件</span></h3>
-<div id="log-list" class="log-list"></div>
-<div id="online-chat-controls" class="hidden">
-<div class="stamp-row">
-<button type="button" class="stamp-btn" onclick="sendQuickStamp('そこ行くか〜！')">💬 そこ行くか〜！</button>
-<button type="button" class="stamp-btn" onclick="sendQuickStamp('うわ、被った！！')">😱 うわ、被った！！</button>
-<button type="button" class="stamp-btn" onclick="sendQuickStamp('頼む当たれ…！')">🙏 頼む当たれ…！</button>
-<button type="button" class="stamp-btn" onclick="sendQuickStamp('ナイスピック！')">👏 ナイスピック！</button>
-</div>
-<div class="chat-bar">
-<input type="text" id="chat-input" placeholder="友達にメッセージを送る..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-<button type="button" class="btn btn-sm" onclick="sendChatMessage()">送信</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- 3. RESULT SCREEN -->
-<div id="result-screen" class="result-summary hidden">
-<h2 style="font-size:1.35rem; color:var(--gold); margin-bottom:12px;">🏆 2026年 ドラフト会議 最終獲得結果</h2>
-<div class="result-actions">
-<button class="btn btn-gold" onclick="exportCSV()">📥 結果をCSVでダウンロード</button>
-<button class="btn" onclick="copyResultText()">📋 パワプロ編成用テキストをコピー</button>
-<button class="btn btn-outline" onclick="confirmReset()">新しいドラフトを始める</button>
-</div>
-<div id="result-rosters" class="rosters-grid"></div>
-</div>
-</div>
-
-<!-- Lottery Mini-Game Modal -->
-<div id="lottery-modal" class="modal-backdrop hidden">
-<div class="modal">
-<h3 id="lottery-modal-title">🎯 指名競合！運命のくじ引き抽選</h3>
-<p id="lottery-modal-subtitle" style="font-size:0.88rem; color:var(--text-muted);"></p>
-<div id="lottery-target-area"></div>
-<div id="envelopes-container" class="envelopes-grid"></div>
-<div id="lottery-result-area"></div>
-<button id="btn-lottery-next" class="btn btn-gold hidden" style="margin-top:16px; width:100%;" onclick="proceedAfterCurrentLottery()">次へ進む</button>
-</div>
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-card" id="modalContent"></div>
 </div>
 
 <script>
-// ============================================================================
-// 2026年度 NPB 12球団 支配下登録選手データベース（HTML完全内蔵）
-// ・元ファイルのトレード・移籍反映データをそのまま維持し、引退選手のみ除外
-// ・全盛期準拠の能力ランク（S:超一流 / A:主力級 / B:一軍戦力 / C:当落線上）
-// ============================================================================
-const TEAMS_META = {
-tigers: { name: "阪神", color: "#eab308", text: "#000" },
-baystars: { name: "DeNA", color: "#2563eb", text: "#fff" },
-giants: { name: "巨人", color: "#f97316", text: "#fff" },
-dragons: { name: "中日", color: "#1d4ed8", text: "#fff" },
-carp: { name: "広島", color: "#dc2626", text: "#fff" },
-swallows: { name: "ヤクルト", color: "#16a34a", text: "#fff" },
-hawks: { name: "ソフトバンク", color: "#facc15", text: "#000" },
-fighters: { name: "日本ハム", color: "#0284c7", text: "#fff" },
-marines: { name: "ロッテ", color: "#334155", text: "#fff" },
-eagles: { name: "楽天", color: "#991b1b", text: "#fff" },
-buffaloes:{ name: "オリックス", color: "#1e3a8a", text: "#fff" },
-lions: { name: "西武", color: "#1e40af", text: "#fff" }
-};
-
-const NPB_2026_COMPACT = [
-// 1. 阪神タイガース
-["tigers", "投手", "投手", "S", "才木浩人,村上頌樹,西勇輝,岩崎優"],
-["tigers", "投手", "投手", "A", "及川雅貴,桐敷拓馬,大竹耕太郎,伊原陵人,髙橋遥人,石井大智,湯浅京己,伊藤将司"],
-["tigers", "投手", "投手", "B", "富田蓮,門別啓人,岩貞祐太,畠世周,ドリス,モレッタ,セベリーノ,ブレイロック"],
-["tigers", "投手", "投手", "C", "茨木秀俊,木下里都,椎葉剛,津田淳哉,岡留英貴,今朝丸裕喜,石黒佑弥,早川太貴,工藤泰成,ルーカス,ラグズデール,神宮僚介"],
-["tigers", "捕手", "捕手", "A", "坂本誠志郎,梅野隆太郎,伏見寅威"],
-["tigers", "捕手", "捕手", "B", "榮枝裕貴,中川勇斗"],
-["tigers", "捕手", "捕手", "C", "長坂拳弥,藤田健斗,町田隼乙,嶋村麟士朗"],
-["tigers", "内野手", "一三", "S", "佐藤輝明,大山悠輔"],
-["tigers", "内野手", "二遊", "A", "中野拓夢"],
-["tigers", "内野手", "二遊", "B", "木浪聖也,小幡竜平,熊谷敬宥,植田海,立石正広,ディベイニー,元山飛優"],
-["tigers", "内野手", "一三", "B", "糸原健斗,高寺望夢"],
-["tigers", "内野手", "二遊", "C", "百﨑蒼生,山田脩也"],
-["tigers", "内野手", "一三", "C", "佐野大陽,谷端将伍"],
-["tigers", "外野手", "外野", "S", "森下翔太,近本光司"],
-["tigers", "外野手", "外野", "A", "前川右京"],
-["tigers", "外野手", "外野", "B", "島田海吏,小野寺暖,豊田寛,濱田太貴,ガルシア"],
-["tigers", "外野手", "外野", "C", "井坪陽生,福島圭音"],
-
-// 2. 横浜DeNAベイスターズ
-["baystars", "投手", "投手", "S", "東克樹,山﨑康晃"],
-["baystars", "投手", "投手", "A", "入江大生,伊勢大夢,石田健大,大貫晋一,平良拳太郎,石田裕太郎,竹田祐,尾形崇斗,藤浪晋太郎,森原康平"],
-["baystars", "投手", "投手", "B", "坂本裕哉,中川颯,宮城滝太,中川虎大,篠木健太郎,吉野光樹,佐々木千隼,ビド,ルイーズ,浜地真澄,馬場皐輔"],
-["baystars", "投手", "投手", "C", "小園健太,島田舜也,片山皓心,庄司陽斗,レイノルズ,深沢鳳介,松本凌人,若松尚輝,武田陸玖,橋本達弥,坂口翔颯,岩田将貴"],
-["baystars", "捕手", "捕手", "A", "松尾汐恩,戸柱恭孝"],
-["baystars", "捕手", "捕手", "B", "古市尊"],
-["baystars", "捕手", "捕手", "C", "東妻純平,益子京右,九鬼隆平"],
-["baystars", "内野手", "二遊", "S", "牧秀悟"],
-["baystars", "内野手", "一三", "S", "宮﨑敏郎"],
-["baystars", "内野手", "二遊", "B", "京田陽太,林琢真,柴田竜拓,石上泰輝,森敬斗,三森大貴"],
-["baystars", "内野手", "一三", "B", "井上朋也,ヒュンメル"],
-["baystars", "内野手", "一三", "C", "井上絢登,小田康一郎,高見澤郁魅"],
-["baystars", "外野手", "外野", "S", "佐野恵太,筒香嘉智"],
-["baystars", "外野手", "外野", "A", "度会隆輝,梶原昂希,蝦名達夫"],
-["baystars", "外野手", "外野", "B", "神里和毅,関根大気,エンカーナシオン"],
-["baystars", "外野手", "外野", "C", "勝又温史,濱将乃介"],
-
-// 3. 読売ジャイアンツ
-["giants", "投手", "投手", "S", "戸郷翔征,山﨑伊織,大勢,ライデル・マルティネス,田中将大,則本昂大"],
-["giants", "投手", "投手", "A", "井上温大,西舘勇陽,赤星優志,船迫大雅,小笠原慎之介,高梨雄平,中川皓太"],
-["giants", "投手", "投手", "B", "堀田賢慎,泉圭輔,石川達也,横川凱,田中瑛斗,バルドナード,松浦慶斗,ウィットリー,マタ"],
-["giants", "投手", "投手", "C", "平内龍太,ハワード,ルシアーノ,代木大和,竹丸和幸,山城京平,田和廉,北浦竜次"],
-["giants", "捕手", "捕手", "S", "甲斐拓也"],
-["giants", "捕手", "捕手", "A", "大城卓三,岸田行倫"],
-["giants", "捕手", "捕手", "B", "郡拓也,山瀬慎之助"],
-["giants", "内野手", "二遊", "S", "吉川尚輝,坂本勇人"],
-["giants", "内野手", "二遊", "A", "門脇誠,泉口友汰"],
-["giants", "内野手", "二遊", "B", "中山礼都,増田大輝"],
-["giants", "内野手", "一三", "B", "増田陸,リチャード,ダルベック"],
-["giants", "内野手", "二遊", "C", "湯浅大,石塚裕惺,浦田俊輔,宇都宮葵星"],
-["giants", "内野手", "一三", "C", "荒巻悠,小濱佑斗,平山功太"],
-["giants", "外野手", "外野", "S", "丸佳浩"],
-["giants", "外野手", "外野", "A", "松本剛,キャベッジ"],
-["giants", "外野手", "外野", "B", "浅野翔吾,萩尾匡也,佐々木俊輔,岡田悠希"],
-["giants", "外野手", "外野", "C", "笹原操希,知念大成,鈴木大和,ティマ,皆川岳飛,三塚琉生"],
-
-// 4. 中日ドラゴンズ
-["dragons", "投手", "投手", "S", "髙橋宏斗,松山晋也,大野雄大,涌井秀章"],
-["dragons", "投手", "投手", "A", "柳裕也,清水達也,金丸夢斗,松葉貴大"],
-["dragons", "投手", "投手", "B", "勝野昌慶,橋本侑樹,藤嶋健人,齋藤綱記,仲地礼亜,松木平優太,福敬登,杉浦稔大,メヒア,アブレウ"],
-["dragons", "投手", "投手", "C", "根尾昂,梅野雄吾,伊藤茉央,吉田聖弥,草加勝,近藤廉,三浦瑞樹,中西聖輝,櫻井頼之介,宮内春輝,森博人,牧野憲伸"],
-["dragons", "捕手", "捕手", "A", "木下拓哉,石伊雄太"],
-["dragons", "捕手", "捕手", "B", "宇佐見真吾,加藤匠馬"],
-["dragons", "捕手", "捕手", "C", "味谷大誠"],
-["dragons", "内野手", "二遊", "A", "福永裕基,村松開人,田中幹也"],
-["dragons", "内野手", "一三", "A", "石川昂弥,阿部寿樹"],
-["dragons", "内野手", "二遊", "B", "山本泰寛,龍空,カリステ,知野直人"],
-["dragons", "内野手", "一三", "B", "高橋周平,サノー"],
-["dragons", "内野手", "二遊", "C", "辻本倫太郎,樋口正修"],
-["dragons", "内野手", "一三", "C", "板山祐太郎"],
-["dragons", "外野手", "外野", "S", "岡林勇希,細川成也,大島洋平"],
-["dragons", "外野手", "外野", "A", "上林誠知"],
-["dragons", "外野手", "外野", "B", "鵜飼航丞,ブライト健太,尾田剛樹"],
-["dragons", "外野手", "外野", "C", "福元悠真"],
-
-// 5. 広島東洋カープ
-["carp", "投手", "投手", "S", "森下暢仁,床田寛樹,大瀬良大地,栗林良吏"],
-["carp", "投手", "投手", "A", "島内颯太郎,黒原拓未,ハーン"],
-["carp", "投手", "投手", "B", "玉村昇悟,塹江敦哉,森翔平,益田武尚,常廣羽也斗,アドゥワ誠,ターノック"],
-["carp", "投手", "投手", "C", "斉藤優汰,滝田一希,佐藤柳之介,岡本駿,髙太一,松本竜也,遠藤淳志,高橋昂也,杉田健"],
-["carp", "捕手", "捕手", "S", "坂倉将吾"],
-["carp", "捕手", "捕手", "A", "會澤翼"],
-["carp", "捕手", "捕手", "B", "石原貴規"],
-["carp", "捕手", "捕手", "C", "清水叶人,髙木翔斗,持丸泰輝"],
-["carp", "内野手", "二遊", "S", "小園海斗,菊池涼介"],
-["carp", "内野手", "二遊", "A", "矢野雅哉"],
-["carp", "内野手", "二遊", "B", "羽月隆太郎,辰見鴻之介"],
-["carp", "内野手", "一三", "B", "堂林翔太,林晃汰,二俣翔一,佐々木泰,モンテロ"],
-["carp", "内野手", "一三", "C", "渡邉悠斗,佐藤啓介,仲田侑仁,内田湘大"],
-["carp", "外野手", "外野", "S", "秋山翔吾"],
-["carp", "外野手", "外野", "A", "野間峻祥,末包昇大,ファビアン"],
-["carp", "外野手", "外野", "B", "田村俊介,中村奨成,大盛穂"],
-["carp", "外野手", "外野", "C", "久保修,名原典彦"],
-
-// 6. 東京ヤクルトスワローズ
-["swallows", "投手", "投手", "S", "石川雅規,小川泰弘"],
-["swallows", "投手", "投手", "A", "吉村貢司郎,高橋奎二,奥川恭伸,星知弥,田口麗斗,清水昇,木澤尚文,大西広樹,石山泰稚"],
-["swallows", "投手", "投手", "B", "小澤怜史,阪口皓亮,矢崎拓也,中村優斗,荘司宏太,ランバート,キハダ,大道温貴"],
-["swallows", "投手", "投手", "C", "長谷川宙輝,高梨裕稔,松本健吾,坂本拓己,下川隼佑,沼田翔平,廣澤優,西舘昂汰,バウマン,アビラ"],
-["swallows", "捕手", "捕手", "S", "中村悠平"],
-["swallows", "捕手", "捕手", "A", "古賀優大"],
-["swallows", "捕手", "捕手", "B", "松本直樹,内山壮真"],
-["swallows", "捕手", "捕手", "C", "鈴木叶,矢野泰二郎"],
-["swallows", "内野手", "二遊", "S", "山田哲人,長岡秀樹"],
-["swallows", "内野手", "一三", "A", "オスナ,茂木栄五郎"],
-["swallows", "内野手", "二遊", "B", "赤羽由紘,武岡龍世,宮本丈"],
-["swallows", "内野手", "一三", "B", "セデーニョ"],
-["swallows", "内野手", "二遊", "C", "伊藤琉偉,田中陽翔"],
-["swallows", "内野手", "一三", "C", "北村恵吾,松下歩叶"],
-["swallows", "外野手", "外野", "S", "サンタナ,塩見泰隆"],
-["swallows", "外野手", "外野", "A", "丸山和郁"],
-["swallows", "外野手", "外野", "B", "並木秀尊,増田珠,岩田幸宏,澤井廉"],
-["swallows", "外野手", "外野", "C", "橋本星哉,モンテル,西村瑠伊斗"],
-
-// 7. 福岡ソフトバンクホークス
-["hawks", "投手", "投手", "S", "モイネロ,スチュワート・ジュニア,オスナ"],
-["hawks", "投手", "投手", "A", "大津亮介,杉山一樹,松本裕樹,津森宥紀,藤井皓哉,ヘルナンデス,大関友久,東浜巨"],
-["hawks", "投手", "投手", "B", "前田悠伍,岩井俊介,松本晴,上茶谷大河,中村稔弥"],
-["hawks", "投手", "投手", "C", "村上泰斗,大山凌,木村光,前田純,大竹風雅,藤原大翔,アルメンタ,張峻瑋,小林樹斗,ラトリッジ,北斗,ロドリゲス"],
-["hawks", "捕手", "捕手", "A", "山本祐大,海野隆司"],
-["hawks", "捕手", "捕手", "B", "谷川原健太,渡邉陸"],
-["hawks", "捕手", "捕手", "C", "石塚綜一郎,藤田悠太郎"],
-["hawks", "内野手", "一三", "S", "山川穂高,栗原陵矢"],
-["hawks", "内野手", "二遊", "S", "今宮健太"],
-["hawks", "内野手", "二遊", "A", "牧原大成"],
-["hawks", "内野手", "二遊", "B", "野村勇,川瀬晃,ダウンズ"],
-["hawks", "内野手", "一三", "B", "中村晃,廣瀨隆太,秋広優人"],
-["hawks", "内野手", "二遊", "C", "イヒネイツア,庄子雄大,石見颯真"],
-["hawks", "内野手", "一三", "C", "宇野真仁朗"],
-["hawks", "外野手", "外野", "S", "近藤健介,柳田悠岐,周東佑京"],
-["hawks", "外野手", "外野", "A", "柳町達,正木智也"],
-["hawks", "外野手", "外野", "B", "笹川吉康,緒方理貢,川村友斗"],
-["hawks", "外野手", "外野", "C", "山本恵大"],
-
-// 8. 北海道日本ハムファイターズ
-["fighters", "投手", "投手", "S", "伊藤大海,山﨑福也,加藤貴之,北山亘基,宮西尚生"],
-["fighters", "投手", "投手", "A", "田中正義,河野竜生,達孝太,金村尚真,池田隆英,齋藤友貴哉"],
-["fighters", "投手", "投手", "B", "福島蓮,細野晴希,柳川大晟,玉井大翔,生田目翼,ラオ,菊地大稀,島本浩也"],
-["fighters", "投手", "投手", "C", "畔柳亨丞,柴田獅子,清宮虎多朗,松岡洸希"],
-["fighters", "捕手", "捕手", "A", "田宮裕涼,郡司裕也"],
-["fighters", "捕手", "捕手", "B", "清水優心,進藤勇也,吉田賢吾,リン"],
-["fighters", "捕手", "捕手", "C", "梅林優貴"],
-["fighters", "内野手", "一三", "S", "清宮幸太郎,レイエス"],
-["fighters", "内野手", "二遊", "A", "水野達稀,上川畑大悟"],
-["fighters", "内野手", "一三", "A", "野村佑希"],
-["fighters", "内野手", "二遊", "B", "奈良間大己,中島卓也,カストロ"],
-["fighters", "内野手", "二遊", "C", "山縣秀,常谷拓輝"],
-["fighters", "内野手", "一三", "C", "有薗直輝"],
-["fighters", "外野手", "外野", "S", "万波中正"],
-["fighters", "外野手", "外野", "A", "水谷瞬,五十幡亮汰,西川遥輝"],
-["fighters", "外野手", "外野", "B", "淺間大基,矢澤宏太,今川優馬"],
-
-// 9. 千葉ロッテマリーンズ
-["marines", "投手", "投手", "S", "種市篤暉,小島和哉,鈴木昭汰,益田直也"],
-["marines", "投手", "投手", "A", "横山陸人,石川柊太,西野勇士,田中晴也,中森俊介,ジャクソン"],
-["marines", "投手", "投手", "B", "東妻勇輔,菊地吏玖,澤田圭佑,廣畑敦也,高野脩汰,唐川侑己,坂本光士郎,木村優人,カスティーヨ,ロング,ルケーシー"],
-["marines", "投手", "投手", "C", "一條力真,坂井遼,毛利海大,石垣元気,奥村頼人,森遼大朗,髙橋快秀"],
-["marines", "捕手", "捕手", "A", "佐藤都志也"],
-["marines", "捕手", "捕手", "B", "田村龍弘,松川虎生,寺地隆成"],
-["marines", "捕手", "捕手", "C", "植田将太"],
-["marines", "内野手", "二遊", "A", "藤岡裕大,中村奨吾,友杉篤輝"],
-["marines", "内野手", "一三", "A", "安田尚憲,ソト"],
-["marines", "内野手", "二遊", "B", "茶谷健太,小川龍成,山﨑剛"],
-["marines", "内野手", "一三", "B", "池田来翔,上田希由翔"],
-["marines", "内野手", "二遊", "C", "宮崎竜成"],
-["marines", "外野手", "外野", "S", "ポランコ"],
-["marines", "外野手", "外野", "A", "藤原恭大,髙部瑛斗,岡大海,角中勝也,西川史礁"],
-["marines", "外野手", "外野", "B", "山口航輝,和田康士朗,井上広大,山本大斗"],
-
-// 10. 東北楽天ゴールデンイーグルス
-["eagles", "投手", "投手", "S", "早川隆久,岸孝之"],
-["eagles", "投手", "投手", "A", "藤井聖,荘司康誠,鈴木翔天,藤平尚真,酒居知史,渡辺翔太,西口直人"],
-["eagles", "投手", "投手", "B", "内星龍,古謝樹,瀧中瞭太,辛島航,宋家豪,田中千晴,ウレーニャ,マルテ,伊藤樹"],
-["eagles", "投手", "投手", "C", "津留﨑大成"],
-["eagles", "捕手", "捕手", "A", "太田光,伊藤光"],
-["eagles", "捕手", "捕手", "B", "石原彪,安田悠馬,堀内謙伍"],
-["eagles", "捕手", "捕手", "C", "田中貴也"],
-["eagles", "内野手", "二遊", "S", "浅村栄斗,宗山塁"],
-["eagles", "内野手", "二遊", "A", "村林一輝,小深田大翔"],
-["eagles", "内野手", "一三", "A", "鈴木大地,ボイト"],
-["eagles", "内野手", "二遊", "B", "黒川史陽,平良竜哉"],
-["eagles", "内野手", "一三", "B", "渡邊佳明,伊藤裕季也"],
-["eagles", "内野手", "二遊", "C", "入江大樹,小森航大郎"],
-["eagles", "内野手", "一三", "C", "金子京介"],
-["eagles", "外野手", "外野", "S", "辰己涼介"],
-["eagles", "外野手", "外野", "A", "小郷裕哉,中島大輔,ゴンザレス"],
-["eagles", "外野手", "外野", "B", "田中和基,武藤敦貴,佐藤直樹,マッカスカー"],
-["eagles", "外野手", "外野", "C", "吉納翼"],
-
-// 11. オリックス・バファローズ
-["buffaloes", "投手", "投手", "S", "宮城大弥,山下舜平大,平野佳寿"],
-["buffaloes", "投手", "投手", "A", "曽谷龍平,九里亜蓮,山岡泰輔,山﨑颯一郎,古田島成龍,田嶋大樹,東晃平,マチャド,エスピノーザ,ペルドモ"],
-["buffaloes", "投手", "投手", "B", "阿部翔太,吉田輝星,齋藤響介,寺西成騎,山田修義,富山凌雅,椋木蓮,髙島泰都,本田仁海"],
-["buffaloes", "投手", "投手", "C", "才木海翔,川瀬堅斗,権田琉成,東山玲士,宮國凌空,陳睦衡"],
-["buffaloes", "捕手", "捕手", "S", "森友哉"],
-["buffaloes", "捕手", "捕手", "A", "若月健矢,頓宮裕真"],
-["buffaloes", "捕手", "捕手", "B", "福永奨,石川亮"],
-["buffaloes", "捕手", "捕手", "C", "堀柊那,山中稜真"],
-["buffaloes", "内野手", "二遊", "S", "紅林弘太郎,太田椋"],
-["buffaloes", "内野手", "一三", "A", "宗佑磨,中川圭太,廣岡大志"],
-["buffaloes", "内野手", "二遊", "A", "西野真弘"],
-["buffaloes", "内野手", "二遊", "B", "野口智哉,大城滉二,宜保翔"],
-["buffaloes", "内野手", "一三", "B", "平沼翔太,シーモア"],
-["buffaloes", "内野手", "二遊", "C", "横山聖哉"],
-["buffaloes", "内野手", "一三", "C", "内藤鵬"],
-["buffaloes", "外野手", "外野", "S", "西川龍馬,杉本裕太郎"],
-["buffaloes", "外野手", "外野", "A", "麦谷祐介"],
-["buffaloes", "外野手", "外野", "B", "来田涼斗,池田陵真,渡部遼人,杉澤龍"],
-
-// 12. 埼玉西武ライオンズ
-["lions", "投手", "投手", "S", "髙橋光成,隅田知一郎,武内夏暉,平良海馬"],
-["lions", "投手", "投手", "A", "松本航,渡邉勇太朗,佐藤隼輔,甲斐野央,豆田泰志,羽田慎之介,ウィンゲンター"],
-["lions", "投手", "投手", "B", "菅井信也,青山美夏人,黒田将矢,糸川亮太,浜屋将太,中村祐太,ボー・タカハシ,ラミレス,森脇亮介"],
-["lions", "投手", "投手", "C", "冨士大和,佐藤爽,篠原響"],
-["lions", "捕手", "捕手", "A", "古賀悠斗"],
-["lions", "捕手", "捕手", "B", "柘植世那,牧野翔矢"],
-["lions", "捕手", "捕手", "C", "是澤涼輔,龍山暖"],
-["lions", "内野手", "二遊", "S", "源田壮亮,外崎修汰"],
-["lions", "内野手", "一三", "S", "中村剛也"],
-["lions", "内野手", "二遊", "A", "石井一成"],
-["lions", "内野手", "一三", "A", "ネビン"],
-["lions", "内野手", "二遊", "B", "滝澤夏央,児玉亮涼,仲田慶介,平沢大河"],
-["lions", "内野手", "一三", "B", "山村崇嘉"],
-["lions", "内野手", "二遊", "C", "齋藤大翔,佐藤太陽"],
-["lions", "内野手", "一三", "C", "村田怜音"],
-["lions", "外野手", "外野", "S", "桑原将志,栗山巧"],
-["lions", "外野手", "外野", "A", "渡部聖弥,西川愛也,長谷川信哉,カナリオ,林安可"],
-["lions", "外野手", "外野", "B", "蛭間拓哉,岸潤一郎,若林楽人,茶野篤政"],
-["lions", "外野手", "外野", "C", "古川雄大,秋山俊,仲三優太"]
+// ==========================================
+// 1. 球団マスターデータ（2026年順位逆順ウェーバー基準）
+// ==========================================
+const TEAMS = [
+  { id: "swallows",  name: "東京ヤクルト", short: "ヤク", league: "セ", color: "#009944", needs: ["投手","捕手","外野手"] },
+  { id: "marines",   name: "千葉ロッテ",   short: "ロッ", league: "パ", color: "#222222", needs: ["内野手","投手","捕手"] },
+  { id: "dragons",   name: "中日",         short: "中日", league: "セ", color: "#004c98", needs: ["内野手","外野手","捕手"] },
+  { id: "eagles",    name: "東北楽天",     short: "楽天", league: "パ", color: "#860010", needs: ["投手","外野手","捕手"] },
+  { id: "carp",      name: "広島東洋",     short: "広島", league: "セ", color: "#ff2b06", needs: ["内野手","外野手","投手"] },
+  { id: "lions",     name: "埼玉西武",     short: "西武", league: "パ", color: "#102961", needs: ["捕手","内野手","外野手"] },
+  { id: "giants",    name: "読売",         short: "巨人", league: "セ", color: "#f97709", needs: ["外野手","内野手","投手"] },
+  { id: "buffaloes", name: "オリックス",   short: "オリ", league: "パ", color: "#000019", needs: ["投手","外野手","内野手"] },
+  { id: "baystars",  name: "横浜DeNA",     short: "DeNA", league: "セ", color: "#0055a5", needs: ["投手","内野手","外野手"] },
+  { id: "fighters",  name: "北海道日本ハム",short: "日ハ", league: "パ", color: "#006298", needs: ["投手","内野手","捕手"] },
+  { id: "tigers",    name: "阪神",         short: "阪神", league: "セ", color: "#ffe201", needs: ["外野手","内野手","投手"] },
+  { id: "hawks",     name: "福岡ソフトバンク",short: "ソフ", league: "パ", color: "#f5c700", needs: ["捕手","投手","外野手"] }
 ];
 
-// ============================================================================
-// アプリケーション＆オンラインP2P状態管理
-// ============================================================================
-let MASTER_PLAYERS = [];
-let ACTIVE_POOL = [];
+// ==========================================
+// 2. 2026年11月時点 NPB12球団 支配下選手データベース
+// [teamId, mainPos, subPos, rank, "選手1,選手2,..."]
+// ==========================================
+const RAW_ROSTER = [
+  // 1. 阪神タイガース（西勇輝・岩貞祐太引退除外 / 立石・ディベイニー・伏見・濱田・嶋村・福島・セベリーノ・ガルシア収録）
+  ["tigers", "投手", "投手", "S", "村上頌樹,才木浩人,岩崎優,石井大智"],
+  ["tigers", "投手", "投手", "A", "大竹耕太郎,伊藤将司,及川雅貴,桐敷拓馬,湯浅京己,髙橋遥人,門別啓人,ドリス,モレッタ"],
+  ["tigers", "投手", "投手", "B", "伊原陵人,畠世周,富田蓮,岡留英貴,ルーカス,ラグズデール,工藤泰成,石黒佑弥"],
+  ["tigers", "投手", "投手", "C", "下村海翔,椎葉剛,今朝丸裕喜,早瀬朔,茨木秀俊,早川太貴,木下里都,能登嵩都,津田淳哉,神宮僚介,セベリーノ"],
+  ["tigers", "捕手", "捕手", "A", "坂本誠志郎,梅野隆太郎,伏見寅威"],
+  ["tigers", "捕手", "捕手", "B", "榮枝裕貴,中川勇斗"],
+  ["tigers", "捕手", "捕手", "C", "長坂拳弥,藤田健斗,町田隼乙,嶋村麟士朗"],
+  ["tigers", "内野手", "一三", "S", "佐藤輝明,大山悠輔"],
+  ["tigers", "内野手", "二遊", "A", "中野拓夢"],
+  ["tigers", "内野手", "二遊", "B", "木浪聖也,小幡竜平,熊谷敬宥,植田海,立石正広,ディベイニー,元山飛優"],
+  ["tigers", "内野手", "一三", "B", "糸原健斗,髙寺望夢"],
+  ["tigers", "内野手", "二遊", "C", "百﨑蒼生,山田脩也"],
+  ["tigers", "内野手", "一三", "C", "佐野大陽,谷端将伍"],
+  ["tigers", "外野手", "外野", "S", "森下翔太,近本光司"],
+  ["tigers", "外野手", "外野", "A", "前川右京"],
+  ["tigers", "外野手", "外野", "B", "島田海吏,小野寺暖,豊田寛,濱田太貴,ガルシア"],
+  ["tigers", "外野手", "外野", "C", "岡城快生,井坪陽生,福島圭音"],
 
-let net = {
-playMode: "online", // "online" | "local"
-role: "host", // "host" | "guest"
-peer: null,
-roomCode: "",
-connections: [], // host: [{ conn, peerId, name, teamIdx }]
-hostConn: null, // guest: DataConnection to host
-myTeamIdx: 0,
-connected: false,
-lotteryChooserCounter: 0
-};
+  // 2. 横浜DeNAベイスターズ（11/10無償トレード復帰・嶺井博希追加 / 引退・戦力外除外）
+  ["baystars", "投手", "投手", "S", "東克樹,山﨑康晃"],
+  ["baystars", "投手", "投手", "A", "入江大生,伊勢大夢,石田健大,平良拳太郎,石田裕太郎,竹田祐,尾形崇斗,森原康平"],
+  ["baystars", "投手", "投手", "B", "坂本裕哉,宮城滝太,中川虎大,篠木健太郎,吉野光樹,ビド,ルイーズ,浜地真澄,馬場皐輔"],
+  ["baystars", "投手", "投手", "C", "島田舜也,片山皓心,庄司陽斗,レイノルズ,深沢鳳介,松本凌人,若松尚輝,武田陸玖,坂口翔颯,岩田将貴,マルセリーノ"],
+  ["baystars", "捕手", "捕手", "A", "松尾汐恩,戸柱恭孝"],
+  ["baystars", "捕手", "捕手", "B", "嶺井博希,古市尊"],
+  ["baystars", "捕手", "捕手", "C", "九鬼隆平"],
+  ["baystars", "内野手", "二遊", "S", "牧秀悟"],
+  ["baystars", "内野手", "一三", "S", "宮﨑敏郎"],
+  ["baystars", "内野手", "二遊", "B", "京田陽太,林琢真,柴田竜拓,石上泰輝,森敬斗,三森大貴"],
+  ["baystars", "内野手", "一三", "B", "井上朋也"],
+  ["baystars", "内野手", "二遊", "C", "宮下朝陽,加藤響,成瀬脩人,田内真翔"],
+  ["baystars", "内野手", "一三", "C", "小田康一郎,高見澤郁魅"],
+  ["baystars", "外野手", "外野", "S", "佐野恵太,筒香嘉智"],
+  ["baystars", "外野手", "外野", "A", "度会隆輝,梶原昂希,蝦名達夫"],
+  ["baystars", "外野手", "外野", "B", "関根大気,神里和毅,エンカーナシオン,ヒュンメル"],
+  ["baystars", "外野手", "外野", "C", "勝又温史"],
 
+  // 3. 読売ジャイアンツ（則本・松本剛・竹丸・小笠原・ダルベック収録 / 長野引退・浅野戦力外除外）
+  ["giants", "投手", "投手", "S", "戸郷翔征,山﨑伊織,大勢,マルティネス"],
+  ["giants", "投手", "投手", "A", "井上温大,則本昂大,田中将大,赤星優志,船迫大雅,バルドナード,中川皓太,高梨雄平,西舘勇陽,小笠原慎之介"],
+  ["giants", "投手", "投手", "B", "横川凱,泉圭輔,平内龍太,堀田賢慎,石川達也,ウィットリー,ハワード,マタ,田中瑛斗,菊地大稀,竹丸和幸"],
+  ["giants", "投手", "投手", "C", "代木大和,田和廉,山城京平,又木鉄平,森田駿哉,ルシアーノ,松浦慶斗,北浦竜次,宮原駿介,山田龍聖"],
+  ["giants", "捕手", "捕手", "S", "甲斐拓也"],
+  ["giants", "捕手", "捕手", "A", "大城卓三,岸田行倫"],
+  ["giants", "捕手", "捕手", "B", "小林誠司,郡拓也"],
+  ["giants", "捕手", "捕手", "C", "山瀬慎之助"],
+  ["giants", "内野手", "二遊", "S", "吉川尚輝"],
+  ["giants", "内野手", "一三", "A", "坂本勇人"],
+  ["giants", "内野手", "二遊", "A", "門脇誠,泉口友汰"],
+  ["giants", "内野手", "一三", "B", "ダルベック,リチャード,増田陸"],
+  ["giants", "内野手", "二遊", "B", "増田大輝,湯浅大"],
+  ["giants", "内野手", "一三", "C", "石塚裕惺,荒巻悠,藤井健翔"],
+  ["giants", "内野手", "二遊", "C", "浦田俊輔,小濱佑斗,宇都宮葵星,平山功太"],
+  ["giants", "外野手", "外野", "A", "丸佳浩,松本剛,キャベッジ,中山礼都"],
+  ["giants", "外野手", "外野", "B", "萩尾匡也,佐々木俊輔,岡田悠希"],
+  ["giants", "外野手", "外野", "C", "皆川岳飛,鈴木大和,ティマ,笹原操希,知念大成,三塚琉生"],
+
+  // 4. 中日ドラゴンズ（サノー・アブレウ・杉浦・知野収録 / ブライト・宇佐見・福・尾田除外）
+  ["dragons", "投手", "投手", "S", "髙橋宏斗,松山晋也,清水達也"],
+  ["dragons", "投手", "投手", "A", "柳裕也,大野雄大,金丸夢斗,藤嶋健人,勝野昌慶,齋藤綱記,松葉貴大,アブレウ"],
+  ["dragons", "投手", "投手", "B", "涌井秀章,梅津晃大,橋本侑樹,マラー,メヒア,杉浦稔大,森博人"],
+  ["dragons", "投手", "投手", "C", "根尾昂,仲地礼亜,福田幸之介,草加勝,吉田聖弥,岡田俊哉,牧野憲伸,宮内春輝"],
+  ["dragons", "捕手", "捕手", "A", "木下拓哉"],
+  ["dragons", "捕手", "捕手", "B", "石橋康太,加藤匠馬"],
+  ["dragons", "捕手", "捕手", "C", "味谷大誠,山浅龍之介"],
+  ["dragons", "内野手", "二遊", "A", "田中幹也,村松開人"],
+  ["dragons", "内野手", "一三", "A", "福永裕基,サノー"],
+  ["dragons", "内野手", "一三", "B", "石川昂弥,高橋周平,カリステ,阿部寿樹"],
+  ["dragons", "内野手", "二遊", "B", "山本泰寛,土田龍空,板山祐太郎,知野直人"],
+  ["dragons", "内野手", "二遊", "C", "辻本倫太郎,新保茉良,ロドリゲス,樋口正修"],
+  ["dragons", "内野手", "一三", "C", "森駿太"],
+  ["dragons", "外野手", "外野", "S", "細川成也,岡林勇希"],
+  ["dragons", "外野手", "外野", "A", "上林誠知,ボスラー"],
+  ["dragons", "外野手", "外野", "B", "大島洋平,川越誠司,鵜飼航丞"],
+  ["dragons", "外野手", "外野", "C", "福元悠真,花田旭,能戸輝夢"],
+
+  // 5. 広島東洋カープ（森浦大輔をはじめ全投手網羅 / 10/1戦力外の小園・矢野・田村・前川および羽月除外）
+  ["carp", "投手", "投手", "S", "森下暢仁,床田寛樹,栗林良吏"],
+  ["carp", "投手", "投手", "A", "森浦大輔,大瀬良大地,島内颯太郎,黒原拓未,ハーン,玉村昇悟,アドゥワ誠,森翔平"],
+  ["carp", "投手", "投手", "B", "中﨑翔太,塹江敦哉,鈴木健矢,常廣羽也斗,髙太一,益田武尚,松本竜也,ターノック,齊藤汰直"],
+  ["carp", "投手", "投手", "C", "佐藤柳之介,ケムナ誠,滝田一希,高橋昂也,工藤泰己,赤木晴哉,長谷部銀次,髙木快大,斉藤優汰,杉田健,岡本駿,遠藤淳志,菊地ハルン,日髙暖己,辻大雅"],
+  ["carp", "捕手", "捕手", "S", "坂倉将吾"],
+  ["carp", "捕手", "捕手", "A", "石原貴規"],
+  ["carp", "捕手", "捕手", "B", "會澤翼"],
+  ["carp", "捕手", "捕手", "C", "持丸泰輝,清水叶人,髙木翔斗"],
+  ["carp", "内野手", "二遊", "A", "菊池涼介"],
+  ["carp", "内野手", "一三", "A", "モンテロ,佐々木泰"],
+  ["carp", "内野手", "一三", "B", "堂林翔太,林晃汰,二俣翔一"],
+  ["carp", "内野手", "二遊", "B", "勝田成,辰見鴻之介"],
+  ["carp", "内野手", "一三", "C", "渡邉悠斗,仲田侑仁,内田湘大,佐藤啓介"],
+  ["carp", "内野手", "二遊", "C", "西川篤夢"],
+  ["carp", "外野手", "外野", "A", "末包昇大,ファビアン,秋山翔吾,野間峻祥"],
+  ["carp", "外野手", "外野", "B", "中村奨成,大盛穂,平川蓮"],
+  ["carp", "外野手", "外野", "C", "久保修,名原典彦,中村貴浩"],
+
+  // 6. 東京ヤクルトスワローズ（中村優斗・大道・西舘・松下収録 / 田口・青柳・茂木・川端・セデーニョ除外）
+  ["swallows", "投手", "投手", "S", "吉村貢司郎"],
+  ["swallows", "投手", "投手", "A", "大西広樹,高橋奎二,小澤怜史,木澤尚文,清水昇,奥川恭伸,小川泰弘,中村優斗,荘司宏太"],
+  ["swallows", "投手", "投手", "B", "石山泰稚,石川雅規,星知弥,山野太一,松本健吾,高梨裕稔,拓也,大道温貴,キハダ,ウォルターズ"],
+  ["swallows", "投手", "投手", "C", "西舘昂汰,山崎太陽,石原勇輝,増居翔太,鈴木蓮吾,坂本拓己,飯田琉斗,リランソ,阪口皓亮,丸山翔大,下川隼佑,廣澤優"],
+  ["swallows", "捕手", "捕手", "A", "中村悠平,古賀優大"],
+  ["swallows", "捕手", "捕手", "B", "松本直樹,柿沼友哉"],
+  ["swallows", "捕手", "捕手", "C", "橋本星哉,矢野泰二郎,鈴木叶"],
+  ["swallows", "内野手", "二遊", "S", "長岡秀樹"],
+  ["swallows", "内野手", "一三", "A", "オスナ,内山壮真"],
+  ["swallows", "内野手", "二遊", "A", "山田哲人"],
+  ["swallows", "内野手", "二遊", "B", "赤羽由紘,武岡龍世,宮本丈"],
+  ["swallows", "内野手", "一三", "B", "松下歩叶"],
+  ["swallows", "内野手", "二遊", "C", "石井巧,松川玲央,田中陽翔,伊藤琉偉"],
+  ["swallows", "外野手", "外野", "S", "サンタナ"],
+  ["swallows", "外野手", "外野", "A", "塩見泰隆,丸山和郁,岩田幸宏"],
+  ["swallows", "外野手", "外野", "B", "並木秀尊,澤井廉,増田珠"],
+  ["swallows", "外野手", "外野", "C", "モイセエフニキータ,西村瑠伊斗,モンテル"],
+
+  // 7. 福岡ソフトバンクホークス（山本祐大トレード加入・徐若熙・秋広収録 / 11/10嶺井DeNA移籍反映）
+  ["hawks", "投手", "投手", "S", "モイネロ,大関友久,松本裕樹,杉山一樹"],
+  ["hawks", "投手", "投手", "A", "上沢直之,大津亮介,藤井皓哉,オスナ,ヘルナンデス,徐若熙,松本晴,東浜巨"],
+  ["hawks", "投手", "投手", "B", "津森宥紀,スチュワート・ジュニア,前田純,大山凌,上茶谷大河,中村稔弥,大江竜聖,岩井俊介,前田悠伍,ラトリッジ"],
+  ["hawks", "投手", "投手", "C", "稲川竜汰,張峻瑋,村上泰斗,藤原大翔,鈴木豪太,安德駿,アルメンタ,伊藤優輔,北斗,相良雅斗,木村大成,大野稼頭央,木村光,岩崎峻典,ロドリゲス,小林樹斗,大竹風雅"],
+  ["hawks", "捕手", "捕手", "A", "山本祐大,海野隆司"],
+  ["hawks", "捕手", "捕手", "B", "谷川原健太,渡邉陸"],
+  ["hawks", "捕手", "捕手", "C", "石塚綜一郎,藤田悠太郎"],
+  ["hawks", "内野手", "一三", "S", "山川穂高,栗原陵矢"],
+  ["hawks", "内野手", "二遊", "A", "牧原大成,今宮健太"],
+  ["hawks", "内野手", "二遊", "B", "川瀬晃,野村勇,ダウンズ"],
+  ["hawks", "内野手", "一三", "B", "中村晃,廣瀨隆太,秋広優人"],
+  ["hawks", "内野手", "二遊", "C", "庄子雄大,イヒネイツア,宇野真仁朗,石見颯真"],
+  ["hawks", "内野手", "一三", "C", "髙橋隆慶"],
+  ["hawks", "外野手", "外野", "S", "近藤健介,柳田悠岐,周東佑京"],
+  ["hawks", "外野手", "外野", "A", "柳町達,正木智也"],
+  ["hawks", "外野手", "外野", "B", "川村友斗,笹川吉康,緒方理貢"],
+  ["hawks", "外野手", "外野", "C", "山本恵大"],
+
+  // 8. 北海道日本ハムファイターズ（西川遥輝復帰・カストロ・リン・ラオ・清宮虎多朗収録 / 松岡戦力外除外）
+  ["fighters", "投手", "投手", "S", "伊藤大海,北山亘基"],
+  ["fighters", "投手", "投手", "A", "加藤貴之,山﨑福也,金村尚真,田中正義,河野竜生,達孝太,齋藤友貴哉,柳川大晟"],
+  ["fighters", "投手", "投手", "B", "宮西尚生,池田隆英,玉井大翔,上原健太,細野晴希,福島蓮,矢澤宏太,山本拓実,生田目翼,ラオ"],
+  ["fighters", "投手", "投手", "C", "柴田獅子,孫易磊,堀瑞輝,根本悠楓,畔柳亨丞,清宮虎多朗"],
+  ["fighters", "捕手", "捕手", "A", "田宮裕涼,郡司裕也,マルティネス"],
+  ["fighters", "捕手", "捕手", "B", "清水優心,吉田賢吾,リン"],
+  ["fighters", "捕手", "捕手", "C", "進藤勇也,藤森海斗,梅林優貴"],
+  ["fighters", "内野手", "一三", "S", "清宮幸太郎"],
+  ["fighters", "内野手", "二遊", "A", "水野達稀"],
+  ["fighters", "内野手", "一三", "A", "野村佑希"],
+  ["fighters", "内野手", "二遊", "B", "上川畑大悟,奈良間大己,中島卓也,細川凌平,カストロ"],
+  ["fighters", "内野手", "一三", "B", "有薗直輝"],
+  ["fighters", "内野手", "二遊", "C", "大塚瑠晏,半田南十,山縣秀,常谷拓輝"],
+  ["fighters", "内野手", "一三", "C", "阪口樂,明瀬諒介"],
+  ["fighters", "外野手", "外野", "S", "万波中正,レイエス"],
+  ["fighters", "外野手", "外野", "A", "水谷瞬,五十幡亮汰"],
+  ["fighters", "外野手", "外野", "B", "淺間大基,西川遥輝,今川優馬"],
+  ["fighters", "外野手", "外野", "C", "宮崎一樹,エドポロケイン"],
+
+  // 9. 千葉ロッテマリーンズ（石川柊太・石垣元気・毛利・ジャクソン・井上広大収録 / 中村奨吾退団・東妻戦力外除外）
+  ["marines", "投手", "投手", "S", "種市篤暉,小島和哉,鈴木昭汰"],
+  ["marines", "投手", "投手", "A", "横山陸人,西野勇士,石川柊太,田中晴也,中森俊介,益田直也,ジャクソン,カスティーヨ"],
+  ["marines", "投手", "投手", "B", "高野脩汰,菊地吏玖,坂本光士郎,小野郁,木村優人,澤田圭佑,廣畑敦也,唐川侑己,ロング,ルケーシー"],
+  ["marines", "投手", "投手", "C", "毛利海大,石垣元気,大谷輝龍,八木彬,奥村頼人,一條力真,冨士隼斗,河村説人,早坂響,大聖,坂井遼,廣池康志郎,宮﨑颯,吉川悠斗,森遼大朗,髙橋快秀"],
+  ["marines", "捕手", "捕手", "S", "佐藤都志也"],
+  ["marines", "捕手", "捕手", "A", "寺地隆成"],
+  ["marines", "捕手", "捕手", "B", "田村龍弘,松川虎生"],
+  ["marines", "捕手", "捕手", "C", "植田将太,岡村了樹"],
+  ["marines", "内野手", "一三", "A", "ソト,安田尚憲"],
+  ["marines", "内野手", "二遊", "A", "藤岡裕大,友杉篤輝"],
+  ["marines", "内野手", "二遊", "B", "小川龍成,茶谷健太,池田来翔,山﨑剛"],
+  ["marines", "内野手", "一三", "B", "上田希由翔"],
+  ["marines", "内野手", "二遊", "C", "石垣勝海,宮崎竜成"],
+  ["marines", "内野手", "一三", "C", "立松由宇,櫻井ユウヤ"],
+  ["marines", "外野手", "外野", "A", "髙部瑛斗,藤原恭大,ポランコ,岡大海,西川史礁"],
+  ["marines", "外野手", "外野", "B", "角中勝也,山口航輝,山本大斗,愛斗,和田康士朗,井上広大"],
+  ["marines", "外野手", "外野", "C", "石川慎吾"],
+
+  // 10. 東北楽天ゴールデンイーグルス（前田健太・宗山・田中千晴・佐藤直樹・ボイト収録 / 酒居・今野・渡辺翔戦力外除外）
+  ["eagles", "投手", "投手", "S", "早川隆久,藤平尚真"],
+  ["eagles", "投手", "投手", "A", "古謝樹,藤井聖,荘司康誠,鈴木翔天,西口直人,前田健太,岸孝之"],
+  ["eagles", "投手", "投手", "B", "内星龍,西垣雅矢,宋家豪,加治屋蓮,瀧中瞭太,田中千晴,コントレラス,ウレーニャ,マルテ"],
+  ["eagles", "投手", "投手", "C", "藤原聡大,伊藤樹,中込陽翔,江原雅裕,九谷瑠,津留﨑大成,坂井陽翔,辛島航,泰勝利,古賀康誠,大内誠弥,柴田大地,伊藤大晟"],
+  ["eagles", "捕手", "捕手", "A", "太田光,石原彪"],
+  ["eagles", "捕手", "捕手", "B", "伊藤光,堀内謙伍,YG安田"],
+  ["eagles", "捕手", "捕手", "C", "田中貴也,大栄利哉"],
+  ["eagles", "内野手", "二遊", "S", "宗山塁,村林一輝"],
+  ["eagles", "内野手", "一三", "A", "浅村栄斗,ボイト"],
+  ["eagles", "内野手", "二遊", "A", "小深田大翔"],
+  ["eagles", "内野手", "一三", "B", "黒川史陽,鈴木大地,渡邊佳明,伊藤裕季也"],
+  ["eagles", "内野手", "二遊", "B", "小森航大郎"],
+  ["eagles", "内野手", "一三", "C", "平良竜哉,入江大樹,青野拓海,金子京介"],
+  ["eagles", "内野手", "二遊", "C", "繁永晟,ワォーターズ,陽柏翔"],
+  ["eagles", "外野手", "外野", "S", "辰己涼介"],
+  ["eagles", "外野手", "外野", "A", "小郷裕哉,中島大輔"],
+  ["eagles", "外野手", "外野", "B", "田中和基,佐藤直樹,マッカスカー,武藤敦貴"],
+  ["eagles", "外野手", "外野", "C", "吉納翼,阪上翔也,吉野創士"],
+
+  // 11. オリックス・バファローズ（九里・岩嵜・平沼・本田仁海収録 / 曽谷戦力外除外）
+  ["buffaloes", "投手", "投手", "S", "宮城大弥,山下舜平大,マチャド"],
+  ["buffaloes", "投手", "投手", "A", "九里亜蓮,田嶋大樹,エスピノーザ,古田島成龍,ペルドモ,東晃平,山﨑颯一郎,山岡泰輔"],
+  ["buffaloes", "投手", "投手", "B", "平野佳寿,阿部翔太,岩嵜翔,山田修義,椋木蓮,才木海翔,髙島泰都,ジェリー,本田仁海,吉田輝星"],
+  ["buffaloes", "投手", "投手", "C", "寺西成騎,齋藤響介,富山凌雅,藤川敦也,森陽樹,佐藤龍月,髙谷舟,山口廉王,東松快征,片山楽生,横山楓,東山玲士,宮國凌空,博志,入山海斗,陳睦衡,佐藤一磨,川瀬堅斗,権田琉成"],
+  ["buffaloes", "捕手", "捕手", "S", "森友哉"],
+  ["buffaloes", "捕手", "捕手", "A", "若月健矢,頓宮裕真"],
+  ["buffaloes", "捕手", "捕手", "B", "福永奨,石川亮"],
+  ["buffaloes", "捕手", "捕手", "C", "山中稜真,野上士耀,堀柊那"],
+  ["buffaloes", "内野手", "二遊", "S", "紅林弘太郎,太田椋"],
+  ["buffaloes", "内野手", "一三", "A", "宗佑磨,中川圭太"],
+  ["buffaloes", "内野手", "二遊", "B", "西野真弘,大城滉二,野口智哉,宜保翔"],
+  ["buffaloes", "内野手", "一三", "B", "廣岡大志,シーモア"],
+  ["buffaloes", "内野手", "二遊", "C", "横山聖哉"],
+  ["buffaloes", "内野手", "一三", "C", "内藤鵬"],
+  ["buffaloes", "外野手", "外野", "S", "西川龍馬"],
+  ["buffaloes", "外野手", "外野", "A", "杉本裕太郎,麦谷祐介"],
+  ["buffaloes", "外野手", "外野", "B", "平沼翔太,来田涼斗,渡部遼人"],
+  ["buffaloes", "外野手", "外野", "C", "杉澤龍,池田陵真,窪田洋祐"],
+
+  // 12. 埼玉西武ライオンズ（桑原・石井一成・若林楽人・茶野・是澤収録 / 中村祐太戦力外除外）
+  ["lions", "投手", "投手", "S", "今井達也,隅田知一郎,武内夏暉,平良海馬"],
+  ["lions", "投手", "投手", "A", "髙橋光成,渡邉勇太朗,甲斐野央,佐藤隼輔,松本航,ウィンゲンター"],
+  ["lions", "投手", "投手", "B", "羽田慎之介,菅井信也,山田陽翔,森脇亮介,田村伊知郎,豆田泰志,糸川亮太"],
+  ["lions", "投手", "投手", "C", "黒田将矢,上田大河,青山美夏人,篠原響,狩生聖真,冨士大和,佐藤爽"],
+  ["lions", "捕手", "捕手", "A", "柘植世那"],
+  ["lions", "捕手", "捕手", "B", "牧野翔矢"],
+  ["lions", "捕手", "捕手", "C", "龍山暖,是澤涼輔"],
+  ["lions", "内野手", "二遊", "A", "源田壮亮,滝澤夏央,石井一成"],
+  ["lions", "内野手", "一三", "A", "外崎修汰,ネビン"],
+  ["lions", "内野手", "二遊", "B", "児玉亮涼,平沢大河,仲田慶介,髙松渡"],
+  ["lions", "内野手", "一三", "B", "中村剛也,山村崇嘉,村田怜音"],
+  ["lions", "内野手", "二遊", "C", "齋藤大翔,佐藤太陽,横田蒼和"],
+  ["lions", "外野手", "外野", "A", "西川愛也,桑原将志,渡部聖弥,長谷川信哉"],
+  ["lions", "外野手", "外野", "B", "若林楽人,蛭間拓哉,岸潤一郎,栗山巧,茶野篤政,カナリオ,林安可"],
+  ["lions", "外野手", "外野", "C", "古川雄大,秋山俊,林冠臣,仲三優太,川田悠慎"]
+];
+
+const RANK_SCORE = { S: 95, A: 82, B: 68, C: 54 };
+const TEAM_MAP = Object.fromEntries(TEAMS.map(t => [t.id, t]));
+
+// 選手一覧をフラット化
+let ALL_PLAYERS = [];
+function buildPlayerDatabase() {
+  ALL_PLAYERS = [];
+  let idCounter = 1;
+  RAW_ROSTER.forEach(([teamId, mainPos, subPos, rank, namesStr]) => {
+    namesStr.split(",").forEach(rawName => {
+      const name = rawName.trim();
+      if (!name) return;
+      ALL_PLAYERS.push({
+        id: idCounter++,
+        name,
+        teamId,
+        mainPos,
+        subPos,
+        rank,
+        score: RANK_SCORE[rank] + (idCounter % 5),
+        draftedBy: null,
+        pickRound: null
+      });
+    });
+  });
+  document.getElementById("dbCountBadge").textContent = `登録支配下選手: ${ALL_PLAYERS.length}名`;
+}
+
+// ==========================================
+// 3. ゲーム状態管理
+// ==========================================
 let state = {
-teams: [],
-totalRounds: 36,
-bidUntilRound: 10, // 何巡目まで同時入札抽選にするか（デフォルト10巡目まで）
-currentRound: 1,
-turnQueue: [],
-turnPointer: 0,
-posFilter: "ALL",
-phase: "setup", // setup | bid | rebid | normal | finished
-pendingTeams: [],
-bids: {},
-lockedBids: {}, // { teamIdx: true } オンライン時に確定済みか管理
-selectedBidSlot: null,
-// くじ引きミニゲームキュー
-lotteryQueue: [],
-currentLottery: null,
-lotteryLosers: [],
-// CPU制御
-cpuTimer: null,
-cpuDelay: 380,
-logs: []
+  mode: "12team",
+  maxRounds: 10,
+  useLottery: true,
+  timeLimit: 0,
+  userTeams: ["carp"],
+  participatingTeams: [],
+  currentRound: 1,
+  turnIndex: 0,
+  roundOrder: [],
+  rosters: {},
+  logs: [],
+  lotteryPool: {},
+  lotteryPendingTeams: [],
+  timerId: null,
+  timeLeft: 0,
+  finished: false
 };
 
-const DEFAULT_TEAM_NAMES = [
-"プレイヤー1球団", "プレイヤー2球団", "CPUタイガース", "CPUホークス",
-"CPUジャイアンツ", "CPUファイターズ", "CPUベイスターズ", "CPUバファローズ"
-];
-let teamConfigs = [];
-
-function buildMasterPlayers() {
-MASTER_PLAYERS = [];
-let idCounter = 1;
-NPB_2026_COMPACT.forEach(([teamId, pos, subPos, rank, namesStr]) => {
-namesStr.split(",").forEach(rawName => {
-const name = rawName.trim();
-if (!name) return;
-MASTER_PLAYERS.push({
-id: idCounter++,
-name,
-teamId,
-teamName: TEAMS_META[teamId].name,
-pos,
-subPos,
-rank,
-draftedBy: null,
-draftRound: null
-});
-});
-});
-
-const teamFilter = document.getElementById("team-filter");
-teamFilter.innerHTML = '<option value="ALL">全12球団</option>';
-Object.entries(TEAMS_META).forEach(([id, meta]) => {
-const opt = document.createElement("option");
-opt.value = id;
-opt.textContent = meta.name;
-teamFilter.appendChild(opt);
-});
-}
-
-// ============================================================================
-// オンライン対戦（PeerJS WebRTC P2P）制御
-// ============================================================================
-function switchPlayMode(mode) {
-net.playMode = mode;
-document.getElementById("tab-online").classList.toggle("active", mode === "online");
-document.getElementById("tab-local").classList.toggle("active", mode === "local");
-document.getElementById("online-lobby-box").classList.toggle("hidden", mode !== "online");
-document.getElementById("local-presets-bar").classList.toggle("hidden", mode === "online");
-
-if (mode === "online") {
-setOnlineRole(net.role);
-} else {
-document.getElementById("host-settings-wrapper").classList.remove("hidden");
-document.getElementById("guest-waiting-banner").classList.add("hidden");
-document.getElementById("local-teams-section").classList.remove("hidden");
-}
-}
-
-function setOnlineRole(role) {
-net.role = role;
-document.getElementById("btn-role-host").className = role === "host" ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
-document.getElementById("btn-role-guest").className = role === "guest" ? "btn btn-gold btn-sm" : "btn btn-outline btn-sm";
-document.getElementById("online-host-ui").classList.toggle("hidden", role !== "host");
-document.getElementById("online-guest-ui").classList.toggle("hidden", role !== "guest");
-
-if (role === "host") {
-document.getElementById("host-settings-wrapper").classList.remove("hidden");
-document.getElementById("guest-waiting-banner").classList.add("hidden");
-document.getElementById("local-teams-section").classList.add("hidden");
-} else {
-document.getElementById("host-settings-wrapper").classList.add("hidden");
-document.getElementById("guest-waiting-banner").classList.toggle("hidden", !net.connected);
-}
-}
-
-function generateRoomCode() {
-const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-let code = "NPB-";
-for (let i = 0; i < 4; i++) {
-code += chars[Math.floor(Math.random() * chars.length)];
-}
-return code;
-}
-
-function createOnlineRoom() {
-if (typeof Peer === "undefined") {
-alert("オンライン通信ライブラリ(PeerJS)の読み込みに失敗しました。インターネット接続を確認するか、ローカル対戦モードをご利用ください。");
-return;
-}
-if (net.peer) {
-try { net.peer.destroy(); } catch (e) {}
-}
-net.connections = [];
-net.connected = false;
-net.myTeamIdx = 0;
-
-const code = generateRoomCode();
-net.roomCode = code;
-const peerId = "npb2026-draft-" + code.toLowerCase();
-
-document.getElementById("btn-create-room").disabled = true;
-document.getElementById("online-status-text").textContent = "⏳ ルームサーバーに接続中...";
-
-const peer = new Peer(peerId);
-net.peer = peer;
-
-peer.on("open", () => {
-document.getElementById("btn-create-room").disabled = false;
-document.getElementById("host-room-info").classList.remove("hidden");
-document.getElementById("display-room-id").textContent = code;
-document.getElementById("online-status-text").innerHTML = `🟡 <strong>${escapeHtml(code)}</strong> で待機中！友達にルームIDまたは招待URLを送ってください。`;
-updateHeaderNetBadge(true, `🟢 ホスト待機中 (${code})`);
-});
-
-peer.on("connection", (conn) => {
-conn.on("open", () => {
-const slotIdx = net.connections.length + 1;
-net.connections.push({ conn, peerId: conn.peer, name: `ゲスト球団${slotIdx}`, teamIdx: slotIdx });
-net.connected = true;
-updateOnlineLobbyStatus();
-updateHeaderNetBadge(true, `🟢 オンライン接続済 (${net.connections.length + 1}人)`);
-});
-
-conn.on("data", (msg) => {
-handleHostReceivedData(conn, msg);
-});
-
-conn.on("close", () => {
-net.connections = net.connections.filter(c => c.conn !== conn);
-net.connected = net.connections.length > 0;
-updateOnlineLobbyStatus();
-updateHeaderNetBadge(net.connected, net.connected ? `🟢 オンライン接続済` : `🔴 相手が切断されました`);
-addLog("⚠️ ゲストとの通信が切断されました。");
-});
-});
-
-peer.on("error", (err) => {
-document.getElementById("btn-create-room").disabled = false;
-document.getElementById("online-status-text").textContent = `❌ 通信エラー: ${err.type}（再度「部屋を作成」を押してください）`;
-});
-}
-
-function updateOnlineLobbyStatus() {
-const totalConnected = 1 + net.connections.length;
-document.getElementById("online-peers-count").textContent = `参加者: ${totalConnected}名`;
-if (net.connections.length > 0) {
-const names = net.connections.map(c => escapeHtml(c.name)).join("、");
-document.getElementById("online-status-text").innerHTML = `🟢 <strong>${names}</strong> が入室しました！「72人をピックしてドラフト開始！」を押せます。`;
-const sel = document.getElementById("team-count");
-if (totalConnected <= 2) { sel.value = "2"; document.getElementById("total-rounds").value = "36"; }
-else if (totalConnected <= 4) { sel.value = "4"; document.getElementById("total-rounds").value = "18"; }
-else { sel.value = "6"; document.getElementById("total-rounds").value = "12"; }
-}
-}
-
-function joinOnlineRoom() {
-if (typeof Peer === "undefined") {
-alert("オンライン通信ライブラリ(PeerJS)の読み込みに失敗しました。");
-return;
-}
-const rawCode = document.getElementById("join-room-id").value.trim().toUpperCase();
-if (!rawCode) {
-alert("ホストから受け取ったルームID（例: NPB-4829）を入力してください。");
-return;
-}
-const code = rawCode.startsWith("NPB-") ? rawCode : "NPB-" + rawCode;
-const hostPeerId = "npb2026-draft-" + code.toLowerCase();
-const guestName = document.getElementById("guest-team-name").value.trim() || "ゲスト球団";
-
-if (net.peer) {
-try { net.peer.destroy(); } catch (e) {}
-}
-
-document.getElementById("btn-join-room").disabled = true;
-document.getElementById("online-status-text").textContent = `⏳ ルーム ${code} に接続中...`;
-
-const peer = new Peer();
-net.peer = peer;
-
-peer.on("open", () => {
-const conn = peer.connect(hostPeerId, { reliable: true });
-net.hostConn = conn;
-
-conn.on("open", () => {
-net.connected = true;
-net.roomCode = code;
-document.getElementById("btn-join-room").disabled = false;
-document.getElementById("online-status-text").innerHTML = `🟢 ルーム <strong>${escapeHtml(code)}</strong> に接続成功！ホストが開始するのを待っています...`;
-document.getElementById("guest-waiting-banner").classList.remove("hidden");
-updateHeaderNetBadge(true, `🟢 ゲスト接続中 (${code})`);
-conn.send({ type: "HELLO_GUEST", name: guestName });
-});
-
-conn.on("data", (msg) => {
-handleGuestReceivedData(msg);
-});
-
-conn.on("close", () => {
-net.connected = false;
-updateHeaderNetBadge(false, "🔴 ホストとの通信が切断されました");
-alert("ホストとの接続が切断されました。");
-});
-});
-
-peer.on("error", (err) => {
-document.getElementById("btn-join-room").disabled = false;
-document.getElementById("online-status-text").textContent = `❌ 接続失敗 (${err.type})。ルームIDが正しいか、ホストが部屋を作成済みか確認してください。`;
-});
-}
-
-function copyRoomId() {
-navigator.clipboard.writeText(net.roomCode).then(() => {
-alert(`ルームID「${net.roomCode}」をコピーしました！友達に送ってください。`);
-});
-}
-
-function copyInviteUrl() {
-const baseUrl = window.location.href.split("#")[0];
-const url = `${baseUrl}#room=${encodeURIComponent(net.roomCode)}`;
-navigator.clipboard.writeText(url).then(() => {
-alert(`招待URLをコピーしました！\n${url}\n※ローカルHTMLファイルの場合はルームID「${net.roomCode}」を伝えてください。`);
-});
-}
-
-function updateHeaderNetBadge(isOk, text) {
-const el = document.getElementById("header-net-badge");
-el.classList.remove("hidden");
-el.classList.toggle("disconnected", !isOk);
-el.textContent = text;
-}
-
-// ホスト側のメッセージ受信処理
-function handleHostReceivedData(conn, msg) {
-const entry = net.connections.find(c => c.conn === conn);
-if (!entry) return;
-
-if (msg.type === "HELLO_GUEST") {
-entry.name = (msg.name || "ゲスト球団").trim();
-updateOnlineLobbyStatus();
-conn.send({ type: "ASSIGN_SLOT", teamIdx: entry.teamIdx, roomCode: net.roomCode });
-return;
-}
-
-if (msg.type === "LOCK_BID") {
-const tid = entry.teamIdx;
-if ((state.phase === "bid" || state.phase === "rebid") && state.pendingTeams.includes(tid)) {
-state.bids[tid] = msg.playerId;
-state.lockedBids[tid] = true;
-updateStatusAndUI();
-broadcastStateToGuests();
-checkAutoRevealOnlineBids();
-}
-return;
-}
-
-if (msg.type === "NORMAL_PICK") {
-const tid = entry.teamIdx;
-if (state.phase === "normal" && state.turnQueue[state.turnPointer] === tid) {
-const player = ACTIVE_POOL.find(p => p.id === msg.playerId);
-if (player && player.draftedBy === null) {
-executeNormalPick(tid, player);
-}
-}
-return;
-}
-
-if (msg.type === "LOTTERY_CLICK") {
-if (state.currentLottery && !state.currentLottery.resolved && state.currentLottery.chooserTid === entry.teamIdx) {
-resolveLotteryEnvelopeClick(msg.clickedIdx, state.currentLottery.winEnvelopeIdx, entry.teamIdx, true);
-}
-return;
-}
-
-if (msg.type === "CHAT") {
-const senderName = state.teams[entry.teamIdx]?.name || entry.name;
-addLog(`💬 <strong>${escapeHtml(senderName)}</strong>: ${escapeHtml(msg.text)}`, false, true);
-broadcastChatToGuests(senderName, msg.text);
-}
-}
-
-// ゲスト側のメッセージ受信処理
-function handleGuestReceivedData(msg) {
-if (msg.type === "ASSIGN_SLOT") {
-net.myTeamIdx = msg.teamIdx;
-return;
-}
-
-if (msg.type === "SYNC_STATE") {
-const myPreservedDraftBid = (state.phase === msg.state.phase && state.currentRound === msg.state.currentRound && !msg.state.lockedBids[net.myTeamIdx])
-? state.bids[net.myTeamIdx]
-: null;
-
-ACTIVE_POOL = msg.pool;
-state = {
-...state,
-...msg.state,
-cpuTimer: null
-};
-if (myPreservedDraftBid && !state.lockedBids[net.myTeamIdx]) {
-state.bids[net.myTeamIdx] = myPreservedDraftBid;
-}
-
-document.getElementById("setup-screen").classList.add("hidden");
-document.getElementById("btn-reset").classList.remove("hidden");
-document.getElementById("online-chat-controls").classList.remove("hidden");
-
-if (state.phase === "finished") {
-document.getElementById("draft-screen").classList.add("hidden");
-document.getElementById("result-screen").classList.remove("hidden");
-document.getElementById("lottery-modal").classList.add("hidden");
-renderRosters("result-rosters");
-return;
-}
-
-document.getElementById("draft-screen").classList.remove("hidden");
-document.getElementById("result-screen").classList.add("hidden");
-document.getElementById("pool-summary-bar").classList.remove("hidden");
-renderPoolSummaryBar();
-
-if (state.phase === "bid" || state.phase === "rebid") {
-document.getElementById("bid-panel").classList.remove("hidden");
-document.getElementById("bid-phase-title").textContent = state.phase === "rebid"
-? `【第${state.currentRound}巡目 外れ再入札】`
-: `【第${state.currentRound}巡目 同時入札フェーズ】`;
-} else {
-document.getElementById("bid-panel").classList.add("hidden");
-}
-
-document.getElementById("log-count").textContent = `${state.logs.length}件`;
-document.getElementById("log-list").innerHTML = state.logs.map(l =>
-`<div class="log-item ${l.isLottery ? 'lottery' : ''} ${l.isChat ? 'chat' : ''}">${l.htmlText}</div>`
-).join("");
-
-if (state.currentLottery) {
-renderLotteryModalFromState(state.currentLottery);
-} else {
-document.getElementById("lottery-modal").classList.add("hidden");
-}
-
-updateStatusAndUI();
-return;
-}
-
-if (msg.type === "CHAT_BROADCAST") {
-addLog(`💬 <strong>${escapeHtml(msg.sender)}</strong>: ${escapeHtml(msg.text)}`, false, true);
-}
-}
-
-function broadcastStateToGuests() {
-if (net.playMode !== "online" || net.role !== "host") return;
-
-net.connections.forEach(c => {
-if (!c.conn || !c.conn.open) return;
-const sanitizedBids = {};
-Object.keys(state.bids).forEach(tidStr => {
-const tid = parseInt(tidStr, 10);
-if (tid === c.teamIdx) {
-sanitizedBids[tid] = state.bids[tid];
-} else if (state.lockedBids[tid]) {
-sanitizedBids[tid] = "__LOCKED_HIDDEN__";
-}
-});
-
-const payloadState = {
-teams: state.teams,
-totalRounds: state.totalRounds,
-bidUntilRound: state.bidUntilRound,
-currentRound: state.currentRound,
-turnQueue: state.turnQueue,
-turnPointer: state.turnPointer,
-phase: state.phase,
-pendingTeams: state.pendingTeams,
-bids: sanitizedBids,
-lockedBids: state.lockedBids,
-currentLottery: state.currentLottery,
-logs: state.logs
-};
-
-c.conn.send({
-type: "SYNC_STATE",
-pool: ACTIVE_POOL,
-state: payloadState
-});
-});
-}
-
-function broadcastChatToGuests(sender, text) {
-if (net.playMode !== "online" || net.role !== "host") return;
-net.connections.forEach(c => {
-if (c.conn && c.conn.open) {
-c.conn.send({ type: "CHAT_BROADCAST", sender, text });
-}
-});
-}
-
-function sendChatMessage() {
-const input = document.getElementById("chat-input");
-const text = input.value.trim();
-if (!text) return;
-input.value = "";
-sendQuickStamp(text);
-}
-
-function sendQuickStamp(text) {
-if (net.playMode !== "online") return;
-const myName = state.teams[net.myTeamIdx]?.name || "プレイヤー";
-if (net.role === "host") {
-addLog(`💬 <strong>${escapeHtml(myName)}</strong>: ${escapeHtml(text)}`, false, true);
-broadcastChatToGuests(myName, text);
-} else if (net.hostConn && net.hostConn.open) {
-net.hostConn.send({ type: "CHAT", text });
-}
-}
-
-// ============================================================================
-// 12球団×6人＝72人 4条件同時最適化アルゴリズム
-// （12球団各6人・ポジション配分・S/A/B/Cバランス配分・各球団内偏り抑制）
-// ============================================================================
-function generateBalanced72Pool() {
-const targetPos = {
-"投手": parseInt(document.getElementById("q-pitcher").value, 10) || 34,
-"捕手": parseInt(document.getElementById("q-catcher").value, 10) || 6,
-"二遊": parseInt(document.getElementById("q-mi").value, 10) || 10,
-"一三": parseInt(document.getElementById("q-ci").value, 10) || 8,
-"外野": parseInt(document.getElementById("q-of").value, 10) || 14
-};
-const targetRank = {
-S: parseInt(document.getElementById("r-S").value, 10) || 14,
-A: parseInt(document.getElementById("r-A").value, 10) || 24,
-B: parseInt(document.getElementById("r-B").value, 10) || 28,
-C: parseInt(document.getElementById("r-C").value, 10) || 6
-};
-
-const teamIds = Object.keys(TEAMS_META);
-const byTeam = {};
-teamIds.forEach(tid => {
-byTeam[tid] = MASTER_PLAYERS.filter(p => p.teamId === tid).map(p => ({ ...p }));
-});
-
-const sel = {};
-teamIds.forEach(tid => {
-const shuffled = [...byTeam[tid]].sort(() => Math.random() - 0.5);
-sel[tid] = shuffled.slice(0, 6);
-});
-
-const calcError = (posCounts, rankCounts) => {
-let err = 0;
-for (const k of Object.keys(targetPos)) {
-err += Math.abs(posCounts[k] - targetPos[k]) * 12;
-}
-for (const k of Object.keys(targetRank)) {
-err += Math.abs(rankCounts[k] - targetRank[k]) * 10;
-}
-for (const tid of teamIds) {
-let ts = 0, tp = 0;
-for (const p of sel[tid]) {
-if (p.rank === "S") ts++;
-if (p.subPos === "投手") tp++;
-}
-if (ts > 2) err += (ts - 2) * 3;
-if (tp < 2) err += (2 - tp) * 3;
-if (tp > 4) err += (tp - 4) * 3;
-}
-return err;
-};
-
-const posCounts = { "投手": 0, "捕手": 0, "二遊": 0, "一三": 0, "外野": 0 };
-const rankCounts = { S: 0, A: 0, B: 0, C: 0 };
-teamIds.forEach(tid => {
-sel[tid].forEach(p => {
-posCounts[p.subPos]++;
-rankCounts[p.rank]++;
-});
-});
-
-for (let iter = 0; iter < 5000; iter++) {
-const curErr = calcError(posCounts, rankCounts);
-if (curErr === 0) break;
-
-const tid = teamIds[Math.floor(Math.random() * teamIds.length)];
-const idx = Math.floor(Math.random() * 6);
-const outP = sel[tid][idx];
-const usedIds = new Set(sel[tid].map(p => p.id));
-const cands = byTeam[tid].filter(p => !usedIds.has(p.id));
-if (cands.length === 0) continue;
-
-const inP = cands[Math.floor(Math.random() * cands.length)];
-
-sel[tid][idx] = inP;
-posCounts[outP.subPos]--;
-posCounts[inP.subPos]++;
-rankCounts[outP.rank]--;
-rankCounts[inP.rank]++;
-
-const newErr = calcError(posCounts, rankCounts);
-if (newErr > curErr) {
-sel[tid][idx] = outP;
-posCounts[inP.subPos]--;
-posCounts[outP.subPos]++;
-rankCounts[inP.rank]--;
-rankCounts[outP.rank]++;
-}
-}
-
-return teamIds.flatMap(tid => sel[tid]).map(p => ({ ...p, draftedBy: null, draftRound: null }));
-}
-
-// ============================================================================
-// 設定画面 UI制御
-// ============================================================================
-function onTeamCountChange() {
-const count = parseInt(document.getElementById("team-count").value, 10);
-const roundsSel = document.getElementById("total-rounds");
-if (count === 2) roundsSel.value = "36";
-else if (count === 4) roundsSel.value = "18";
-else if (count === 6) roundsSel.value = "12";
-renderTeamInputs(true);
-}
-
-function onDraftModeChange() {
-const mode = document.getElementById("draft-mode").value;
-const input = document.getElementById("bid-until-round");
-if (mode === "bid_10") input.value = 10;
-else if (mode === "bid_5") input.value = 5;
-else if (mode === "bid_1") input.value = 1;
-else if (mode === "bid_all") input.value = 36;
-else if (mode === "weber_only") input.value = 0;
-}
-
-function syncCustomBidRound() {
-document.getElementById("draft-mode").value = "bid_custom";
-}
-
-function applyRankPreset(type) {
-if (type === "balanced") {
-document.getElementById("r-S").value = 14;
-document.getElementById("r-A").value = 24;
-document.getElementById("r-B").value = 28;
-document.getElementById("r-C").value = 6;
-} else if (type === "star") {
-document.getElementById("r-S").value = 16;
-document.getElementById("r-A").value = 26;
-document.getElementById("r-B").value = 24;
-document.getElementById("r-C").value = 6;
-} else if (type === "strict") {
-document.getElementById("r-S").value = 10;
-document.getElementById("r-A").value = 20;
-document.getElementById("r-B").value = 36;
-document.getElementById("r-C").value = 6;
-}
-updateQuotaSum();
-}
-
-function updateQuotaSum() {
-const posSum =
-(parseInt(document.getElementById("q-pitcher").value, 10) || 0) +
-(parseInt(document.getElementById("q-catcher").value, 10) || 0) +
-(parseInt(document.getElementById("q-mi").value, 10) || 0) +
-(parseInt(document.getElementById("q-ci").value, 10) || 0) +
-(parseInt(document.getElementById("q-of").value, 10) || 0);
-
-const rankSum =
-(parseInt(document.getElementById("r-S").value, 10) || 0) +
-(parseInt(document.getElementById("r-A").value, 10) || 0) +
-(parseInt(document.getElementById("r-B").value, 10) || 0) +
-(parseInt(document.getElementById("r-C").value, 10) || 0);
-
-const badge = document.getElementById("quota-sum-text");
-const startBtn = document.getElementById("btn-start-draft");
-if (posSum === 72 && rankSum === 72) {
-badge.style.color = "var(--success)";
-badge.textContent = "✅ ポジション合計: 72名 ／ ランク合計: 72名（12球団×各6名）";
-startBtn.disabled = false;
-} else {
-badge.style.color = "var(--danger)";
-badge.textContent = `⚠️ ポジション合計: ${posSum}名 ／ ランク合計: ${rankSum}名（どちらも72名にしてください）`;
-startBtn.disabled = true;
-}
-}
-
-function renderTeamInputs(preserve = true) {
-const count = parseInt(document.getElementById("team-count").value, 10);
-const container = document.getElementById("team-inputs");
-if (!preserve || teamConfigs.length === 0) {
-teamConfigs = Array.from({ length: 8 }, (_, i) => ({
-name: DEFAULT_TEAM_NAMES[i],
-isCpu: false
-}));
-}
-
-container.innerHTML = "";
-for (let i = 0; i < count; i++) {
-const cfg = teamConfigs[i];
-const div = document.createElement("div");
-div.className = "team-input-item";
-div.innerHTML = `
-<div class="team-input-top">
-<span class="idx">#${i + 1}</span>
-<input type="text" value="${escapeHtml(cfg.name)}" onchange="updateTeamName(${i}, this.value)">
-</div>
-<div class="role-toggle">
-<button type="button" class="role-btn ${!cfg.isCpu ? 'active-human' : ''}" onclick="setTeamRole(${i}, false)">👤 プレイヤー</button>
-<button type="button" class="role-btn ${cfg.isCpu ? 'active-cpu' : ''}" onclick="setTeamRole(${i}, true)">🤖 CPU</button>
-</div>
-`;
-container.appendChild(div);
-}
-}
-
-function updateTeamName(idx, val) {
-teamConfigs[idx].name = val.trim() || DEFAULT_TEAM_NAMES[idx];
-}
-
-function setTeamRole(idx, isCpu) {
-teamConfigs[idx].isCpu = isCpu;
-renderTeamInputs(true);
-}
-
-function applyPreset(mode) {
-const count = parseInt(document.getElementById("team-count").value, 10);
-for (let i = 0; i < count; i++) {
-if (mode === "all_human") {
-teamConfigs[i].isCpu = false;
-teamConfigs[i].name = `プレイヤー${i + 1}球団`;
-} else if (mode === "solo_cpu") {
-teamConfigs[i].isCpu = i > 0;
-teamConfigs[i].name = i === 0 ? "あなた球団" : `CPUライバル${i}`;
-} else if (mode === "all_cpu") {
-teamConfigs[i].isCpu = true;
-teamConfigs[i].name = `CPU球団${i + 1}`;
-}
-}
-renderTeamInputs(true);
-}
-
-function toggleCpuSpeed() {
-const btn = document.getElementById("btn-speed");
-if (state.cpuDelay === 380) {
-state.cpuDelay = 90;
-btn.textContent = "⚡ CPU速度: 高速";
-} else {
-state.cpuDelay = 380;
-btn.textContent = "⚡ CPU速度: 標準";
-}
-}
-
-function addLog(htmlText, isLottery = false, isChat = false) {
-state.logs.unshift({ htmlText, isLottery, isChat });
-document.getElementById("log-count").textContent = `${state.logs.length}件`;
-const logList = document.getElementById("log-list");
-logList.innerHTML = state.logs.map(l =>
-`<div class="log-item ${l.isLottery ? 'lottery' : ''} ${l.isChat ? 'chat' : ''}">${l.htmlText}</div>`
-).join("");
-}
-
-// ============================================================================
-// CPU 思考AI
-// ============================================================================
-function chooseCpuPlayer(teamIdx) {
-const team = state.teams[teamIdx];
-const available = ACTIVE_POOL.filter(p => p.draftedBy === null);
-if (available.length === 0) return null;
-
-const counts = { "投手": 0, "捕手": 0, "二遊": 0, "一三": 0, "外野": 0 };
-team.roster.forEach(p => { if (counts[p.subPos] !== undefined) counts[p.subPos]++; });
-
-const scale = state.totalRounds / 36;
-const targets = {
-"投手": Math.round(17 * scale),
-"捕手": Math.max(1, Math.round(3 * scale)),
-"二遊": Math.max(1, Math.round(5 * scale)),
-"一三": Math.max(1, Math.round(4 * scale)),
-"外野": Math.max(1, Math.round(7 * scale))
-};
-
-const rankBaseScore = { S: 100, A: 74, B: 46, C: 20 };
-
-const scored = available.map(p => {
-let score = rankBaseScore[p.rank] || 20;
-if (state.currentRound <= 3) {
-if (p.rank === "S") score += 40;
-if (p.rank === "A") score += 20;
-}
-const deficit = targets[p.subPos] - counts[p.subPos];
-if (deficit > 0) score += deficit * 10;
-else score -= 18;
-
-if ((p.subPos === "捕手" || p.subPos === "二遊") && counts[p.subPos] === 0 && state.currentRound >= 5) {
-score += 30;
-}
-score += Math.random() * 14;
-return { player: p, score };
-});
-
-scored.sort((a, b) => b.score - a.score);
-const topN = scored.slice(0, Math.min(3, scored.length));
-return topN[Math.floor(Math.random() * topN.length)].player;
-}
-
-// ============================================================================
-// ドラフト開始＆72人プールサマリー表示
-// ============================================================================
+// 初期UI構築
+function initSetupUI() {
+  buildPlayerDatabase();
+  const grid = document.getElementById("teamSelectGrid");
+  grid.innerHTML = "";
+  TEAMS.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "team-card" + (state.userTeams.includes(t.id) ? " selected" : "");
+    div.dataset.teamId = t.id;
+    div.innerHTML = `
+      <div class="team-dot" style="background:${t.color}">${t.short}</div>
+      <div class="t-name">${t.name}</div>
+      <div class="t-league">${t.league}・リーグ</div>
+      <div class="t-need">補強: ${t.needs[0]}/${t.needs[1]}</div>
+    `;
+    div.onclick = () => selectSetupTeam(t.id);
+    grid.appendChild(div);
+  });
+
+  const teamFilter = document.getElementById("teamFilter");
+  teamFilter.innerHTML = `<option value="ALL">全12球団</option>` +
+    TEAMS.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
+}
+
+function onModeChange() {
+  const mode = document.getElementById("modeSelect").value;
+  state.mode = mode;
+  if (mode === "2p") {
+    state.userTeams = ["tigers", "hawks"];
+    document.getElementById("teamSelectTitle").textContent = "2. 対戦する2球団を選択（1P ＆ 2P）";
+  } else {
+    state.userTeams = ["carp"];
+    document.getElementById("teamSelectTitle").textContent = "2. あなたが担当する球団を選択";
+  }
+  refreshSetupSelection();
+}
+
+function selectSetupTeam(teamId) {
+  if (state.mode === "12team") {
+    state.userTeams = [teamId];
+  } else {
+    if (state.userTeams.includes(teamId)) {
+      if (state.userTeams.length > 1) {
+        state.userTeams = state.userTeams.filter(id => id !== teamId);
+      }
+    } else {
+      if (state.userTeams.length >= 2) state.userTeams.shift();
+      state.userTeams.push(teamId);
+    }
+  }
+  refreshSetupSelection();
+}
+
+function refreshSetupSelection() {
+  document.querySelectorAll(".team-card").forEach(el => {
+    const id = el.dataset.teamId;
+    el.classList.toggle("selected", state.userTeams.includes(id));
+  });
+}
+
+// ==========================================
+// 4. ドラフト開始・進行ロジック
+// ==========================================
 function startDraft() {
-if (net.playMode === "online" && net.role === "guest") return;
-
-if (net.playMode === "online" && net.connections.length === 0) {
-if (!confirm("まだオンラインの友達が接続していません。このままCPU補充またはテスト開始しますか？")) {
-return;
-}
-}
-
-clearCpuTimer();
-buildMasterPlayers();
-
-const count = parseInt(document.getElementById("team-count").value, 10);
-state.totalRounds = parseInt(document.getElementById("total-rounds").value, 10);
-state.bidUntilRound = parseInt(document.getElementById("bid-until-round").value, 10) || 0;
-state.logs = [];
-document.getElementById("log-list").innerHTML = "";
-document.getElementById("log-count").textContent = "0件";
-
-ACTIVE_POOL = generateBalanced72Pool();
-document.getElementById("pool-summary-bar").classList.remove("hidden");
-renderPoolSummaryBar();
-
-state.teams = [];
-if (net.playMode === "online") {
-net.myTeamIdx = 0;
-const hostName = document.getElementById("host-team-name").value.trim() || "ホスト球団";
-state.teams.push({ id: 0, name: hostName, isCpu: false, isRemote: false, roster: [] });
-
-net.connections.forEach((c, idx) => {
-const tid = idx + 1;
-c.teamIdx = tid;
-if (c.conn && c.conn.open) {
-c.conn.send({ type: "ASSIGN_SLOT", teamIdx: tid, roomCode: net.roomCode });
-}
-state.teams.push({ id: tid, name: c.name || `ゲスト球団${tid}`, isCpu: false, isRemote: true, roster: [] });
-});
-
-while (state.teams.length < count) {
-const idx = state.teams.length;
-state.teams.push({ id: idx, name: `CPU球団${idx + 1}`, isCpu: true, isRemote: false, roster: [] });
-}
-document.getElementById("online-chat-controls").classList.remove("hidden");
-document.getElementById("btn-reroll-pool").classList.remove("hidden");
-} else {
-for (let i = 0; i < count; i++) {
-state.teams.push({
-id: i,
-name: teamConfigs[i]?.name || DEFAULT_TEAM_NAMES[i],
-isCpu: !!teamConfigs[i]?.isCpu,
-isRemote: false,
-roster: []
-});
-}
-document.getElementById("online-chat-controls").classList.add("hidden");
-document.getElementById("btn-reroll-pool").classList.remove("hidden");
-document.getElementById("btn-speed").classList.remove("hidden");
-}
-
-document.getElementById("setup-screen").classList.add("hidden");
-document.getElementById("draft-screen").classList.remove("hidden");
-document.getElementById("btn-reset").classList.remove("hidden");
-
-beginRound(1);
-}
-
-function reroll72Pool() {
-if (net.playMode === "online" && net.role === "guest") return;
-if (state.teams.some(t => t.roster.length > 0)) {
-if (!confirm("すでに指名が進行中です。72人の候補を再抽選して1巡目からやり直しますか？")) {
-return;
-}
-}
-startDraft();
-}
-
-function renderPoolSummaryBar() {
-const posCnt = { "投手": 0, "捕手": 0, "二遊": 0, "一三": 0, "外野": 0 };
-const rankCnt = { S: 0, A: 0, B: 0, C: 0 };
-ACTIVE_POOL.forEach(p => {
-posCnt[p.subPos]++;
-rankCnt[p.rank]++;
-});
-
-document.getElementById("pool-summary-chips").innerHTML = `
-<strong style="color:var(--gold);">📋 選出72名内訳：</strong>
-<span class="s-chip">投手 <b>${posCnt["投手"]}</b></span>
-<span class="s-chip">捕手 <b>${posCnt["捕手"]}</b></span>
-<span class="s-chip">二遊間 <b>${posCnt["二遊"]}</b></span>
-<span class="s-chip">一三塁 <b>${posCnt["一三"]}</b></span>
-<span class="s-chip">外野 <b>${posCnt["外野"]}</b></span>
-<span class="s-chip" style="border-color:var(--gold);">S:<b>${rankCnt.S}</b> / A:<b>${rankCnt.A}</b> / B:<b>${rankCnt.B}</b> / C:<b>${rankCnt.C}</b></span>
-`;
-}
-
-function clearCpuTimer() {
-if (state.cpuTimer) {
-clearTimeout(state.cpuTimer);
-state.cpuTimer = null;
-}
-}
-
-function beginRound(round) {
-state.currentRound = round;
-const useBid = round <= state.bidUntilRound;
-
-if (useBid) {
-startBidPhase(state.teams.map(t => t.id), false);
-} else {
-startNormalRound(round);
-}
-}
-
-// ============================================================================
-// 同時入札フェーズ＆競合くじ引きミニゲーム（オンライン完全同期対応）
-// ============================================================================
-function startBidPhase(teamIds, isRebid) {
-clearCpuTimer();
-state.phase = isRebid ? "rebid" : "bid";
-state.pendingTeams = [...teamIds];
-state.bids = {};
-state.lockedBids = {};
-
-state.pendingTeams.forEach(tid => {
-if (state.teams[tid].isCpu) {
-const pick = chooseCpuPlayer(tid);
-if (pick) {
-state.bids[tid] = pick.id;
-state.lockedBids[tid] = true;
-}
-}
-});
-
-if (net.playMode === "online") {
-state.selectedBidSlot = state.pendingTeams.includes(net.myTeamIdx) ? net.myTeamIdx : null;
-} else {
-const firstHuman = state.pendingTeams.find(tid => !state.teams[tid].isCpu);
-state.selectedBidSlot = firstHuman !== undefined ? firstHuman : null;
-}
-
-document.getElementById("bid-panel").classList.remove("hidden");
-document.getElementById("btn-auto-skip-cpu").classList.add("hidden");
-document.getElementById("bid-phase-title").textContent = isRebid
-? `【第${state.currentRound}巡目 外れ再入札】`
-: `【第${state.currentRound}巡目 同時入札フェーズ（${state.bidUntilRound}巡目まで入札制）】`;
-
-updateStatusAndUI();
-broadcastStateToGuests();
-
-if (state.pendingTeams.every(tid => state.teams[tid].isCpu)) {
-state.cpuTimer = setTimeout(() => revealBids(), state.cpuDelay + 150);
-}
-}
-
-function renderBidSlots() {
-const container = document.getElementById("bid-slots");
-container.innerHTML = "";
-const isOnline = net.playMode === "online";
-
-state.pendingTeams.forEach(tid => {
-const team = state.teams[tid];
-const bidVal = state.bids[tid];
-const isLocked = !!state.lockedBids[tid];
-const isMine = isOnline && tid === net.myTeamIdx;
-const isSelected = state.selectedBidSlot === tid;
-
-const div = document.createElement("div");
-div.className = `bid-slot ${isSelected ? 'selected-slot' : ''} ${(team.isCpu || isLocked) ? 'locked' : ''}`;
-
-if (!isOnline && !team.isCpu) {
-div.onclick = () => {
-state.selectedBidSlot = tid;
-renderBidSlots();
-};
-}
-
-let pickDisplay = "";
-if (team.isCpu) {
-pickDisplay = `<div style="color:#6ee7b7; font-size:0.84rem;">🔒 CPU入札完了（開票待ち）</div>`;
-} else if (isOnline) {
-if (isMine) {
-const player = typeof bidVal === "number" ? ACTIVE_POOL.find(p => p.id === bidVal) : null;
-if (isLocked && player) {
-pickDisplay = `<div style="color:#6ee7b7; font-weight:800;">🔒 確定済：${escapeHtml(player.name)} <span style="font-size:0.75rem;">(${player.teamName})</span></div>`;
-} else if (player) {
-pickDisplay = `<div style="color:var(--gold); font-weight:800;">仮選択：${escapeHtml(player.name)} <span style="font-size:0.75rem; color:var(--text-muted);">（「確定」を押してください）</span></div>`;
-} else {
-pickDisplay = `<div style="color:var(--text-muted); font-size:0.84rem;">下の選手表から1名選択してください</div>`;
-}
-} else {
-if (isLocked) {
-pickDisplay = `<div style="color:#6ee7b7; font-weight:800;">🔒 相手は入札確定済み！（開票待ち）</div>`;
-} else {
-pickDisplay = `<div style="color:var(--text-muted); font-size:0.84rem;">⏳ 相手が選手を選択中...</div>`;
-}
-}
-} else {
-const player = typeof bidVal === "number" ? ACTIVE_POOL.find(p => p.id === bidVal) : null;
-if (player) {
-const humanCount = state.pendingTeams.filter(id => !state.teams[id].isCpu).length;
-if (humanCount >= 2 && !isSelected) {
-pickDisplay = `<div style="color:var(--gold); font-weight:800;">🔒 指名選択済み（クリックで確認）</div>`;
-} else {
-pickDisplay = `<div style="color:var(--gold); font-weight:800;">${escapeHtml(player.name)} <span style="font-size:0.76rem; color:var(--text-muted);">(${player.teamName}/${player.subPos})</span></div>`;
-}
-} else {
-pickDisplay = `<div style="color:var(--text-muted); font-size:0.84rem;">未選択（下の表から指名）</div>`;
-}
-}
-
-div.innerHTML = `
-<div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:4px; display:flex; justify-content:space-between;">
-<span>${escapeHtml(team.name)} ${isMine ? '(あなた)' : ''}</span>
-<span class="role-chip ${team.isCpu ? 'cpu' : 'human'}">${team.isCpu ? 'CPU' : 'プレイヤー'}</span>
-</div>
-${pickDisplay}
-`;
-container.appendChild(div);
-});
-
-const lockBtn = document.getElementById("btn-lock-my-bid");
-const revealBtn = document.getElementById("btn-reveal-bids");
-
-if (isOnline) {
-const amIPending = state.pendingTeams.includes(net.myTeamIdx);
-const amILocked = !!state.lockedBids[net.myTeamIdx];
-const myDraftPick = state.bids[net.myTeamIdx];
-if (amIPending && !amILocked) {
-lockBtn.classList.remove("hidden");
-lockBtn.disabled = typeof myDraftPick !== "number";
-} else {
-lockBtn.classList.add("hidden");
-}
-
-if (net.role === "host") {
-const allLocked = state.pendingTeams.every(tid => state.lockedBids[tid]);
-revealBtn.classList.remove("hidden");
-revealBtn.disabled = !allLocked;
-} else {
-revealBtn.classList.add("hidden");
-}
-} else {
-lockBtn.classList.add("hidden");
-revealBtn.classList.remove("hidden");
-const allSelected = state.pendingTeams.every(tid => typeof state.bids[tid] === "number");
-revealBtn.disabled = !allSelected;
-}
-}
-
-function lockMyOnlineBid() {
-if (net.playMode !== "online") return;
-const tid = net.myTeamIdx;
-const pid = state.bids[tid];
-if (typeof pid !== "number") return;
-
-state.lockedBids[tid] = true;
-if (net.role === "host") {
-updateStatusAndUI();
-broadcastStateToGuests();
-checkAutoRevealOnlineBids();
-} else if (net.hostConn && net.hostConn.open) {
-renderBidSlots();
-net.hostConn.send({ type: "LOCK_BID", playerId: pid });
-}
-}
-
-function checkAutoRevealOnlineBids() {
-if (net.playMode === "online" && net.role === "host") {
-const allLocked = state.pendingTeams.every(tid => state.lockedBids[tid]);
-if (allLocked) {
-setTimeout(() => {
-if ((state.phase === "bid" || state.phase === "rebid") && state.pendingTeams.every(tid => state.lockedBids[tid])) {
-revealBids();
-}
-}, 450);
-}
-}
-}
-
-function revealBids() {
-if (net.playMode === "online" && net.role !== "host") return;
-clearCpuTimer();
-
-const playerToTeams = {};
-state.pendingTeams.forEach(tid => {
-const pid = state.bids[tid];
-if (!playerToTeams[pid]) playerToTeams[pid] = [];
-playerToTeams[pid].push(tid);
-});
-
-state.lotteryQueue = [];
-state.lotteryLosers = [];
-
-Object.entries(playerToTeams).forEach(([pidStr, tids]) => {
-const pid = parseInt(pidStr, 10);
-const player = ACTIVE_POOL.find(p => p.id === pid);
-if (tids.length === 1) {
-const winTid = tids[0];
-assignPlayerToTeam(player, winTid, state.currentRound);
-addLog(`【${state.currentRound}巡目確定】<strong>${escapeHtml(state.teams[winTid].name)}</strong> が <strong>${escapeHtml(player.name)}</strong> (${player.teamName}) を単独指名！`);
-} else {
-const humanContenders = tids.filter(id => !state.teams[id].isCpu);
-let chooserTid = null;
-if (humanContenders.length > 0) {
-chooserTid = humanContenders[net.lotteryChooserCounter % humanContenders.length];
-net.lotteryChooserCounter++;
-}
-state.lotteryQueue.push({
-player,
-contenderIds: tids,
-winEnvelopeIdx: Math.floor(Math.random() * tids.length),
-chooserTid,
-resolved: false,
-clickedIdx: null,
-winnerTid: null
-});
-}
-});
-
-if (state.lotteryQueue.length > 0) {
-startNextLotteryMiniGame();
-} else {
-finishBidRoundOrNext();
-}
-}
-
-function startNextLotteryMiniGame() {
-const item = state.lotteryQueue.shift();
-state.currentLottery = item;
-renderLotteryModalFromState(item);
-broadcastStateToGuests();
-}
-
-function renderLotteryModalFromState(item) {
-const modal = document.getElementById("lottery-modal");
-const titleEl = document.getElementById("lottery-modal-title");
-const subEl = document.getElementById("lottery-modal-subtitle");
-const targetArea = document.getElementById("lottery-target-area");
-const envContainer = document.getElementById("envelopes-container");
-const resArea = document.getElementById("lottery-result-area");
-const nextBtn = document.getElementById("btn-lottery-next");
-
-const contenderNames = item.contenderIds.map(id => state.teams[id].name).join(" vs ");
-titleEl.textContent = `🎯 ${item.contenderIds.length}球団競合！運命のドラフトくじ引き`;
-targetArea.innerHTML = `
-<div class="lottery-target-card">
-<div style="font-size:0.78rem; color:var(--text-muted);">競合対象選手</div>
-<div style="font-size:1.15rem; font-weight:900; color:#fff;">${escapeHtml(item.player.name)} <span style="font-size:0.85rem; color:var(--gold);">(${item.player.teamName} / ${item.player.subPos} / ランク${item.player.rank})</span></div>
-<div style="font-size:0.84rem; color:#93c5fd; margin-top:2px;">競合：${escapeHtml(contenderNames)}</div>
-</div>
-`;
-
-const isOnline = net.playMode === "online";
-const canIClick = !item.resolved && (
-!isOnline ||
-item.chooserTid === net.myTeamIdx ||
-(item.chooserTid === null && net.role === "host")
-);
-
-if (!item.resolved) {
-nextBtn.classList.add("hidden");
-resArea.innerHTML = "";
-if (item.chooserTid !== null) {
-if (canIClick) {
-subEl.innerHTML = `<strong style="color:var(--gold);">${escapeHtml(state.teams[item.chooserTid].name)}（あなた）</strong> が引く封筒を1つ選んでクリックしてください！`;
-} else {
-subEl.innerHTML = `⏳ <strong style="color:var(--gold);">${escapeHtml(state.teams[item.chooserTid].name)}</strong> が抽選くじを選んでいます...`;
-}
-} else {
-subEl.textContent = "CPU球団同士の競合です。封筒をクリックして開封してください！";
-}
-
-envContainer.innerHTML = "";
-for (let i = 0; i < item.contenderIds.length; i++) {
-const env = document.createElement("div");
-env.className = `envelope-card ${canIClick ? '' : 'disabled'}`;
-env.innerHTML = `
-<div class="envelope-seal">NPB</div>
-<div class="envelope-label">抽選くじ #${i + 1}</div>
-<div style="font-size:0.74rem; color:#475569; margin-top:8px;">${canIClick ? 'タップして開封' : '相手選択中'}</div>
-`;
-if (canIClick) {
-env.onclick = () => {
-if (isOnline && net.role === "guest") {
-net.hostConn.send({ type: "LOTTERY_CLICK", clickedIdx: i });
-} else {
-resolveLotteryEnvelopeClick(i, item.winEnvelopeIdx, item.chooserTid, false);
-}
-};
-}
-envContainer.appendChild(env);
-}
-} else {
-envContainer.innerHTML = "";
-for (let i = 0; i < item.contenderIds.length; i++) {
-const env = document.createElement("div");
-const isWin = i === item.winEnvelopeIdx;
-env.className = `envelope-card disabled ${isWin ? 'opened-win' : 'opened-lose'}`;
-if (isWin) {
-env.innerHTML = `
-<div style="font-size:0.76rem; font-weight:800; color:#92400e;">${i === item.clickedIdx && item.chooserTid !== null ? '選択された封筒' : '当たりくじ'}</div>
-<div class="stamp-win">交渉権確定</div>
-<div style="font-size:0.82rem; font-weight:900; color:#0f172a;">${escapeHtml(state.teams[item.winnerTid].name)}</div>
-`;
-} else {
-env.innerHTML = `
-<div style="font-size:0.74rem; color:#475569;">${i === item.clickedIdx && item.chooserTid !== null ? '選択された封筒' : '抽選くじ #' + (i + 1)}</div>
-<div class="stamp-lose">ハズレ</div>
-<div style="font-size:0.75rem; color:#64748b;">白紙</div>
-`;
-}
-envContainer.appendChild(env);
-}
-
-const losersForThis = item.contenderIds.filter(id => id !== item.winnerTid);
-const isYouWin = isOnline ? (item.winnerTid === net.myTeamIdx) : (item.chooserTid !== null && item.winnerTid === item.chooserTid);
-resArea.innerHTML = `
-<div class="lottery-summary-list">
-<div style="font-size:1.05rem; font-weight:900; color:${isYouWin ? 'var(--gold)' : '#93c5fd'};">
-${isYouWin ? '🎊 おめでとうございます！交渉権を獲得しました！' : `🎉 交渉権獲得：${escapeHtml(state.teams[item.winnerTid].name)}`}
-</div>
-<div style="color:var(--text-muted); margin-top:4px;">
-外れ球団（${losersForThis.map(id => escapeHtml(state.teams[id].name)).join("・")}）は再入札を行います。
-</div>
-</div>
-`;
-
-if (!isOnline || net.role === "host") {
-nextBtn.classList.remove("hidden");
-} else {
-nextBtn.classList.add("hidden");
-subEl.textContent = "ホストが「次へ進む」を押すと再入札へ進みます...";
-}
-}
-
-modal.classList.remove("hidden");
-}
-
-function resolveLotteryEnvelopeClick(clickedIdx, winEnvelopeIdx, chooserTid, fromRemote) {
-const item = state.currentLottery;
-if (!item || item.resolved) return;
-item.resolved = true;
-item.clickedIdx = clickedIdx;
-
-let winnerTid = null;
-if (chooserTid !== null) {
-if (clickedIdx === winEnvelopeIdx) {
-winnerTid = chooserTid;
-} else {
-const others = item.contenderIds.filter(id => id !== chooserTid);
-winnerTid = others[Math.floor(Math.random() * others.length)];
-}
-} else {
-winnerTid = item.contenderIds[winEnvelopeIdx];
-}
-item.winnerTid = winnerTid;
-
-const targetPlayer = ACTIVE_POOL.find(p => p.id === item.player.id);
-assignPlayerToTeam(targetPlayer, winnerTid, state.currentRound);
-const losersForThis = item.contenderIds.filter(id => id !== winnerTid);
-state.lotteryLosers.push(...losersForThis);
-
-const namesList = item.contenderIds.map(id => escapeHtml(state.teams[id].name)).join("・");
-addLog(`🎯【${state.currentRound}巡目くじ抽選】${namesList} が競合 → <strong>${escapeHtml(state.teams[winnerTid].name)}</strong> が <strong>${escapeHtml(item.player.name)}</strong> の交渉権確定！`, true);
-
-renderRosters("rosters-grid");
-renderLotteryModalFromState(item);
-broadcastStateToGuests();
-}
-
-function proceedAfterCurrentLottery() {
-if (net.playMode === "online" && net.role !== "host") return;
-if (state.lotteryQueue.length > 0) {
-startNextLotteryMiniGame();
-} else {
-state.currentLottery = null;
-document.getElementById("lottery-modal").classList.add("hidden");
-if (state.lotteryLosers.length > 0) {
-startBidPhase(state.lotteryLosers, true);
-} else {
-finishBidRoundOrNext();
-}
-}
-}
-
-function finishBidRoundOrNext() {
-document.getElementById("bid-panel").classList.add("hidden");
-const rem = ACTIVE_POOL.filter(p => p.draftedBy === null).length;
-if (state.currentRound < state.totalRounds && rem > 0) {
-beginRound(state.currentRound + 1);
-} else {
-finishDraft();
-}
-}
-
-// ============================================================================
-// 通常ウェーバー / スネーク進行
-// ============================================================================
-function startNormalRound(round) {
-clearCpuTimer();
-state.phase = "normal";
-state.currentRound = round;
-document.getElementById("bid-panel").classList.add("hidden");
-
-const indices = state.teams.map((_, i) => i);
-if (round % 2 === 0) {
-indices.reverse();
-}
-state.turnQueue = indices;
-state.turnPointer = 0;
-updateStatusAndUI();
-broadcastStateToGuests();
-scheduleCpuIfNeeded();
-}
-
-function assignPlayerToTeam(player, teamIdx, round) {
-player.draftedBy = teamIdx;
-player.draftRound = round;
-state.teams[teamIdx].roster.push({ ...player, round });
-}
-
-function handleDraftClick(playerId) {
-const player = ACTIVE_POOL.find(p => p.id === playerId);
-if (!player || player.draftedBy !== null) return;
-
-if (state.phase === "bid" || state.phase === "rebid") {
-if (net.playMode === "online") {
-if (!state.pendingTeams.includes(net.myTeamIdx) || state.lockedBids[net.myTeamIdx]) return;
-state.bids[net.myTeamIdx] = playerId;
-renderBidSlots();
-return;
-}
-if (state.selectedBidSlot === null) return;
-const team = state.teams[state.selectedBidSlot];
-if (team.isCpu) return;
-
-state.bids[state.selectedBidSlot] = playerId;
-const nextUnpickedHuman = state.pendingTeams.find(tid => !state.teams[tid].isCpu && !state.bids[tid]);
-if (nextUnpickedHuman !== undefined) {
-state.selectedBidSlot = nextUnpickedHuman;
-}
-renderBidSlots();
-return;
-}
-
-if (state.phase === "normal") {
-const activeTeamIdx = state.turnQueue[state.turnPointer];
-const activeTeam = state.teams[activeTeamIdx];
-if (activeTeam.isCpu) return;
-
-if (net.playMode === "online") {
-if (activeTeamIdx !== net.myTeamIdx) return;
-if (net.role === "guest") {
-net.hostConn.send({ type: "NORMAL_PICK", playerId });
-return;
-}
-}
-
-executeNormalPick(activeTeamIdx, player);
-}
-}
-
-function executeNormalPick(teamIdx, player) {
-assignPlayerToTeam(player, teamIdx, state.currentRound);
-const team = state.teams[teamIdx];
-addLog(`【${state.currentRound}巡目】<strong>${escapeHtml(team.name)}</strong> が <strong>${escapeHtml(player.name)}</strong> (${player.teamName}・${player.subPos}) を指名`);
-
-const rem = ACTIVE_POOL.filter(p => p.draftedBy === null).length;
-if (rem === 0) {
-finishDraft();
-return;
-}
-
-state.turnPointer++;
-if (state.turnPointer >= state.turnQueue.length) {
-if (state.currentRound < state.totalRounds) {
-beginRound(state.currentRound + 1);
-} else {
-finishDraft();
-}
-} else {
-updateStatusAndUI();
-broadcastStateToGuests();
-scheduleCpuIfNeeded();
-}
-}
-
-function scheduleCpuIfNeeded() {
-if (net.playMode === "online" && net.role !== "host") return;
-clearCpuTimer();
-if (state.phase !== "normal") return;
-const activeTeamIdx = state.turnQueue[state.turnPointer];
-const activeTeam = state.teams[activeTeamIdx];
-if (!activeTeam || !activeTeam.isCpu) {
-document.getElementById("btn-auto-skip-cpu").classList.add("hidden");
-return;
-}
-
-document.getElementById("btn-auto-skip-cpu").classList.remove("hidden");
-state.cpuTimer = setTimeout(() => {
-const pick = chooseCpuPlayer(activeTeamIdx);
-if (pick) {
-executeNormalPick(activeTeamIdx, pick);
-} else {
-finishDraft();
-}
-}, state.cpuDelay);
-}
-
-function fastForwardCpu() {
-if (net.playMode === "online" && net.role !== "host") return;
-clearCpuTimer();
-while (state.phase === "normal") {
-const activeTeamIdx = state.turnQueue[state.turnPointer];
-const activeTeam = state.teams[activeTeamIdx];
-if (!activeTeam || !activeTeam.isCpu) break;
-const pick = chooseCpuPlayer(activeTeamIdx);
-if (!pick) {
-finishDraft();
-return;
-}
-assignPlayerToTeam(pick, activeTeamIdx, state.currentRound);
-addLog(`【${state.currentRound}巡目】<strong>${escapeHtml(activeTeam.name)}</strong> が <strong>${escapeHtml(pick.name)}</strong> (${pick.teamName}・${pick.subPos}) を指名`);
-
-if (ACTIVE_POOL.filter(p => p.draftedBy === null).length === 0) {
-finishDraft();
-return;
-}
-
-state.turnPointer++;
-if (state.turnPointer >= state.turnQueue.length) {
-if (state.currentRound < state.totalRounds) {
-state.currentRound++;
-if (state.currentRound <= state.bidUntilRound) {
-startBidPhase(state.teams.map(t => t.id), false);
-return;
-}
-const indices = state.teams.map((_, i) => i);
-if (state.currentRound % 2 === 0) indices.reverse();
-state.turnQueue = indices;
-state.turnPointer = 0;
-} else {
-finishDraft();
-return;
-}
-}
-}
-updateStatusAndUI();
-broadcastStateToGuests();
-}
-
-function updateStatusAndUI() {
-const statusEl = document.getElementById("status-text");
-const rem = ACTIVE_POOL.filter(p => p.draftedBy === null).length;
-document.getElementById("remaining-count").textContent = `残り候補: ${rem}名`;
-
-const isOnline = net.playMode === "online";
-
-if (state.phase === "bid" || state.phase === "rebid") {
-const label = state.phase === "rebid"
-? `第${state.currentRound}巡目【外れ再入札】`
-: `第${state.currentRound}巡目【同時入札抽選】`;
-statusEl.innerHTML = `<span class="round-tag">${label}</span> <span>対象 ${state.pendingTeams.length} 球団が入札中</span>`;
-renderBidSlots();
-} else if (state.phase === "normal") {
-const activeTeamIdx = state.turnQueue[state.turnPointer];
-const team = state.teams[activeTeamIdx];
-const overallPick = (state.currentRound - 1) * state.teams.length + state.turnPointer + 1;
-if (team.isCpu) {
-statusEl.innerHTML = `
-<span class="round-tag">第${state.currentRound}巡目（全体${overallPick}位）</span>
-<span>指名中: <strong style="color:#6ee7b7; font-size:1.12rem;">🤖 ${escapeHtml(team.name)}</strong></span>
-<span class="cpu-thinking-badge">CPU思考中...</span>
-`;
-} else if (isOnline && activeTeamIdx !== net.myTeamIdx) {
-statusEl.innerHTML = `
-<span class="round-tag">第${state.currentRound}巡目（全体${overallPick}位）</span>
-<span>指名中: <strong style="color:#93c5fd; font-size:1.12rem;">🌐 ${escapeHtml(team.name)}</strong></span>
-<span class="cpu-thinking-badge" style="background:#1e3a8a; border-color:#3b82f6; color:#bfdbfe;">相手の選択を待機中...</span>
-`;
-} else {
-statusEl.innerHTML = `
-<span class="round-tag">第${state.currentRound}巡目（全体${overallPick}位）</span>
-<span>指名中: <strong style="color:var(--gold); font-size:1.15rem;">👤 ${escapeHtml(team.name)}${isOnline ? '（あなたの番！）' : ''}</strong></span>
-`;
-}
-}
-
-renderPlayerTable();
-renderRosters("rosters-grid");
-}
+  if (state.mode === "2p" && state.userTeams.length < 2) {
+    alert("2人対戦モードでは2球団を選択してください。");
+    return;
+  }
+  buildPlayerDatabase();
+  state.maxRounds = parseInt(document.getElementById("roundsSelect").value, 10);
+  state.useLottery = document.getElementById("lotterySelect").value === "on";
+  state.timeLimit = parseInt(document.getElementById("timerSelect").value, 10);
+  state.participatingTeams = state.mode === "12team" ? TEAMS.map(t => t.id) : [...state.userTeams];
+
+  state.rosters = {};
+  state.participatingTeams.forEach(id => state.rosters[id] = []);
+  state.logs = [];
+  state.currentRound = 1;
+  state.turnIndex = 0;
+  state.finished = false;
+
+  const inspectSel = document.getElementById("inspectTeamSelect");
+  inspectSel.innerHTML = state.participatingTeams.map(id =>
+    `<option value="${id}">${TEAM_MAP[id].name}</option>`
+  ).join("");
+  inspectSel.value = state.userTeams[0];
+
+  document.getElementById("setupScreen").classList.add("hidden");
+  document.getElementById("draftScreen").classList.remove("hidden");
+  document.getElementById("viewFinalBtn").style.display = "none";
+
+  setupRound(1);
+}
+
+function setupRound(round) {
+  state.currentRound = round;
+  state.turnIndex = 0;
+  const base = [...state.participatingTeams];
+  // 1巡目・奇数巡目はウェーバー、偶数巡目は逆ウェーバー
+  state.roundOrder = (round % 2 === 1) ? base : base.reverse();
+
+  if (round === 1 && state.useLottery) {
+    state.lotteryPool = {};
+    state.lotteryPendingTeams = [...state.participatingTeams];
+    state.roundOrder = [...state.lotteryPendingTeams];
+  }
+  updateUI();
+  processCurrentTurn();
+}
+
+function isLotteryRound() {
+  return state.currentRound === 1 && state.useLottery;
+}
+
+function getCurrentTeamId() {
+  if (state.finished) return null;
+  if (isLotteryRound()) {
+    return state.lotteryPendingTeams[state.turnIndex] || null;
+  }
+  return state.roundOrder[state.turnIndex] || null;
+}
+
+function processCurrentTurn() {
+  stopTimer();
+  if (state.finished) return;
+
+  const teamId = getCurrentTeamId();
+  if (!teamId) {
+    if (isLotteryRound()) {
+      resolveLotteryBatch();
+    } else {
+      advanceRound();
+    }
+    return;
+  }
+
+  updateUI();
+  if (state.userTeams.includes(teamId)) {
+    document.getElementById("inspectTeamSelect").value = teamId;
+    renderRightPanel();
+    startTimer();
+  } else {
+    setTimeout(() => {
+      const pick = chooseAiPlayer(teamId);
+      if (pick) executePick(teamId, pick);
+    }, 180);
+  }
+}
+
+function executePick(teamId, player) {
+  if (isLotteryRound()) {
+    state.lotteryPool[teamId] = player;
+    state.turnIndex++;
+    processCurrentTurn();
+    return;
+  }
+
+  assignPlayerToTeam(teamId, player, state.currentRound, "通常指名");
+  state.turnIndex++;
+  if (state.turnIndex >= state.roundOrder.length) {
+    advanceRound();
+  } else {
+    processCurrentTurn();
+  }
+}
 
-function setPosFilter(pos, btn) {
-state.posFilter = pos;
-document.querySelectorAll(".pos-tab").forEach(el => el.classList.remove("active"));
-btn.classList.add("active");
-renderPlayerTable();
+function assignPlayerToTeam(teamId, player, round, note) {
+  player.draftedBy = teamId;
+  player.pickRound = round;
+  state.rosters[teamId].push({ round, player, note });
+  state.logs.unshift({
+    round,
+    teamId,
+    player,
+    note,
+    isUser: state.userTeams.includes(teamId)
+  });
+}
+
+// 1巡目入札抽選処理
+function resolveLotteryBatch() {
+  const groups = {};
+  Object.entries(state.lotteryPool).forEach(([teamId, player]) => {
+    if (!groups[player.id]) groups[player.id] = { player, teams: [] };
+    groups[player.id].teams.push(teamId);
+  });
+
+  const nextPending = [];
+  const results = [];
+
+  Object.values(groups).forEach(({ player, teams }) => {
+    if (teams.length === 1) {
+      const winner = teams[0];
+      assignPlayerToTeam(winner, player, 1, "単独1位指名");
+      results.push({ player, teams, winner, contested: false });
+    } else {
+      const winner = teams[Math.floor(Math.random() * teams.length)];
+      assignPlayerToTeam(winner, player, 1, `抽選当たり(${teams.length}球団競合)`);
+      teams.forEach(tid => {
+        if (tid !== winner) nextPending.push(tid);
+      });
+      results.push({ player, teams, winner, contested: true });
+    }
+  });
+
+  showLotteryModal(results, () => {
+    if (nextPending.length > 0) {
+      state.lotteryPool = {};
+      state.lotteryPendingTeams = nextPending;
+      state.roundOrder = [...nextPending];
+      state.turnIndex = 0;
+      processCurrentTurn();
+    } else {
+      advanceRound();
+    }
+  });
+}
+
+function showLotteryModal(results, onClose) {
+  const modal = document.getElementById("modalBackdrop");
+  const box = document.getElementById("modalContent");
+  const contestedCount = results.filter(r => r.contested).length;
+
+  box.innerHTML = `
+    <div class="modal-title">第1巡目 入札開票・抽選結果（競合 ${contestedCount}件）</div>
+    ${results.map(r => `
+      <div class="lottery-box">
+        <div class="lottery-player">
+          <span class="rank-badge rank-${r.player.rank}">${r.player.rank}</span>
+          ${r.player.name}（${TEAM_MAP[r.player.teamId].short}・${r.player.mainPos}）
+          ${r.contested ? `<span style="color:var(--gold);font-size:12px;margin-left:6px;">★${r.teams.length}球団競合！</span>` : `<span style="color:var(--text-sub);font-size:12px;margin-left:6px;">単独指名</span>`}
+        </div>
+        <div class="lottery-teams">
+          ${r.teams.map(tid => {
+            const isWin = tid === r.winner;
+            return `<span class="l-chip ${r.contested ? (isWin ? 'winner' : 'loser') : 'winner'}">
+              ${TEAM_MAP[tid].name} ${r.contested ? (isWin ? '【交渉権獲得】' : '【外れ】') : '【確定】'}
+            </span>`;
+          }).join("")}
+        </div>
+      </div>
+    `).join("")}
+    <button class="btn-start" id="closeLotteryBtn" style="margin-top:10px;">次へ進む</button>
+  `;
+  modal.classList.add("open");
+  document.getElementById("closeLotteryBtn").onclick = () => {
+    modal.classList.remove("open");
+    onClose();
+  };
+}
+
+function advanceRound() {
+  if (state.currentRound >= state.maxRounds) {
+    state.finished = true;
+    stopTimer();
+    updateUI();
+    document.getElementById("viewFinalBtn").style.display = "inline-block";
+    openFinalReport();
+    return;
+  }
+  setupRound(state.currentRound + 1);
+}
+
+// ==========================================
+// 5. AI思考ロジック（各球団補強ポイント＋能力評価）
+// ==========================================
+function chooseAiPlayer(teamId) {
+  const avail = ALL_PLAYERS.filter(p => !p.draftedBy);
+  if (avail.length === 0) return null;
+
+  const team = TEAM_MAP[teamId];
+  const roster = state.rosters[teamId];
+  const counts = { 投手: 0, 捕手: 0, 内野手: 0, 外野手: 0 };
+  roster.forEach(r => counts[r.player.mainPos]++);
+
+  const scored = avail.map(p => {
+    let val = p.score + Math.random() * 7;
+    if (team.needs.includes(p.mainPos)) val += 5;
+    // バランス補正
+    if (state.currentRound >= 3) {
+      if (counts["捕手"] === 0 && p.mainPos === "捕手") val += 14;
+      if (counts["投手"] < Math.floor(state.currentRound * 0.45) && p.mainPos === "投手") val += 8;
+      if (counts["内野手"] < 2 && p.mainPos === "内野手") val += 7;
+      if (counts["外野手"] < 2 && p.mainPos === "外野手") val += 7;
+    }
+    if (counts[p.mainPos] >= Math.ceil(state.maxRounds * 0.55)) val -= 15;
+    return { p, val };
+  });
+
+  scored.sort((a, b) => b.val - a.val);
+  // 1巡目入札時は上位3名から少しバラけさせてリアルな競合を生む
+  const topN = isLotteryRound() ? Math.min(3, scored.length) : 1;
+  return scored[Math.floor(Math.random() * topN)].p;
+}
+
+function autoPickForUser() {
+  const teamId = getCurrentTeamId();
+  if (!teamId || !state.userTeams.includes(teamId)) return;
+  const pick = chooseAiPlayer(teamId);
+  if (pick) executePick(teamId, pick);
+}
+
+// ==========================================
+// 6. タイマー管理
+// ==========================================
+function startTimer() {
+  stopTimer();
+  if (state.timeLimit <= 0) {
+    document.getElementById("timerDisplay").textContent = "";
+    return;
+  }
+  state.timeLeft = state.timeLimit;
+  document.getElementById("timerDisplay").textContent = `残り ${state.timeLeft}秒`;
+  state.timerId = setInterval(() => {
+    state.timeLeft--;
+    document.getElementById("timerDisplay").textContent = `残り ${state.timeLeft}秒`;
+    if (state.timeLeft <= 0) {
+      stopTimer();
+      autoPickForUser();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (state.timerId) {
+    clearInterval(state.timerId);
+    state.timerId = null;
+  }
+}
+
+// ==========================================
+// 7. UIレンダリング
+// ==========================================
+function updateUI() {
+  const roundBadge = document.getElementById("roundBadge");
+  const turnText = document.getElementById("turnStatusText");
+  const autoBtn = document.getElementById("autoPickBtn");
+
+  if (state.finished) {
+    roundBadge.textContent = "全日程終了";
+    turnText.innerHTML = `<strong>全${state.maxRounds}巡目の指名が完了しました！</strong>`;
+    autoBtn.disabled = true;
+  } else {
+    const curTeam = TEAM_MAP[getCurrentTeamId()];
+    const isUser = state.userTeams.includes(curTeam.id);
+    roundBadge.textContent = isLotteryRound() ? "第1巡目（入札抽選）" : `第${state.currentRound}巡目`;
+    turnText.innerHTML = `現在の指名球団: <strong>${curTeam.name}</strong> ${isUser ? '<span style="color:#38bdf8;">（あなたの番です）</span>' : '（AI思考中...）'}`;
+    autoBtn.disabled = !isUser;
+  }
+
+  // 指名順ストリップ
+  const strip = document.getElementById("orderStrip");
+  strip.innerHTML = state.roundOrder.map((tid, idx) => {
+    const t = TEAM_MAP[tid];
+    const cls = [
+      "order-chip",
+      idx === state.turnIndex && !state.finished ? "active" : "",
+      idx < state.turnIndex || state.finished ? "done" : "",
+      state.userTeams.includes(tid) ? "user" : ""
+    ].join(" ");
+    return `<span class="${cls}">${idx + 1}.${t.short}</span>`;
+  }).join("");
+
+  renderPlayerTable();
+  renderRightPanel();
 }
 
 function renderPlayerTable() {
-const keyword = document.getElementById("search-input").value.trim().toLowerCase();
-const teamFilter = document.getElementById("team-filter").value;
-const rankFilter = document.getElementById("rank-filter").value;
-const hideDrafted = document.getElementById("hide-drafted").checked;
-const tbody = document.getElementById("player-tbody");
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  const tf = document.getElementById("teamFilter").value;
+  const pf = document.getElementById("posFilter").value;
+  const rf = document.getElementById("rankFilter").value;
 
-let disablePickButtons = false;
-if (state.phase === "normal") {
-const activeTeamIdx = state.turnQueue[state.turnPointer];
-const activeTeam = state.teams[activeTeamIdx];
-if (!activeTeam || activeTeam.isCpu) disablePickButtons = true;
-if (net.playMode === "online" && activeTeamIdx !== net.myTeamIdx) disablePickButtons = true;
-} else if (state.phase === "bid" || state.phase === "rebid") {
-if (net.playMode === "online") {
-if (!state.pendingTeams.includes(net.myTeamIdx) || state.lockedBids[net.myTeamIdx]) {
-disablePickButtons = true;
-}
-}
-}
+  const filtered = ALL_PLAYERS.filter(p => {
+    if (tf !== "ALL" && p.teamId !== tf) return false;
+    if (rf !== "ALL" && p.rank !== rf) return false;
+    if (pf !== "ALL") {
+      if (pf === "二遊" || pf === "一三") {
+        if (p.subPos !== pf) return false;
+      } else if (p.mainPos !== pf) return false;
+    }
+    if (q && !p.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
 
-const filtered = ACTIVE_POOL.filter(p => {
-if (hideDrafted && p.draftedBy !== null) return false;
-if (state.posFilter === "投手" && p.pos !== "投手") return false;
-if (state.posFilter === "捕手" && p.pos !== "捕手") return false;
-if (state.posFilter === "二遊間" && p.subPos !== "二遊") return false;
-if (state.posFilter === "一三塁" && p.subPos !== "一三") return false;
-if (state.posFilter === "外野手" && p.pos !== "外野手") return false;
-if (teamFilter !== "ALL" && p.teamId !== teamFilter) return false;
-if (rankFilter !== "ALL" && p.rank !== rankFilter) return false;
-if (keyword && !p.name.toLowerCase().includes(keyword)) return false;
-return true;
-});
+  document.getElementById("filteredCountText").textContent = `表示: ${filtered.length}名（未指名 ${filtered.filter(p => !p.draftedBy).length}名）`;
 
-const rankOrder = { S: 0, A: 1, B: 2, C: 3 };
-filtered.sort((a, b) => rankOrder[a.rank] - rankOrder[b.rank] || a.id - b.id);
+  const curTeamId = getCurrentTeamId();
+  const canUserPick = !state.finished && curTeamId && state.userTeams.includes(curTeamId);
 
-tbody.innerHTML = filtered.slice(0, 300).map(p => {
-const meta = TEAMS_META[p.teamId];
-const isDrafted = p.draftedBy !== null;
-const isMySelectedBid = (state.phase === "bid" || state.phase === "rebid") &&
-((net.playMode === "online" && state.bids[net.myTeamIdx] === p.id) ||
-(net.playMode === "local" && state.selectedBidSlot !== null && state.bids[state.selectedBidSlot] === p.id));
-
-const actionHtml = isDrafted
-? `<span style="color:var(--text-muted); font-size:0.78rem;">${escapeHtml(state.teams[p.draftedBy].name)} (${p.draftRound}位)</span>`
-: `<button class="btn btn-sm ${isMySelectedBid ? 'btn-gold' : ''}" ${disablePickButtons ? 'disabled' : ''} onclick="handleDraftClick(${p.id})">${isMySelectedBid ? '選択中' : '指名'}</button>`;
-
-const subBadge = p.pos === "内野手" ? `<span class="subpos-tag">${p.subPos}</span>` : "";
-
-return `
-<tr class="${isDrafted ? 'drafted' : ''}">
-<td><span class="rank-badge rank-${p.rank}">${p.rank}</span></td>
-<td style="font-weight:700;">${escapeHtml(p.name)}</td>
-<td><span class="team-pill" style="background:${meta.color}; color:${meta.text};">${meta.name}</span></td>
-<td><span class="pos-tag">${p.pos}</span>${subBadge}</td>
-<td>${actionHtml}</td>
-</tr>
-`;
-}).join("");
+  const tbody = document.getElementById("playerTableBody");
+  tbody.innerHTML = filtered.map(p => {
+    const origTeam = TEAM_MAP[p.teamId];
+    const drafted = Boolean(p.draftedBy);
+    let actionHtml = "";
+    if (drafted) {
+      actionHtml = `<span style="font-size:11px;color:var(--text-sub);">${TEAM_MAP[p.draftedBy].short}${p.pickRound}位</span>`;
+    } else {
+      actionHtml = `<button class="btn-pick" ${canUserPick ? "" : "disabled"} onclick="onUserSelectPlayer(${p.id})">指名</button>`;
+    }
+    return `
+      <tr class="${drafted ? 'drafted-row' : ''}">
+        <td><span class="rank-badge rank-${p.rank}">${p.rank}</span></td>
+        <td style="font-weight:700;">${p.name}</td>
+        <td><span class="team-tag" style="background:${origTeam.color}">${origTeam.short}</span></td>
+        <td><span class="pos-tag">${p.mainPos === '内野手' ? p.subPos : p.mainPos}</span></td>
+        <td>${actionHtml}</td>
+      </tr>
+    `;
+  }).join("");
 }
 
-function renderRosters(containerId) {
-const container = document.getElementById(containerId);
-const activeTeamIdx = state.phase === "normal" ? state.turnQueue[state.turnPointer] : -1;
-
-container.innerHTML = state.teams.map((t, idx) => {
-const counts = { "投手": 0, "捕手": 0, "二遊": 0, "一三": 0, "外野": 0 };
-t.roster.forEach(p => { if (counts[p.subPos] !== undefined) counts[p.subPos]++; });
-
-const listHtml = t.roster.length === 0
-? `<li style="color:var(--text-muted); justify-content:center; padding:12px 0;">指名選手なし</li>`
-: t.roster.map(p => `
-<li>
-<span><span class="pick-no">${p.round}位</span><strong>${escapeHtml(p.name)}</strong></span>
-<span style="font-size:0.73rem; color:var(--text-muted);">${p.teamName}/${p.subPos} [${p.rank}]</span>
-</li>
-`).join("");
-
-const isMe = net.playMode === "online" && idx === net.myTeamIdx;
-
-return `
-<div class="roster-card ${idx === activeTeamIdx ? 'active-turn' : ''}">
-<div class="roster-header">
-<span>${escapeHtml(t.name)} ${isMe ? '<span style="color:var(--gold); font-size:0.75rem;">(あなた)</span>' : ''}</span>
-<span style="display:flex; align-items:center; gap:5px;">
-<span class="role-chip ${t.isCpu ? 'cpu' : 'human'}">${t.isCpu ? 'CPU' : 'プレイヤー'}</span>
-<span style="font-size:0.8rem; color:var(--gold);">${t.roster.length}/${state.totalRounds}名</span>
-</span>
-</div>
-<div class="roster-counts">
-<span>投:${counts["投手"]}</span>
-<span>捕:${counts["捕手"]}</span>
-<span>二遊:${counts["二遊"]}</span>
-<span>一三:${counts["一三"]}</span>
-<span>外:${counts["外野"]}</span>
-</div>
-<ul class="roster-list">${listHtml}</ul>
-</div>
-`;
-}).join("");
+function onUserSelectPlayer(playerId) {
+  const teamId = getCurrentTeamId();
+  if (!teamId || !state.userTeams.includes(teamId)) return;
+  const player = ALL_PLAYERS.find(p => p.id === playerId);
+  if (!player || player.draftedBy) return;
+  executePick(teamId, player);
 }
 
-function finishDraftEarly() {
-if (net.playMode === "online" && net.role !== "host") {
-alert("ドラフト終了操作はホストが行えます。");
-return;
-}
-if (confirm("現在の獲得状況でドラフトを終了し、結果画面へ移動しますか？")) {
-finishDraft();
-}
+let activeRightTab = "roster";
+function switchRightTab(tab) {
+  activeRightTab = tab;
+  document.getElementById("tabRoster").classList.toggle("active", tab === "roster");
+  document.getElementById("tabLog").classList.toggle("active", tab === "log");
+  document.getElementById("tabAllTeams").classList.toggle("active", tab === "allTeams");
+
+  document.getElementById("rightRosterView").classList.toggle("hidden", tab !== "roster");
+  document.getElementById("rightLogView").classList.toggle("hidden", tab !== "log");
+  document.getElementById("rightAllTeamsView").classList.toggle("hidden", tab !== "allTeams");
+  renderRightPanel();
 }
 
-function finishDraft() {
-clearCpuTimer();
-state.phase = "finished";
-document.getElementById("draft-screen").classList.add("hidden");
-document.getElementById("result-screen").classList.remove("hidden");
-renderRosters("result-rosters");
-broadcastStateToGuests();
+function renderRightPanel() {
+  const inspectId = document.getElementById("inspectTeamSelect").value || state.userTeams[0];
+  const roster = state.rosters[inspectId] || [];
+
+  // 1. 自チーム編成タブ
+  const counts = { 投手: 0, 捕手: 0, 内野手: 0, 外野手: 0 };
+  roster.forEach(r => counts[r.player.mainPos]++);
+  document.getElementById("rosterSummary").innerHTML = `
+    <div class="pos-box"><div class="p-lbl">合計</div><div class="p-cnt">${roster.length}/${state.maxRounds}</div></div>
+    <div class="pos-box"><div class="p-lbl">投手</div><div class="p-cnt">${counts["投手"]}</div></div>
+    <div class="pos-box"><div class="p-lbl">捕手</div><div class="p-cnt">${counts["捕手"]}</div></div>
+    <div class="pos-box"><div class="p-lbl">内野</div><div class="p-cnt">${counts["内野手"]}</div></div>
+    <div class="pos-box"><div class="p-lbl">外野</div><div class="p-cnt">${counts["外野手"]}</div></div>
+  `;
+
+  document.getElementById("rosterTableBody").innerHTML = roster.length === 0
+    ? `<tr><td colspan="5" style="text-align:center;color:var(--text-sub);padding:20px;">まだ指名選手はいません</td></tr>`
+    : roster.map(r => `
+      <tr>
+        <td style="font-weight:800;color:var(--gold-light);">${r.round}位</td>
+        <td><span class="rank-badge rank-${r.player.rank}">${r.player.rank}</span></td>
+        <td style="font-weight:700;">${r.player.name}</td>
+        <td><span class="pos-tag">${r.player.mainPos === '内野手' ? r.player.subPos : r.player.mainPos}</span></td>
+        <td style="font-size:11px;color:var(--text-sub);">${TEAM_MAP[r.player.teamId].short}</td>
+      </tr>
+    `).join("");
+
+  // 2. 指名ログタブ
+  document.getElementById("draftLogList").innerHTML = state.logs.map(l => {
+    const t = TEAM_MAP[l.teamId];
+    return `
+      <div class="log-item ${l.isUser ? 'user-pick' : ''}">
+        <div>
+          <span style="font-weight:800;color:var(--gold-light);margin-right:6px;">${l.round}巡目</span>
+          <span class="team-tag" style="background:${t.color};margin-right:6px;">${t.short}</span>
+          <strong>${l.player.name}</strong>
+          <span style="font-size:11px;color:var(--text-sub);">(${l.player.mainPos} / ${TEAM_MAP[l.player.teamId].short})</span>
+        </div>
+        <span class="rank-badge rank-${l.player.rank}">${l.player.rank}</span>
+      </div>
+    `;
+  }).join("");
+
+  // 3. 全参加球団マトリクス
+  const roundsArr = Array.from({ length: state.maxRounds }, (_, i) => i + 1);
+  document.getElementById("allTeamsBoard").innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>球団</th>
+          ${roundsArr.map(r => `<th>${r}位</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${state.participatingTeams.map(tid => {
+          const t = TEAM_MAP[tid];
+          const tr = state.rosters[tid] || [];
+          return `
+            <tr>
+              <td style="font-weight:800;white-space:nowrap;">${t.short}</td>
+              ${roundsArr.map(rn => {
+                const found = tr.find(x => x.round === rn);
+                return `<td style="white-space:nowrap;font-size:11px;">${found ? `${found.player.name}(${found.player.rank})` : "-"}</td>`;
+              }).join("")}
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
 }
 
-function confirmReset() {
-if (confirm("現在のドラフトデータを破棄して設定画面に戻りますか？")) {
-clearCpuTimer();
-document.getElementById("draft-screen").classList.add("hidden");
-document.getElementById("result-screen").classList.add("hidden");
-document.getElementById("btn-reset").classList.add("hidden");
-document.getElementById("btn-speed").classList.add("hidden");
-document.getElementById("btn-reroll-pool").classList.add("hidden");
-document.getElementById("setup-screen").classList.remove("hidden");
-}
+// ==========================================
+// 8. 最終評価レポート
+// ==========================================
+function openFinalReport() {
+  const targetId = state.userTeams[0];
+  const team = TEAM_MAP[targetId];
+  const roster = state.rosters[targetId] || [];
+  const totalPts = roster.reduce((acc, r) => acc + r.player.score, 0);
+  const avgPts = roster.length ? (totalPts / roster.length) : 0;
+
+  let grade = "B";
+  if (avgPts >= 83) grade = "SS";
+  else if (avgPts >= 78) grade = "S";
+  else if (avgPts >= 73) grade = "A";
+  else if (avgPts >= 66) grade = "B";
+  else grade = "C";
+
+  const modal = document.getElementById("modalBackdrop");
+  const box = document.getElementById("modalContent");
+
+  box.innerHTML = `
+    <div class="modal-title">${team.name} 2026ドラフト最終編成評価</div>
+    <div class="grade-banner">
+      <div style="font-size:12px;color:var(--text-sub);">スカウト総合評価</div>
+      <div class="grade-letter">${grade}</div>
+      <div style="font-size:13px;color:var(--gold-light);margin-top:4px;">平均戦力指数: ${avgPts.toFixed(1)} pt（指名 ${roster.length}名）</div>
+    </div>
+    <table style="margin-bottom:16px;">
+      <thead>
+        <tr><th>指名</th><th>ランク</th><th>選手名</th><th>守備</th><th>元球団</th><th>備考</th></tr>
+      </thead>
+      <tbody>
+        ${roster.map(r => `
+          <tr>
+            <td style="font-weight:800;">ドラフト${r.round}位</td>
+            <td><span class="rank-badge rank-${r.player.rank}">${r.player.rank}</span></td>
+            <td style="font-weight:800;">${r.player.name}</td>
+            <td>${r.player.mainPos}（${r.player.subPos}）</td>
+            <td>${TEAM_MAP[r.player.teamId].name}</td>
+            <td style="font-size:11px;color:var(--text-sub);">${r.note}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-outline" style="flex:1;padding:12px;" onclick="copyDraftResult()">指名結果をテキストコピー</button>
+      <button class="btn-start" style="flex:1;padding:12px;" onclick="document.getElementById('modalBackdrop').classList.remove('open')">ボードへ戻る</button>
+    </div>
+  `;
+  modal.classList.add("open");
 }
 
-function exportCSV() {
-let csv = "\uFEFFチーム名,区分,指名順位,選手名,所属球団,守備位置,詳細守備,ランク\n";
-state.teams.forEach(t => {
-const role = t.isCpu ? "CPU" : "プレイヤー";
-t.roster.forEach(p => {
-csv += `"${t.name}","${role}",${p.round},"${p.name}","${p.teamName}","${p.pos}","${p.subPos}","${p.rank}"\n`;
-});
-});
-const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-const url = URL.createObjectURL(blob);
-const a = document.createElement("a");
-a.href = url;
-a.download = "npb_2026_72draft_result.csv";
-a.click();
-URL.revokeObjectURL(url);
+function copyDraftResult() {
+  const targetId = state.userTeams[0];
+  const team = TEAM_MAP[targetId];
+  const roster = state.rosters[targetId] || [];
+  const text = `【NPB 2026 ドラフト会議 ${team.name} 指名結果】\n` +
+    roster.map(r => `${r.round}位: ${r.player.name}（${TEAM_MAP[r.player.teamId].short}・${r.player.mainPos}・評価${r.player.rank}）`).join("\n");
+  navigator.clipboard.writeText(text).then(() => alert("指名結果をクリップボードにコピーしました！"));
 }
 
-function copyResultText() {
-const lines = ["【NPB 2026 パワプロ用ドラフト結果（36人編成）】"];
-state.teams.forEach(t => {
-lines.push(`\n■ ${t.name}（計${t.roster.length}名）`);
-const groups = ["投手", "捕手", "二遊", "一三", "外野"];
-groups.forEach(g => {
-const members = t.roster.filter(p => p.subPos === g).map(p => `${p.name}(${p.teamName}/${p.round}位)`);
-lines.push(` [${g} ${members.length}名] ${members.join("、")}`);
-});
-});
-navigator.clipboard.writeText(lines.join("\n")).then(() => {
-alert("パワプロ編成用にポジション別整理したドラフト結果をコピーしました！");
-});
+function resetToSetup() {
+  stopTimer();
+  document.getElementById("modalBackdrop").classList.remove("open");
+  document.getElementById("draftScreen").classList.add("hidden");
+  document.getElementById("setupScreen").classList.remove("hidden");
 }
 
-function escapeHtml(str) {
-return String(str).replace(/[&<>"']/g, m => ({
-"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-}[m]));
-}
-
-// ============================================================================
-// 初期化（URLハッシュからの自動ルームID読込対応）
-// ============================================================================
-renderTeamInputs(false);
-updateQuotaSum();
-switchPlayMode("online");
-
-(function checkUrlRoomHash() {
-const hash = window.location.hash || "";
-const match = hash.match(/room=([A-Za-z0-9\-]+)/);
-if (match && match[1]) {
-switchPlayMode("online");
-setOnlineRole("guest");
-document.getElementById("join-room-id").value = decodeURIComponent(match[1]).toUpperCase();
-}
-})();
+initSetupUI();
 </script>
 </body>
 </html>
