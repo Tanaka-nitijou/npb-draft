@@ -891,7 +891,7 @@ flex-wrap: wrap;
 <div class="online-grid">
 <div class="form-group">
 <label>あなたのチーム名（ホスト）</label>
-<input type="text" id="host-team-name" value="ホスト球団" oninput="syncHostName()">
+<input type="text" id="host-team-name" value="ホスト球団">
 </div>
 <div class="form-group">
 <label>ルーム作成</label>
@@ -973,11 +973,11 @@ flex-wrap: wrap;
 <!-- 72人ピック バランス＆ランク配分設定 -->
 <div id="pool-config-box" class="pool-config-box">
 <div class="pool-config-header">
-<h3>⚖️ 72人（12球団×6人）ポジション＆戦力バランス配分（S・A抑制済）</h3>
+<h3>⚖️ 72人（12球団×6人）ポジション＆戦力バランス配分</h3>
 <div style="display:flex; gap:6px; flex-wrap:wrap;">
-<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('balanced')">標準（S10・A18・B38・C6）</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('strict')">S/Aさらに控えめ（S8・A14・B42・C8）</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('star')">スター多め（S16・A22・B28・C6）</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('balanced')">標準バランス（S14・A24・B28・C6）</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('star')">主力厚め（S16・A26・B24・C6）</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="applyRankPreset('strict')">S/A控えめ（S10・A20・B36・C6）</button>
 </div>
 </div>
 
@@ -1010,22 +1010,22 @@ flex-wrap: wrap;
 </div>
 </div>
 
-<div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px; font-weight:700;">▼ 全盛期ランク人数配分（合計72名／S・A割合を抑えてAクラス優勝争い級に調整）</div>
+<div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px; font-weight:700;">▼ 全盛期ランク人数配分（合計72名／S+Aで計38名＝各チーム約19名の主力層を確保）</div>
 <div class="pos-quota-grid">
 <div class="quota-item">
 <label>Sランク（超一流）</label>
-<input type="number" id="r-S" value="10" min="2" max="30" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約5人</div>
+<input type="number" id="r-S" value="14" min="2" max="30" onchange="updateQuotaSum()">
+<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約7人</div>
 </div>
 <div class="quota-item">
 <label>Aランク（主力級）</label>
-<input type="number" id="r-A" value="18" min="4" max="36" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約9人</div>
+<input type="number" id="r-A" value="24" min="4" max="36" onchange="updateQuotaSum()">
+<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約12人</div>
 </div>
 <div class="quota-item">
 <label>Bランク（一軍戦力）</label>
-<input type="number" id="r-B" value="38" min="10" max="56" onchange="updateQuotaSum()">
-<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約19人</div>
+<input type="number" id="r-B" value="28" min="10" max="56" onchange="updateQuotaSum()">
+<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">1チーム約14人</div>
 </div>
 <div class="quota-item">
 <label>Cランク（当落線上）</label>
@@ -1036,11 +1036,11 @@ flex-wrap: wrap;
 
 <div class="quota-total-badge">
 <span id="quota-sum-text" style="font-weight:800; color:var(--success);">✅ ポジション合計: 72名 ／ ランク合計: 72名（12球団×各6名）</span>
-<span style="color:var(--text-muted);">※2026年11月最新トレード反映済・全679名内蔵</span>
+<span style="color:var(--text-muted);">※2026年度NPB支配下・トレード移籍反映済データ完全内蔵</span>
 </div>
 </div>
 
-<!-- 参加チーム一覧（ローカルモードまたは3チーム以上のCPU補充用） -->
+<!-- 参加チーム一覧（ローカルモードまたはCPU補充用） -->
 <div id="local-teams-section" class="form-group" style="margin-bottom:8px;">
 <label>参加チーム設定</label>
 <div id="local-presets-bar" class="quick-presets">
@@ -1189,8 +1189,8 @@ flex-wrap: wrap;
 
 <script>
 // ============================================================================
-// 2026年度 NPB 12球団 支配下登録選手データベース（HTML完全内蔵・全679名）
-// ・2026年11月最新トレード移籍（甲斐拓也→楽天、嶺井博希→DeNA等）反映済み
+// 2026年度 NPB 12球団 支配下登録選手データベース（HTML完全内蔵）
+// ・元ファイルのトレード・移籍反映データをそのまま維持し、引退選手のみ除外
 // ・全盛期準拠の能力ランク（S:超一流 / A:主力級 / B:一軍戦力 / C:当落線上）
 // ============================================================================
 const TEAMS_META = {
@@ -1228,13 +1228,13 @@ const NPB_2026_COMPACT = [
 ["tigers", "外野手", "外野", "B", "島田海吏,小野寺暖,豊田寛,濱田太貴,ガルシア"],
 ["tigers", "外野手", "外野", "C", "井坪陽生,福島圭音"],
 
-// 2. 横浜DeNAベイスターズ（嶺井博希トレード加入反映済）
+// 2. 横浜DeNAベイスターズ
 ["baystars", "投手", "投手", "S", "東克樹,山﨑康晃"],
 ["baystars", "投手", "投手", "A", "入江大生,伊勢大夢,石田健大,大貫晋一,平良拳太郎,石田裕太郎,竹田祐,尾形崇斗,藤浪晋太郎,森原康平"],
 ["baystars", "投手", "投手", "B", "坂本裕哉,中川颯,宮城滝太,中川虎大,篠木健太郎,吉野光樹,佐々木千隼,ビド,ルイーズ,浜地真澄,馬場皐輔"],
 ["baystars", "投手", "投手", "C", "小園健太,島田舜也,片山皓心,庄司陽斗,レイノルズ,深沢鳳介,松本凌人,若松尚輝,武田陸玖,橋本達弥,坂口翔颯,岩田将貴"],
 ["baystars", "捕手", "捕手", "A", "松尾汐恩,戸柱恭孝"],
-["baystars", "捕手", "捕手", "B", "古市尊,嶺井博希"],
+["baystars", "捕手", "捕手", "B", "古市尊"],
 ["baystars", "捕手", "捕手", "C", "東妻純平,益子京右,九鬼隆平"],
 ["baystars", "内野手", "二遊", "S", "牧秀悟"],
 ["baystars", "内野手", "一三", "S", "宮﨑敏郎"],
@@ -1246,11 +1246,12 @@ const NPB_2026_COMPACT = [
 ["baystars", "外野手", "外野", "B", "神里和毅,関根大気,エンカーナシオン"],
 ["baystars", "外野手", "外野", "C", "勝又温史,濱将乃介"],
 
-// 3. 読売ジャイアンツ（甲斐拓也トレード移籍反映済）
+// 3. 読売ジャイアンツ
 ["giants", "投手", "投手", "S", "戸郷翔征,山﨑伊織,大勢,ライデル・マルティネス,田中将大,則本昂大"],
 ["giants", "投手", "投手", "A", "井上温大,西舘勇陽,赤星優志,船迫大雅,小笠原慎之介,高梨雄平,中川皓太"],
 ["giants", "投手", "投手", "B", "堀田賢慎,泉圭輔,石川達也,横川凱,田中瑛斗,バルドナード,松浦慶斗,ウィットリー,マタ"],
 ["giants", "投手", "投手", "C", "平内龍太,ハワード,ルシアーノ,代木大和,竹丸和幸,山城京平,田和廉,北浦竜次"],
+["giants", "捕手", "捕手", "S", "甲斐拓也"],
 ["giants", "捕手", "捕手", "A", "大城卓三,岸田行倫"],
 ["giants", "捕手", "捕手", "B", "郡拓也,山瀬慎之助"],
 ["giants", "内野手", "二遊", "S", "吉川尚輝,坂本勇人"],
@@ -1260,7 +1261,7 @@ const NPB_2026_COMPACT = [
 ["giants", "内野手", "二遊", "C", "湯浅大,石塚裕惺,浦田俊輔,宇都宮葵星"],
 ["giants", "内野手", "一三", "C", "荒巻悠,小濱佑斗,平山功太"],
 ["giants", "外野手", "外野", "S", "丸佳浩"],
-["giants", "外野手", "外野", "A", "松本剛,キャベッジ,長野久義"],
+["giants", "外野手", "外野", "A", "松本剛,キャベッジ"],
 ["giants", "外野手", "外野", "B", "浅野翔吾,萩尾匡也,佐々木俊輔,岡田悠希"],
 ["giants", "外野手", "外野", "C", "笹原操希,知念大成,鈴木大和,ティマ,皆川岳飛,三塚琉生"],
 
@@ -1312,7 +1313,7 @@ const NPB_2026_COMPACT = [
 ["swallows", "捕手", "捕手", "B", "松本直樹,内山壮真"],
 ["swallows", "捕手", "捕手", "C", "鈴木叶,矢野泰二郎"],
 ["swallows", "内野手", "二遊", "S", "山田哲人,長岡秀樹"],
-["swallows", "内野手", "一三", "A", "J.オスナ,茂木栄五郎,川端慎吾"],
+["swallows", "内野手", "一三", "A", "オスナ,茂木栄五郎"],
 ["swallows", "内野手", "二遊", "B", "赤羽由紘,武岡龍世,宮本丈"],
 ["swallows", "内野手", "一三", "B", "セデーニョ"],
 ["swallows", "内野手", "二遊", "C", "伊藤琉偉,田中陽翔"],
@@ -1323,7 +1324,7 @@ const NPB_2026_COMPACT = [
 ["swallows", "外野手", "外野", "C", "橋本星哉,モンテル,西村瑠伊斗"],
 
 // 7. 福岡ソフトバンクホークス
-["hawks", "投手", "投手", "S", "モイネロ,スチュワート・ジュニア,R.オスナ"],
+["hawks", "投手", "投手", "S", "モイネロ,スチュワート・ジュニア,オスナ"],
 ["hawks", "投手", "投手", "A", "大津亮介,杉山一樹,松本裕樹,津森宥紀,藤井皓哉,ヘルナンデス,大関友久,東浜巨"],
 ["hawks", "投手", "投手", "B", "前田悠伍,岩井俊介,松本晴,上茶谷大河,中村稔弥"],
 ["hawks", "投手", "投手", "C", "村上泰斗,大山凌,木村光,前田純,大竹風雅,藤原大翔,アルメンタ,張峻瑋,小林樹斗,ラトリッジ,北斗,ロドリゲス"],
@@ -1377,12 +1378,11 @@ const NPB_2026_COMPACT = [
 ["marines", "外野手", "外野", "A", "藤原恭大,髙部瑛斗,岡大海,角中勝也,西川史礁"],
 ["marines", "外野手", "外野", "B", "山口航輝,和田康士朗,井上広大,山本大斗"],
 
-// 10. 東北楽天ゴールデンイーグルス（甲斐拓也トレード加入反映済）
+// 10. 東北楽天ゴールデンイーグルス
 ["eagles", "投手", "投手", "S", "早川隆久,岸孝之"],
 ["eagles", "投手", "投手", "A", "藤井聖,荘司康誠,鈴木翔天,藤平尚真,酒居知史,渡辺翔太,西口直人"],
 ["eagles", "投手", "投手", "B", "内星龍,古謝樹,瀧中瞭太,辛島航,宋家豪,田中千晴,ウレーニャ,マルテ,伊藤樹"],
 ["eagles", "投手", "投手", "C", "津留﨑大成"],
-["eagles", "捕手", "捕手", "S", "甲斐拓也"],
 ["eagles", "捕手", "捕手", "A", "太田光,伊藤光"],
 ["eagles", "捕手", "捕手", "B", "石原彪,安田悠馬,堀内謙伍"],
 ["eagles", "捕手", "捕手", "C", "田中貴也"],
@@ -1627,16 +1627,11 @@ document.getElementById("online-peers-count").textContent = `参加者: ${totalC
 if (net.connections.length > 0) {
 const names = net.connections.map(c => escapeHtml(c.name)).join("、");
 document.getElementById("online-status-text").innerHTML = `🟢 <strong>${names}</strong> が入室しました！「72人をピックしてドラフト開始！」を押せます。`;
-// 参加人数に合わせてチーム数セレクトを自動調整
 const sel = document.getElementById("team-count");
 if (totalConnected <= 2) { sel.value = "2"; document.getElementById("total-rounds").value = "36"; }
 else if (totalConnected <= 4) { sel.value = "4"; document.getElementById("total-rounds").value = "18"; }
 else { sel.value = "6"; document.getElementById("total-rounds").value = "12"; }
 }
-}
-
-function syncHostName() {
-// ホスト名更新時の処理
 }
 
 function joinOnlineRoom() {
@@ -1786,7 +1781,6 @@ if (myPreservedDraftBid && !state.lockedBids[net.myTeamIdx]) {
 state.bids[net.myTeamIdx] = myPreservedDraftBid;
 }
 
-// 画面遷移
 document.getElementById("setup-screen").classList.add("hidden");
 document.getElementById("btn-reset").classList.remove("hidden");
 document.getElementById("online-chat-controls").classList.remove("hidden");
@@ -1813,13 +1807,11 @@ document.getElementById("bid-phase-title").textContent = state.phase === "rebid"
 document.getElementById("bid-panel").classList.add("hidden");
 }
 
-// ログ同期
 document.getElementById("log-count").textContent = `${state.logs.length}件`;
 document.getElementById("log-list").innerHTML = state.logs.map(l =>
 `<div class="log-item ${l.isLottery ? 'lottery' : ''} ${l.isChat ? 'chat' : ''}">${l.htmlText}</div>`
 ).join("");
 
-// くじ引きモーダル同期
 if (state.currentLottery) {
 renderLotteryModalFromState(state.currentLottery);
 } else {
@@ -1840,7 +1832,6 @@ if (net.playMode !== "online" || net.role !== "host") return;
 
 net.connections.forEach(c => {
 if (!c.conn || !c.conn.open) return;
-// 他プレイヤーの未開票入札は隠蔽して送信（カンニング防止）
 const sanitizedBids = {};
 Object.keys(state.bids).forEach(tidStr => {
 const tid = parseInt(tidStr, 10);
@@ -1904,7 +1895,7 @@ net.hostConn.send({ type: "CHAT", text });
 
 // ============================================================================
 // 12球団×6人＝72人 4条件同時最適化アルゴリズム
-// （12球団各6人・ポジション配分・S/A抑制ランク配分・各球団内偏り抑制）
+// （12球団各6人・ポジション配分・S/A/B/Cバランス配分・各球団内偏り抑制）
 // ============================================================================
 function generateBalanced72Pool() {
 const targetPos = {
@@ -1915,9 +1906,9 @@ const targetPos = {
 "外野": parseInt(document.getElementById("q-of").value, 10) || 14
 };
 const targetRank = {
-S: parseInt(document.getElementById("r-S").value, 10) || 10,
-A: parseInt(document.getElementById("r-A").value, 10) || 18,
-B: parseInt(document.getElementById("r-B").value, 10) || 38,
+S: parseInt(document.getElementById("r-S").value, 10) || 14,
+A: parseInt(document.getElementById("r-A").value, 10) || 24,
+B: parseInt(document.getElementById("r-B").value, 10) || 28,
 C: parseInt(document.getElementById("r-C").value, 10) || 6
 };
 
@@ -1927,7 +1918,6 @@ teamIds.forEach(tid => {
 byTeam[tid] = MASTER_PLAYERS.filter(p => p.teamId === tid).map(p => ({ ...p }));
 });
 
-// 初期サンプル（各球団6名）
 const sel = {};
 teamIds.forEach(tid => {
 const shuffled = [...byTeam[tid]].sort(() => Math.random() - 0.5);
@@ -1942,7 +1932,6 @@ err += Math.abs(posCounts[k] - targetPos[k]) * 12;
 for (const k of Object.keys(targetRank)) {
 err += Math.abs(rankCounts[k] - targetRank[k]) * 10;
 }
-// 1球団にSが集中しすぎない・投手が極端に偏らないソフト制約
 for (const tid of teamIds) {
 let ts = 0, tp = 0;
 for (const p of sel[tid]) {
@@ -1986,7 +1975,6 @@ rankCounts[inP.rank]++;
 
 const newErr = calcError(posCounts, rankCounts);
 if (newErr > curErr) {
-// ロールバック
 sel[tid][idx] = outP;
 posCounts[inP.subPos]--;
 posCounts[outP.subPos]++;
@@ -2026,19 +2014,19 @@ document.getElementById("draft-mode").value = "bid_custom";
 
 function applyRankPreset(type) {
 if (type === "balanced") {
-document.getElementById("r-S").value = 10;
-document.getElementById("r-A").value = 18;
-document.getElementById("r-B").value = 38;
+document.getElementById("r-S").value = 14;
+document.getElementById("r-A").value = 24;
+document.getElementById("r-B").value = 28;
 document.getElementById("r-C").value = 6;
-} else if (type === "strict") {
-document.getElementById("r-S").value = 8;
-document.getElementById("r-A").value = 14;
-document.getElementById("r-B").value = 42;
-document.getElementById("r-C").value = 8;
 } else if (type === "star") {
 document.getElementById("r-S").value = 16;
-document.getElementById("r-A").value = 22;
-document.getElementById("r-B").value = 28;
+document.getElementById("r-A").value = 26;
+document.getElementById("r-B").value = 24;
+document.getElementById("r-C").value = 6;
+} else if (type === "strict") {
+document.getElementById("r-S").value = 10;
+document.getElementById("r-A").value = 20;
+document.getElementById("r-B").value = 36;
 document.getElementById("r-C").value = 6;
 }
 updateQuotaSum();
@@ -2342,7 +2330,6 @@ document.getElementById("bid-phase-title").textContent = isRebid
 updateStatusAndUI();
 broadcastStateToGuests();
 
-// 全員CPUの場合は自動開票
 if (state.pendingTeams.every(tid => state.teams[tid].isCpu)) {
 state.cpuTimer = setTimeout(() => revealBids(), state.cpuDelay + 150);
 }
@@ -2384,7 +2371,6 @@ pickDisplay = `<div style="color:var(--gold); font-weight:800;">仮選択：${es
 pickDisplay = `<div style="color:var(--text-muted); font-size:0.84rem;">下の選手表から1名選択してください</div>`;
 }
 } else {
-// オンライン相手スロット（開票まで非表示）
 if (isLocked) {
 pickDisplay = `<div style="color:#6ee7b7; font-weight:800;">🔒 相手は入札確定済み！（開票待ち）</div>`;
 } else {
@@ -2392,7 +2378,6 @@ pickDisplay = `<div style="color:var(--text-muted); font-size:0.84rem;">⏳ 相�
 }
 }
 } else {
-// ローカル対戦
 const player = typeof bidVal === "number" ? ACTIVE_POOL.find(p => p.id === bidVal) : null;
 if (player) {
 const humanCount = state.pendingTeams.filter(id => !state.teams[id].isCpu).length;
@@ -2416,7 +2401,6 @@ ${pickDisplay}
 container.appendChild(div);
 });
 
-// ボタン状態制御
 const lockBtn = document.getElementById("btn-lock-my-bid");
 const revealBtn = document.getElementById("btn-reveal-bids");
 
@@ -2467,7 +2451,6 @@ function checkAutoRevealOnlineBids() {
 if (net.playMode === "online" && net.role === "host") {
 const allLocked = state.pendingTeams.every(tid => state.lockedBids[tid]);
 if (allLocked) {
-// 全員ロック完了したら少し間を置いて自動一斉開票！
 setTimeout(() => {
 if ((state.phase === "bid" || state.phase === "rebid") && state.pendingTeams.every(tid => state.lockedBids[tid])) {
 revealBids();
@@ -2499,11 +2482,9 @@ const winTid = tids[0];
 assignPlayerToTeam(player, winTid, state.currentRound);
 addLog(`【${state.currentRound}巡目確定】<strong>${escapeHtml(state.teams[winTid].name)}</strong> が <strong>${escapeHtml(player.name)}</strong> (${player.teamName}) を単独指名！`);
 } else {
-// 競合発生 → くじ引きミニゲームデータ生成
 const humanContenders = tids.filter(id => !state.teams[id].isCpu);
 let chooserTid = null;
 if (humanContenders.length > 0) {
-// 競合のたびに引く人を交互に公平割り当て
 chooserTid = humanContenders[net.lotteryChooserCounter % humanContenders.length];
 net.lotteryChooserCounter++;
 }
@@ -2593,7 +2574,6 @@ resolveLotteryEnvelopeClick(i, item.winEnvelopeIdx, item.chooserTid, false);
 envContainer.appendChild(env);
 }
 } else {
-// 開封済み表示
 envContainer.innerHTML = "";
 for (let i = 0; i < item.contenderIds.length; i++) {
 const env = document.createElement("div");
