@@ -536,6 +536,16 @@
     color: #93c5fd;
     margin-left: 4px;
   }
+  .role-detail-tag {
+    font-size: 0.69rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(16,185,129,0.16);
+    color: #6ee7b7;
+    border: 1px solid rgba(16,185,129,0.35);
+    margin-left: 4px;
+    font-weight: 700;
+  }
 
   /* Right: Rosters & Log */
   .right-column {
@@ -848,6 +858,169 @@
     margin-bottom: 16px;
     flex-wrap: wrap;
   }
+
+  /* ========================================================================
+     追加機能用スタイル（自チーム状況 / 1軍登録枠 / ウェーバールーレット / オーダー編成 / 復元バナー）
+     ======================================================================== */
+  .recovery-banner {
+    background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(16,185,129,0.16));
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .my-team-status-card {
+    background: linear-gradient(135deg, rgba(30,58,138,0.35), rgba(15,23,42,0.9));
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .my-team-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .status-meter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+    gap: 6px;
+  }
+  .status-meter-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 0.76rem;
+  }
+  .status-meter-item.shortage {
+    border-color: var(--gold);
+    background: rgba(245,158,11,0.1);
+  }
+  .status-meter-item.ok {
+    border-color: var(--success);
+  }
+  .first-team-badge {
+    font-size: 0.72rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 800;
+    background: rgba(16,185,129,0.16);
+    color: #6ee7b7;
+    border: 1px solid rgba(16,185,129,0.4);
+  }
+  .first-team-badge.over {
+    background: rgba(239,68,68,0.2);
+    color: #fca5a5;
+    border-color: var(--danger);
+  }
+
+  /* ウェーバールーレット演出 */
+  .roulette-wheel-box {
+    background: var(--bg);
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 14px 0;
+  }
+  .roulette-slot-item {
+    padding: 10px 14px;
+    margin: 6px 0;
+    border-radius: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.1s;
+  }
+  .roulette-slot-item.highlight {
+    background: rgba(245,158,11,0.25);
+    border-color: var(--gold);
+    color: #fff;
+    transform: scale(1.02);
+  }
+  .roulette-slot-item.confirmed {
+    background: rgba(16,185,129,0.2);
+    border-color: var(--success);
+  }
+
+  /* 最終オーダー編成パネル */
+  .lineup-builder-box {
+    background: var(--bg);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .lineup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .lineup-subcard {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .lineup-subcard h4 {
+    color: var(--gold);
+    font-size: 0.92rem;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px;
+  }
+  .lineup-row {
+    display: grid;
+    grid-template-columns: 62px 86px 1fr;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+  }
+  .lineup-row select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 6px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+  .bench-checklist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  .bench-chip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.77rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .bench-chip.active {
+    border-color: var(--success);
+    background: rgba(16,185,129,0.18);
+    color: #fff;
+  }
 </style>
 </head>
 <body>
@@ -855,6 +1028,7 @@
 <header>
   <h1>⚾ NPB 2026 パワプロ用ドラフト会議 <span class="badge">オンライン対戦対応・2026年11月最新名簿・12球団×6人＝72人</span></h1>
   <div class="header-controls">
+    <span id="header-wakelock-badge" class="net-badge hidden" style="background:#1e3a8a; border-color:#3b82f6; color:#bfdbfe;">🔆 スリープ防止ON</span>
     <span id="header-net-badge" class="net-badge hidden">🟢 オンライン接続中</span>
     <button id="btn-reroll-pool" class="btn btn-gold btn-sm hidden" onclick="reroll72Pool()">🔄 72人候補を再抽選</button>
     <button id="btn-speed" class="btn btn-outline btn-sm hidden" onclick="toggleCpuSpeed()">⚡ CPU速度: 標準</button>
@@ -863,6 +1037,18 @@
 </header>
 
 <div class="container">
+  <!-- ブラウザ更新・スリープ復帰バナー -->
+  <div id="session-recovery-banner" class="recovery-banner hidden">
+    <div>
+      <strong style="color:var(--gold); font-size:0.95rem;">💾 前回のドラフト進行データが自動保存されています！</strong>
+      <div id="recovery-info-text" style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">ブラウザ更新・スリープ前の状態からそのまま再開できます。</div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-success btn-sm" onclick="restoreSavedSession()">🔄 前回の続きから復元する</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="discardSavedSession()">破棄する</button>
+    </div>
+  </div>
+
   <!-- 1. SETUP SCREEN -->
   <div id="setup-screen" class="setup-card">
     <h2>ドラフト会議 設定（12球団×6人＝72人ピック → 36人ずつ2人ドラフト）</h2>
@@ -968,6 +1154,21 @@
           <label>入札抽選を行う巡目数（1〜36巡目）</label>
           <input type="number" id="bid-until-round" value="10" min="0" max="36" onchange="syncCustomBidRound()">
         </div>
+        <div class="form-group">
+          <label>1軍登録枠ルール（パワプロ公式基準）</label>
+          <select id="first-team-limit">
+            <option value="31" selected>最大31名枠（支配下36名中・1軍ベンチ31人）</option>
+            <option value="29">最大29名枠（旧NPB基準）</option>
+            <option value="36">制限なし（36名全員登録可）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ウェーバー移行時の指名順決定</label>
+          <select id="weber-order-mode">
+            <option value="roulette" selected>🎰 ウェーバールーレットで指名順を抽選</option>
+            <option value="fixed">そのまま（#1→#2の順番通り）</option>
+          </select>
+        </div>
       </div>
 
       <!-- 72人ピック バランス＆ランク配分設定 -->
@@ -1067,7 +1268,7 @@
     <!-- 72人ピック内訳サマリーバー -->
     <div id="pool-summary-bar" class="pool-summary-bar">
       <div class="summary-chips" id="pool-summary-chips"></div>
-      <div style="color:var(--text-muted); font-size:0.78rem;">※全12球団から各6名ずつ厳密選出済み（能力は全盛期準拠）</div>
+      <div style="color:var(--text-muted); font-size:0.78rem;">※全12球団から各6名ずつ厳密選出済み（能力・役割は全盛期準拠）</div>
     </div>
 
     <div class="draft-status-bar">
@@ -1109,6 +1310,18 @@
             <option value="B">Bランク（一軍レギュラー級）</option>
             <option value="C">Cランク（有望若手・控え層）</option>
           </select>
+          <select id="role-filter" onchange="renderPlayerTable()">
+            <option value="ALL">全役割</option>
+            <option value="先発">投手：先発</option>
+            <option value="中継ぎ">投手：中継ぎ</option>
+            <option value="抑え">投手：抑え</option>
+            <option value="捕手">野手：捕手</option>
+            <option value="一塁">野手：一塁</option>
+            <option value="二塁">野手：二塁</option>
+            <option value="三塁">野手：三塁</option>
+            <option value="遊撃">野手：遊撃</option>
+            <option value="外野">野手：外野</option>
+          </select>
           <label style="display:flex; align-items:center; gap:4px; font-size:0.8rem; color:var(--text-muted); cursor:pointer;">
             <input type="checkbox" id="hide-drafted" checked onchange="renderPlayerTable()"> 指名済を隠す
           </label>
@@ -1128,7 +1341,7 @@
                 <th>ランク</th>
                 <th>選手名</th>
                 <th>所属球団</th>
-                <th>守備</th>
+                <th>守備・役割</th>
                 <th>状態 / 操作</th>
               </tr>
             </thead>
@@ -1137,10 +1350,13 @@
         </div>
       </div>
 
-      <!-- Right: Team Rosters & Log/Chat -->
+      <!-- Right: My Team Status, Team Rosters & Log/Chat -->
       <div class="right-column">
+        <!-- 自チーム状況リアルタイム分析パネル -->
+        <div id="my-team-status-card" class="my-team-status-card"></div>
+
         <div class="rosters-panel">
-          <h3 style="font-size:0.95rem; margin-bottom:10px; color:var(--text-muted);">獲得選手一覧（36人編成目安：投17・捕3・二遊5・一三4・外7）</h3>
+          <h3 style="font-size:0.95rem; margin-bottom:10px; color:var(--text-muted);">獲得選手一覧（36人編成目安：投17・捕3・二遊5・一三4・外7 ／ 1軍登録枠<span id="roster-limit-label">31</span>名）</h3>
           <div id="rosters-grid" class="rosters-grid"></div>
         </div>
         <div class="log-panel">
@@ -1165,12 +1381,16 @@
 
   <!-- 3. RESULT SCREEN -->
   <div id="result-screen" class="result-summary hidden">
-    <h2 style="font-size:1.35rem; color:var(--gold); margin-bottom:12px;">🏆 2026年 ドラフト会議 最終獲得結果</h2>
+    <h2 style="font-size:1.35rem; color:var(--gold); margin-bottom:12px;">🏆 2026年 ドラフト会議 最終獲得結果 ＆ 1軍オーダー編成</h2>
     <div class="result-actions">
       <button class="btn btn-gold" onclick="exportCSV()">📥 結果をCSVでダウンロード</button>
-      <button class="btn" onclick="copyResultText()">📋 パワプロ編成用テキストをコピー</button>
+      <button class="btn" onclick="copyResultText()">📋 パワプロ編成用テキスト（オーダー込）をコピー</button>
       <button class="btn btn-outline" onclick="confirmReset()">新しいドラフトを始める</button>
     </div>
+
+    <!-- 最終オーダー＆1軍登録枠編成工程 -->
+    <div id="lineup-builder-box" class="lineup-builder-box"></div>
+
     <div id="result-rosters" class="rosters-grid"></div>
   </div>
 </div>
@@ -1184,6 +1404,19 @@
     <div id="envelopes-container" class="envelopes-grid"></div>
     <div id="lottery-result-area"></div>
     <button id="btn-lottery-next" class="btn btn-gold hidden" style="margin-top:16px; width:100%;" onclick="proceedAfterCurrentLottery()">次へ進む</button>
+  </div>
+</div>
+
+<!-- Weber Roulette Modal -->
+<div id="weber-roulette-modal" class="modal-backdrop hidden">
+  <div class="modal">
+    <h3>🎰 ウェーバー指名順 決定ルーレット！</h3>
+    <p id="weber-roulette-subtitle" style="font-size:0.88rem; color:var(--text-muted);">ウェーバー巡目の指名順をルーレットで抽選します！</p>
+    <div id="weber-roulette-wheel" class="roulette-wheel-box"></div>
+    <div id="weber-roulette-actions" style="margin-top:14px;">
+      <button id="btn-spin-weber" class="btn btn-gold" style="width:100%; font-size:1.05rem;" onclick="spinWeberRoulette()">🎲 ルーレットを回す！</button>
+      <button id="btn-confirm-weber" class="btn btn-success hidden" style="width:100%; font-size:1.05rem;" onclick="confirmWeberOrderAndStart()">✅ この指名順でウェーバー開始！</button>
+    </div>
   </div>
 </div>
 
@@ -1455,8 +1688,88 @@ const NPB_2026_COMPACT = [
 ];
 
 // ============================================================================
+// ① 選手データの役割マッピング（投手：先発・中継ぎ・抑え ／ 内野：一塁・二塁・三塁・遊撃）
+// ============================================================================
+const PLAYER_ROLE_MAP = {
+  // 抑え（守護神・クローザー経験者）
+  "岩崎優": "抑え", "ドリス": "抑え", "山﨑康晃": "抑え", "入江大生": "抑え", "森原康平": "抑え",
+  "ライデル・マルティネス": "抑え", "大勢": "抑え", "松山晋也": "抑え", "マルティネス": "抑え",
+  "栗林良吏": "抑え", "石山泰稚": "抑え", "田口麗斗": "抑え", "オスナ": "抑え", "松本裕樹": "抑え",
+  "田中正義": "抑え", "柳川大晟": "抑え", "益田直也": "抑え", "横山陸人": "抑え", "藤平尚真": "抑え",
+  "平野佳寿": "抑え", "マチャド": "抑え", "平良海馬": "抑え",
+  // 中継ぎ・セットアッパー
+  "及川雅貴": "中継ぎ", "桐敷拓馬": "中継ぎ", "湯浅京己": "中継ぎ", "石井大智": "中継ぎ", "工藤泰成": "中継ぎ",
+  "畠世周": "中継ぎ", "岡留英貴": "中継ぎ", "モレッタ": "中継ぎ", "岩貞祐太": "中継ぎ", "石黒佑弥": "中継ぎ",
+  "伊勢大夢": "中継ぎ", "佐々木千隼": "中継ぎ", "尾形崇斗": "中継ぎ", "宮城滝太": "中継ぎ", "中川虎大": "中継ぎ",
+  "ルイーズ": "中継ぎ", "浜地真澄": "中継ぎ", "馬場皐輔": "中継ぎ", "橋本達弥": "中継ぎ", "中川颯": "中継ぎ", "堀岡隼人": "中継ぎ",
+  "船迫大雅": "中継ぎ", "バルドナード": "中継ぎ", "中川皓太": "中継ぎ", "高梨雄平": "中継ぎ", "田中瑛斗": "中継ぎ",
+  "泉圭輔": "中継ぎ", "平内龍太": "中継ぎ", "石川達也": "中継ぎ", "菊地大稀": "中継ぎ", "北浦竜次": "中継ぎ",
+  "清水達也": "中継ぎ", "藤嶋健人": "中継ぎ", "勝野昌慶": "中継ぎ", "齋藤綱記": "中継ぎ", "福敬登": "中継ぎ",
+  "アブレウ": "中継ぎ", "橋本侑樹": "中継ぎ", "森博人": "中継ぎ", "伊藤茉央": "中継ぎ", "梅野雄吾": "中継ぎ", "祖父江大輔": "中継ぎ",
+  "森浦大輔": "中継ぎ", "島内颯太郎": "中継ぎ", "黒原拓未": "中継ぎ", "ハーン": "中継ぎ", "中﨑翔太": "中継ぎ",
+  "塹江敦哉": "中継ぎ", "鈴木健矢": "中継ぎ", "益田武尚": "中継ぎ", "松本竜也": "中継ぎ", "ケムナ誠": "中継ぎ",
+  "大西広樹": "中継ぎ", "木澤尚文": "中継ぎ", "清水昇": "中継ぎ", "荘司宏太": "中継ぎ", "星知弥": "中継ぎ",
+  "大道温貴": "中継ぎ", "キハダ": "中継ぎ", "長谷川宙輝": "中継ぎ", "丸山翔大": "中継ぎ",
+  "杉山一樹": "中継ぎ", "藤井皓哉": "中継ぎ", "ヘルナンデス": "中継ぎ", "津森宥紀": "中継ぎ", "大山凌": "中継ぎ",
+  "中村稔弥": "中継ぎ", "大江竜聖": "中継ぎ", "岩井俊介": "中継ぎ",
+  "宮西尚生": "中継ぎ", "河野竜生": "中継ぎ", "齋藤友貴哉": "中継ぎ", "池田隆英": "中継ぎ", "玉井大翔": "中継ぎ",
+  "山本拓実": "中継ぎ", "生田目翼": "中継ぎ", "大川慈英": "中継ぎ", "堀瑞輝": "中継ぎ",
+  "鈴木昭汰": "中継ぎ", "高野脩汰": "中継ぎ", "坂本光士郎": "中継ぎ", "小野郁": "中継ぎ", "澤田圭佑": "中継ぎ",
+  "廣畑敦也": "中継ぎ", "八木彬": "中継ぎ",
+  "鈴木翔天": "中継ぎ", "西口直人": "中継ぎ", "西垣雅矢": "中継ぎ", "宋家豪": "中継ぎ", "加治屋蓮": "中継ぎ", "田中千晴": "中継ぎ",
+  "ペルドモ": "中継ぎ", "山﨑颯一郎": "中継ぎ", "阿部翔太": "中継ぎ", "岩嵜翔": "中継ぎ", "山田修義": "中継ぎ", "古田島成龍": "中継ぎ",
+  "甲斐野央": "中継ぎ", "佐藤隼輔": "中継ぎ", "ウィンゲンター": "中継ぎ", "羽田慎之介": "中継ぎ", "森脇亮介": "中継ぎ",
+  "田村伊知郎": "中継ぎ", "豆田泰志": "中継ぎ", "糸川亮太": "中継ぎ",
+
+  // 内野手（具体的な主戦ポジション）
+  "大山悠輔": "一塁", "ビシエド": "一塁", "ダルベック": "一塁", "リチャード": "一塁", "中田翔": "一塁",
+  "モンテロ": "一塁", "堂林翔太": "一塁", "林晃汰": "一塁", "オスナ": "一塁", "内山壮真": "一塁", "北村恵吾": "一塁",
+  "山川穂高": "一塁", "中村晃": "一塁", "秋広優人": "一塁", "清宮幸太郎": "一塁", "野村佑希": "一塁", "有薗直輝": "一塁",
+  "ソト": "一塁", "上田希由翔": "一塁", "浅村栄斗": "一塁", "ボイト": "一塁", "伊藤裕季也": "一塁",
+  "頓宮裕真": "一塁", "中川圭太": "一塁", "シーモア": "一塁", "ネビン": "一塁", "村田怜音": "一塁",
+
+  "佐藤輝明": "三塁", "糸原健斗": "三塁", "髙寺望夢": "三塁", "佐野大陽": "三塁", "谷端将伍": "三塁",
+  "宮﨑敏郎": "三塁", "小田康一郎": "三塁", "井上朋也": "三塁", "坂本勇人": "三塁", "増田陸": "三塁", "石塚裕惺": "三塁",
+  "福永裕基": "三塁", "サノー": "三塁", "石川昂弥": "三塁", "高橋周平": "三塁", "カリステ": "三塁", "阿部寿樹": "三塁",
+  "佐々木泰": "三塁", "二俣翔一": "三塁", "茂木栄五郎": "三塁", "松下歩叶": "三塁",
+  "栗原陵矢": "三塁", "廣瀨隆太": "三塁", "安田尚憲": "三塁", "鈴木大地": "三塁", "黒川史陽": "三塁", "渡邊佳明": "三塁",
+  "宗佑磨": "三塁", "廣岡大志": "三塁", "内藤鵬": "三塁", "中村剛也": "三塁", "外崎修汰": "三塁", "山村崇嘉": "三塁",
+
+  "中野拓夢": "二塁", "立石正広": "二塁", "熊谷敬宥": "二塁", "植田海": "二塁", "百﨑蒼生": "二塁",
+  "牧秀悟": "二塁", "林琢真": "二塁", "柴田竜拓": "二塁", "三森大貴": "二塁", "宮下朝陽": "二塁",
+  "吉川尚輝": "二塁", "増田大輝": "二塁", "田中幹也": "二塁", "板山祐太郎": "二塁", "知野直人": "二塁",
+  "菊池涼介": "二塁", "勝田成": "二塁", "羽月隆太郎": "二塁", "山田哲人": "二塁", "赤羽由紘": "二塁", "宮本丈": "二塁", "山野辺翔": "二塁",
+  "牧原大成": "二塁", "ダウンズ": "二塁", "水野達稀": "二塁", "奈良間大己": "二塁", "細川凌平": "二塁", "カストロ": "二塁",
+  "藤岡裕大": "二塁", "小川龍成": "二塁", "中村奨吾": "二塁", "池田来翔": "二塁", "山﨑剛": "二塁",
+  "小深田大翔": "二塁", "小森航大郎": "二塁", "太田椋": "二塁", "西野真弘": "二塁", "大城滉二": "二塁", "宜保翔": "二塁",
+  "滝澤夏央": "二塁", "石井一成": "二塁", "平沢大河": "二塁", "仲田慶介": "二塁", "髙松渡": "二塁",
+
+  "木浪聖也": "遊撃", "小幡竜平": "遊撃", "ディベイニー": "遊撃", "元山飛優": "遊撃", "山田脩也": "遊撃",
+  "京田陽太": "遊撃", "石上泰輝": "遊撃", "森敬斗": "遊撃", "門脇誠": "遊撃", "泉口友汰": "遊撃", "浦田俊輔": "遊撃",
+  "村松開人": "遊撃", "山本泰寛": "遊撃", "土田龍空": "遊撃", "辻本倫太郎": "遊撃", "ロドリゲス": "遊撃",
+  "小園海斗": "遊撃", "矢野雅哉": "遊撃", "辰見鴻之介": "遊撃", "長岡秀樹": "遊撃", "武岡龍世": "遊撃", "石井巧": "遊撃",
+  "今宮健太": "遊撃", "川瀬晃": "遊撃", "野村勇": "遊撃", "庄子雄大": "遊撃",
+  "上川畑大悟": "遊撃", "中島卓也": "遊撃", "山縣秀": "遊撃", "友杉篤輝": "遊撃", "茶谷健太": "遊撃",
+  "宗山塁": "遊撃", "村林一輝": "遊撃", "紅林弘太郎": "遊撃", "野口智哉": "遊撃",
+  "源田壮亮": "遊撃", "児玉亮涼": "遊撃", "齋藤大翔": "遊撃"
+};
+
+function inferPlayerRole(name, pos, subPos) {
+  if (PLAYER_ROLE_MAP[name]) return PLAYER_ROLE_MAP[name];
+  if (pos === "投手") return "先発";
+  if (pos === "捕手") return "捕手";
+  if (pos === "外野手") return "外野";
+  if (subPos === "二遊") return "二遊";
+  if (subPos === "一三") return "一三";
+  return pos;
+}
+
+// ============================================================================
 // アプリケーション＆オンラインP2P状態管理
 // ============================================================================
+const STORAGE_KEY = "npb2026_draft_autosave_v1";
+let wakeLockSentinel = null;
+
 let MASTER_PLAYERS = [];
 let ACTIVE_POOL = [];
 
@@ -1476,11 +1789,15 @@ let state = {
   teams: [],
   totalRounds: 36,
   bidUntilRound: 10, // 何巡目まで同時入札抽選にするか（デフォルト10巡目まで）
+  firstTeamLimit: 31, // 1軍登録枠（最大31名）
+  weberOrderMode: "roulette", // "roulette" | "fixed"
+  weberBaseOrder: null, // ウェーバールーレットで決定した基本順番 [teamIdx, ...]
+  weberRouletteState: null, // ルーレットモーダル同期用
   currentRound: 1,
   turnQueue: [],
   turnPointer: 0,
   posFilter: "ALL",
-  phase: "setup", // setup | bid | rebid | normal | finished
+  phase: "setup", // setup | bid | rebid | weber_roulette | normal | finished
   pendingTeams: [],
   bids: {},
   lockedBids: {}, // { teamIdx: true } オンライン時に確定済みか管理
@@ -1489,6 +1806,8 @@ let state = {
   lotteryQueue: [],
   currentLottery: null,
   lotteryLosers: [],
+  // 最終オーダー編成状態
+  lineupDraft: null,
   // CPU制御
   cpuTimer: null,
   cpuDelay: 380,
@@ -1501,6 +1820,180 @@ const DEFAULT_TEAM_NAMES = [
 ];
 let teamConfigs = [];
 
+// ============================================================================
+// ③ ブラウザ更新・スリープ対策（Wake Lock API ＋ localStorage 自動保存・復元）
+// ============================================================================
+async function requestScreenWakeLock() {
+  if (!("wakeLock" in navigator)) return;
+  try {
+    wakeLockSentinel = await navigator.wakeLock.request("screen");
+    const badge = document.getElementById("header-wakelock-badge");
+    if (badge) badge.classList.remove("hidden");
+    wakeLockSentinel.addEventListener("release", () => {
+      if (badge) badge.classList.add("hidden");
+    });
+  } catch (e) {
+    // バッテリー節約モード等で拒否された場合は静かに無視
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && state.phase !== "setup") {
+    requestScreenWakeLock();
+    // オンライン接続がスリープで一時切断されていた場合、ホストなら同コードで再待機試行
+    if (net.playMode === "online" && net.role === "host" && net.roomCode && (!net.peer || net.peer.disconnected)) {
+      reconnectHostPeerWithSameCode();
+    }
+  }
+});
+
+window.addEventListener("beforeunload", (e) => {
+  if (state.phase !== "setup" && state.phase !== "finished") {
+    saveSessionToStorage();
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
+
+function saveSessionToStorage() {
+  if (state.phase === "setup") return;
+  try {
+    const snapshot = {
+      savedAt: Date.now(),
+      netMeta: {
+        playMode: net.playMode,
+        role: net.role,
+        roomCode: net.roomCode,
+        myTeamIdx: net.myTeamIdx
+      },
+      pool: ACTIVE_POOL,
+      state: {
+        ...state,
+        cpuTimer: null
+      }
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+  } catch (e) {}
+}
+
+function checkSavedSessionOnLoad() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.state || parsed.state.phase === "setup") return;
+    const dt = new Date(parsed.savedAt);
+    const timeStr = `${dt.getHours()}:${String(dt.getMinutes()).padStart(2, "0")}`;
+    const roundStr = parsed.state.phase === "finished" ? "ドラフト完了・結果画面" : `第${parsed.state.currentRound}巡目`;
+    document.getElementById("recovery-info-text").textContent =
+      `保存時刻: ${timeStr} ／ 進行状況: ${roundStr}（${parsed.state.teams.map(t => t.name).join(" vs ")}）`;
+    document.getElementById("session-recovery-banner").classList.remove("hidden");
+  } catch (e) {}
+}
+
+function discardSavedSession() {
+  localStorage.removeItem(STORAGE_KEY);
+  document.getElementById("session-recovery-banner").classList.add("hidden");
+}
+
+function restoreSavedSession() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    buildMasterPlayers();
+
+    ACTIVE_POOL = parsed.pool;
+    state = {
+      ...state,
+      ...parsed.state,
+      cpuTimer: null
+    };
+    if (parsed.netMeta) {
+      net.playMode = parsed.netMeta.playMode || "local";
+      net.role = parsed.netMeta.role || "host";
+      net.roomCode = parsed.netMeta.roomCode || "";
+      net.myTeamIdx = parsed.netMeta.myTeamIdx || 0;
+    }
+
+    document.getElementById("session-recovery-banner").classList.add("hidden");
+    document.getElementById("setup-screen").classList.add("hidden");
+    document.getElementById("btn-reset").classList.remove("hidden");
+    document.getElementById("roster-limit-label").textContent = state.firstTeamLimit || 31;
+    requestScreenWakeLock();
+
+    if (net.playMode === "online" && net.role === "host" && net.roomCode) {
+      reconnectHostPeerWithSameCode();
+    }
+
+    if (state.phase === "finished") {
+      document.getElementById("draft-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+      renderLineupBuilder();
+      renderRosters("result-rosters");
+      return;
+    }
+
+    document.getElementById("draft-screen").classList.remove("hidden");
+    document.getElementById("pool-summary-bar").classList.remove("hidden");
+    renderPoolSummaryBar();
+
+    if (net.playMode === "online") {
+      document.getElementById("online-chat-controls").classList.remove("hidden");
+    } else {
+      document.getElementById("btn-speed").classList.remove("hidden");
+    }
+    if (net.playMode !== "online" || net.role === "host") {
+      document.getElementById("btn-reroll-pool").classList.remove("hidden");
+    }
+
+    document.getElementById("log-count").textContent = `${state.logs.length}件`;
+    document.getElementById("log-list").innerHTML = state.logs.map(l =>
+      `<div class="log-item ${l.isLottery ? 'lottery' : ''} ${l.isChat ? 'chat' : ''}">${l.htmlText}</div>`
+    ).join("");
+
+    if (state.phase === "bid" || state.phase === "rebid") {
+      document.getElementById("bid-panel").classList.remove("hidden");
+    } else {
+      document.getElementById("bid-panel").classList.add("hidden");
+    }
+
+    if (state.currentLottery) {
+      renderLotteryModalFromState(state.currentLottery);
+    }
+    if (state.phase === "weber_roulette" && state.weberRouletteState) {
+      renderWeberRouletteModal();
+    }
+
+    updateStatusAndUI();
+    scheduleCpuIfNeeded();
+    addLog("🔄 ブラウザ更新・スリープからドラフト進行状態を復元しました！");
+  } catch (e) {
+    alert("復元データの読み込みに失敗しました。");
+  }
+}
+
+function reconnectHostPeerWithSameCode() {
+  if (typeof Peer === "undefined" || !net.roomCode) return;
+  try { if (net.peer) net.peer.destroy(); } catch (e) {}
+  const peer = new Peer("npb2026-draft-" + net.roomCode);
+  net.peer = peer;
+  peer.on("open", () => {
+    updateHeaderNetBadge(true, `🟢 ホスト復帰済 (${net.roomCode})`);
+  });
+  peer.on("connection", (conn) => {
+    conn.on("open", () => {
+      const slotIdx = net.connections.length + 1;
+      net.connections.push({ conn, peerId: conn.peer, name: state.teams[slotIdx]?.name || `ゲスト球団${slotIdx}`, teamIdx: slotIdx });
+      net.connected = true;
+      conn.send({ type: "ASSIGN_SLOT", teamIdx: slotIdx, roomCode: net.roomCode });
+      broadcastStateToGuests();
+      updateHeaderNetBadge(true, `🟢 再接続完了 (${net.roomCode})`);
+    });
+    conn.on("data", (msg) => handleHostReceivedData(conn, msg));
+  });
+}
+
 function buildMasterPlayers() {
   MASTER_PLAYERS = [];
   let idCounter = 1;
@@ -1508,6 +2001,7 @@ function buildMasterPlayers() {
     namesStr.split(",").forEach(rawName => {
       const name = rawName.trim();
       if (!name) return;
+      const roleDetail = inferPlayerRole(name, pos, subPos);
       MASTER_PLAYERS.push({
         id: idCounter++,
         name,
@@ -1515,6 +2009,7 @@ function buildMasterPlayers() {
         teamName: TEAMS_META[teamId].name,
         pos,
         subPos,
+        roleDetail,
         rank,
         draftedBy: null,
         draftRound: null
@@ -1609,6 +2104,10 @@ function createOnlineRoom() {
       net.connected = true;
       updateOnlineLobbyStatus();
       updateHeaderNetBadge(true, `🟢 オンライン接続済 (${net.connections.length + 1}人)`);
+      if (state.phase !== "setup") {
+        conn.send({ type: "ASSIGN_SLOT", teamIdx: slotIdx, roomCode: net.roomCode });
+        broadcastStateToGuests();
+      }
     });
 
     conn.on("data", (msg) => {
@@ -1620,7 +2119,7 @@ function createOnlineRoom() {
       net.connected = net.connections.length > 0;
       updateOnlineLobbyStatus();
       updateHeaderNetBadge(net.connected, net.connected ? `🟢 オンライン接続済` : `🔴 相手が切断されました`);
-      addLog("⚠️ ゲストとの通信が切断されました。");
+      addLog("⚠️ ゲストとの通信が切断されました（再入室で自動復帰できます）。");
     });
   });
 
@@ -1678,6 +2177,7 @@ function joinOnlineRoom() {
       document.getElementById("online-status-text").innerHTML = `🟢 ルーム <strong>${escapeHtml(code)}</strong> に接続成功！ホストが開始するのを待っています...`;
       document.getElementById("guest-waiting-banner").classList.remove("hidden");
       updateHeaderNetBadge(true, `🟢 ゲスト接続中 (${code})`);
+      requestScreenWakeLock();
       conn.send({ type: "HELLO_GUEST", name: guestName });
     });
 
@@ -1688,7 +2188,7 @@ function joinOnlineRoom() {
     conn.on("close", () => {
       net.connected = false;
       updateHeaderNetBadge(false, "🔴 ホストとの通信が切断されました");
-      alert("ホストとの接続が切断されました。");
+      alert("ホストとの接続が切断されました。画面更新後、同じ4桁パスワードで再接続できます。");
     });
   });
 
@@ -1728,6 +2228,9 @@ function handleHostReceivedData(conn, msg) {
     entry.name = (msg.name || "ゲスト球団").trim();
     updateOnlineLobbyStatus();
     conn.send({ type: "ASSIGN_SLOT", teamIdx: entry.teamIdx, roomCode: net.roomCode });
+    if (state.phase !== "setup") {
+      broadcastStateToGuests();
+    }
     return;
   }
 
@@ -1790,14 +2293,19 @@ function handleGuestReceivedData(msg) {
       state.bids[net.myTeamIdx] = myPreservedDraftBid;
     }
 
+    saveSessionToStorage();
+    document.getElementById("session-recovery-banner").classList.add("hidden");
     document.getElementById("setup-screen").classList.add("hidden");
     document.getElementById("btn-reset").classList.remove("hidden");
     document.getElementById("online-chat-controls").classList.remove("hidden");
+    document.getElementById("roster-limit-label").textContent = state.firstTeamLimit || 31;
 
     if (state.phase === "finished") {
       document.getElementById("draft-screen").classList.add("hidden");
       document.getElementById("result-screen").classList.remove("hidden");
       document.getElementById("lottery-modal").classList.add("hidden");
+      document.getElementById("weber-roulette-modal").classList.add("hidden");
+      renderLineupBuilder();
       renderRosters("result-rosters");
       return;
     }
@@ -1827,6 +2335,12 @@ function handleGuestReceivedData(msg) {
       document.getElementById("lottery-modal").classList.add("hidden");
     }
 
+    if (state.phase === "weber_roulette" && state.weberRouletteState) {
+      renderWeberRouletteModal();
+    } else {
+      document.getElementById("weber-roulette-modal").classList.add("hidden");
+    }
+
     updateStatusAndUI();
     return;
   }
@@ -1837,6 +2351,7 @@ function handleGuestReceivedData(msg) {
 }
 
 function broadcastStateToGuests() {
+  saveSessionToStorage();
   if (net.playMode !== "online" || net.role !== "host") return;
 
   net.connections.forEach(c => {
@@ -1855,6 +2370,10 @@ function broadcastStateToGuests() {
       teams: state.teams,
       totalRounds: state.totalRounds,
       bidUntilRound: state.bidUntilRound,
+      firstTeamLimit: state.firstTeamLimit,
+      weberOrderMode: state.weberOrderMode,
+      weberBaseOrder: state.weberBaseOrder,
+      weberRouletteState: state.weberRouletteState,
       currentRound: state.currentRound,
       turnQueue: state.turnQueue,
       turnPointer: state.turnPointer,
@@ -2205,9 +2724,17 @@ function startDraft() {
   const count = parseInt(document.getElementById("team-count").value, 10);
   state.totalRounds = parseInt(document.getElementById("total-rounds").value, 10);
   state.bidUntilRound = parseInt(document.getElementById("bid-until-round").value, 10) || 0;
+  state.firstTeamLimit = parseInt(document.getElementById("first-team-limit").value, 10) || 31;
+  state.weberOrderMode = document.getElementById("weber-order-mode").value || "roulette";
+  state.weberBaseOrder = null;
+  state.weberRouletteState = null;
+  state.lineupDraft = null;
   state.logs = [];
   document.getElementById("log-list").innerHTML = "";
   document.getElementById("log-count").textContent = "0件";
+  document.getElementById("roster-limit-label").textContent = state.firstTeamLimit;
+  document.getElementById("session-recovery-banner").classList.add("hidden");
+  requestScreenWakeLock();
 
   ACTIVE_POOL = generateBalanced72Pool();
   document.getElementById("pool-summary-bar").classList.remove("hidden");
@@ -2299,8 +2826,122 @@ function beginRound(round) {
   if (useBid) {
     startBidPhase(state.teams.map(t => t.id), false);
   } else {
+    // ④ ウェーバールーレット（ウェーバー移行初回の巡目で未決定の場合にルーレット発動）
+    if (state.weberOrderMode === "roulette" && !state.weberBaseOrder) {
+      openWeberRoulette(round);
+      return;
+    }
     startNormalRound(round);
   }
+}
+
+// ============================================================================
+// ④ ウェーバールーレット演出＆指名順決定ロジック
+// ============================================================================
+let weberSpinInterval = null;
+
+function openWeberRoulette(round) {
+  clearCpuTimer();
+  state.phase = "weber_roulette";
+  state.currentRound = round;
+  document.getElementById("bid-panel").classList.add("hidden");
+
+  const initialOrder = state.teams.map((_, i) => i);
+  state.weberRouletteState = {
+    round,
+    spinning: false,
+    confirmed: false,
+    order: initialOrder
+  };
+
+  renderWeberRouletteModal();
+  updateStatusAndUI();
+  broadcastStateToGuests();
+}
+
+function renderWeberRouletteModal() {
+  const modal = document.getElementById("weber-roulette-modal");
+  const subEl = document.getElementById("weber-roulette-subtitle");
+  const wheelEl = document.getElementById("weber-roulette-wheel");
+  const spinBtn = document.getElementById("btn-spin-weber");
+  const confirmBtn = document.getElementById("btn-confirm-weber");
+  const rState = state.weberRouletteState;
+  if (!rState) return;
+
+  const isOnline = net.playMode === "online";
+  const isHostOrLocal = !isOnline || net.role === "host";
+
+  subEl.textContent = `第${rState.round}巡目からウェーバー方式へ移行します！ルーレットで基準指名順を決定します。`;
+
+  wheelEl.innerHTML = rState.order.map((tid, idx) => {
+    const t = state.teams[tid];
+    const cls = rState.confirmed ? "confirmed" : (rState.spinning ? "highlight" : "");
+    const nextRoundNote = idx === 0
+      ? `第${rState.round}巡目：1番目 ／ 第${rState.round + 1}巡目：${rState.order.length}番目`
+      : `第${rState.round}巡目：${idx + 1}番目`;
+    return `
+      <div class="roulette-slot-item ${cls}">
+        <span><strong style="color:var(--gold); margin-right:8px;">ウェーバー ${idx + 1}位</strong> ${escapeHtml(t.name)}</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">${nextRoundNote}</span>
+      </div>
+    `;
+  }).join("");
+
+  if (isHostOrLocal) {
+    spinBtn.classList.toggle("hidden", rState.confirmed);
+    spinBtn.disabled = rState.spinning;
+    confirmBtn.classList.toggle("hidden", !rState.confirmed);
+  } else {
+    spinBtn.classList.add("hidden");
+    confirmBtn.classList.add("hidden");
+    subEl.textContent = rState.confirmed
+      ? "ルーレット結果確定！ホストがウェーバーを開始するのを待っています..."
+      : "ホストがウェーバールーレットを回すのを待っています...";
+  }
+
+  modal.classList.remove("hidden");
+}
+
+function spinWeberRoulette() {
+  if (net.playMode === "online" && net.role !== "host") return;
+  if (!state.weberRouletteState || state.weberRouletteState.spinning) return;
+
+  state.weberRouletteState.spinning = true;
+  state.weberRouletteState.confirmed = false;
+  renderWeberRouletteModal();
+
+  let ticks = 0;
+  const maxTicks = 18;
+  if (weberSpinInterval) clearInterval(weberSpinInterval);
+
+  weberSpinInterval = setInterval(() => {
+    ticks++;
+    const shuffled = state.teams.map((_, i) => i).sort(() => Math.random() - 0.5);
+    state.weberRouletteState.order = shuffled;
+    renderWeberRouletteModal();
+
+    if (ticks >= maxTicks) {
+      clearInterval(weberSpinInterval);
+      weberSpinInterval = null;
+      state.weberRouletteState.spinning = false;
+      state.weberRouletteState.confirmed = true;
+      state.weberBaseOrder = [...shuffled];
+
+      const orderNames = shuffled.map((tid, idx) => `${idx + 1}位:${escapeHtml(state.teams[tid].name)}`).join(" → ");
+      addLog(`🎰【ウェーバールーレット結果】第${state.currentRound}巡目からの指名順が <strong>${orderNames}</strong> に決定！`, true);
+
+      renderWeberRouletteModal();
+      broadcastStateToGuests();
+    }
+  }, 85);
+}
+
+function confirmWeberOrderAndStart() {
+  if (net.playMode === "online" && net.role !== "host") return;
+  const round = state.weberRouletteState ? state.weberRouletteState.round : state.currentRound;
+  state.weberRouletteState = null;
+  document.getElementById("weber-roulette-modal").classList.add("hidden");
+  startNormalRound(round);
 }
 
 // ============================================================================
@@ -2393,7 +3034,7 @@ function renderBidSlots() {
         if (humanCount >= 2 && !isSelected) {
           pickDisplay = `<div style="color:var(--gold); font-weight:800;">🔒 指名選択済み（クリックで確認）</div>`;
         } else {
-          pickDisplay = `<div style="color:var(--gold); font-weight:800;">${escapeHtml(player.name)} <span style="font-size:0.76rem; color:var(--text-muted);">(${player.teamName}/${player.subPos})</span></div>`;
+          pickDisplay = `<div style="color:var(--gold); font-weight:800;">${escapeHtml(player.name)} <span style="font-size:0.76rem; color:var(--text-muted);">(${player.teamName}/${player.roleDetail || player.subPos})</span></div>`;
         }
       } else {
         pickDisplay = `<div style="color:var(--text-muted); font-size:0.84rem;">未選択（下の表から指名）</div>`;
@@ -2537,7 +3178,7 @@ function renderLotteryModalFromState(item) {
   targetArea.innerHTML = `
     <div class="lottery-target-card">
       <div style="font-size:0.78rem; color:var(--text-muted);">競合対象選手</div>
-      <div style="font-size:1.15rem; font-weight:900; color:#fff;">${escapeHtml(item.player.name)} <span style="font-size:0.85rem; color:var(--gold);">(${item.player.teamName} / ${item.player.subPos} / ランク${item.player.rank})</span></div>
+      <div style="font-size:1.15rem; font-weight:900; color:#fff;">${escapeHtml(item.player.name)} <span style="font-size:0.85rem; color:var(--gold);">(${item.player.teamName} / ${item.player.roleDetail || item.player.subPos} / ランク${item.player.rank})</span></div>
       <div style="font-size:0.84rem; color:#93c5fd; margin-top:2px;">競合：${escapeHtml(contenderNames)}</div>
     </div>
   `;
@@ -2694,8 +3335,9 @@ function startNormalRound(round) {
   state.currentRound = round;
   document.getElementById("bid-panel").classList.add("hidden");
 
-  const indices = state.teams.map((_, i) => i);
-  if (round % 2 === 0) {
+  const indices = state.weberBaseOrder ? [...state.weberBaseOrder] : state.teams.map((_, i) => i);
+  const weberStep = state.weberBaseOrder ? (round - state.bidUntilRound) : round;
+  if (weberStep % 2 === 0) {
     indices.reverse();
   }
   state.turnQueue = indices;
@@ -2755,7 +3397,7 @@ function handleDraftClick(playerId) {
 function executeNormalPick(teamIdx, player) {
   assignPlayerToTeam(player, teamIdx, state.currentRound);
   const team = state.teams[teamIdx];
-  addLog(`【${state.currentRound}巡目】<strong>${escapeHtml(team.name)}</strong> が <strong>${escapeHtml(player.name)}</strong> (${player.teamName}・${player.subPos}) を指名`);
+  addLog(`【${state.currentRound}巡目】<strong>${escapeHtml(team.name)}</strong> が <strong>${escapeHtml(player.name)}</strong> (${player.teamName}・${player.roleDetail || player.subPos}) を指名`);
 
   const rem = ACTIVE_POOL.filter(p => p.draftedBy === null).length;
   if (rem === 0) {
@@ -2812,7 +3454,7 @@ function fastForwardCpu() {
       return;
     }
     assignPlayerToTeam(pick, activeTeamIdx, state.currentRound);
-    addLog(`【${state.currentRound}巡目】<strong>${escapeHtml(activeTeam.name)}</strong> が <strong>${escapeHtml(pick.name)}</strong> (${pick.teamName}・${pick.subPos}) を指名`);
+    addLog(`【${state.currentRound}巡目】<strong>${escapeHtml(activeTeam.name)}</strong> が <strong>${escapeHtml(pick.name)}</strong> (${pick.teamName}・${pick.roleDetail || pick.subPos}) を指名`);
 
     if (ACTIVE_POOL.filter(p => p.draftedBy === null).length === 0) {
       finishDraft();
@@ -2827,8 +3469,13 @@ function fastForwardCpu() {
           startBidPhase(state.teams.map(t => t.id), false);
           return;
         }
-        const indices = state.teams.map((_, i) => i);
-        if (state.currentRound % 2 === 0) indices.reverse();
+        if (state.weberOrderMode === "roulette" && !state.weberBaseOrder) {
+          openWeberRoulette(state.currentRound);
+          return;
+        }
+        const indices = state.weberBaseOrder ? [...state.weberBaseOrder] : state.teams.map((_, i) => i);
+        const weberStep = state.weberBaseOrder ? (state.currentRound - state.bidUntilRound) : state.currentRound;
+        if (weberStep % 2 === 0) indices.reverse();
         state.turnQueue = indices;
         state.turnPointer = 0;
       } else {
@@ -2839,6 +3486,100 @@ function fastForwardCpu() {
   }
   updateStatusAndUI();
   broadcastStateToGuests();
+}
+
+// ============================================================================
+// ⑤ 自チーム状況リアルタイム分析パネル＆② 1軍登録枠インジケーター
+// ============================================================================
+function renderMyTeamStatusCard() {
+  const card = document.getElementById("my-team-status-card");
+  if (!card || state.teams.length === 0) return;
+
+  let focusIdx = 0;
+  if (net.playMode === "online") {
+    focusIdx = net.myTeamIdx;
+  } else if (state.phase === "normal" && state.turnQueue[state.turnPointer] !== undefined && !state.teams[state.turnQueue[state.turnPointer]].isCpu) {
+    focusIdx = state.turnQueue[state.turnPointer];
+  } else if ((state.phase === "bid" || state.phase === "rebid") && state.selectedBidSlot !== null) {
+    focusIdx = state.selectedBidSlot;
+  }
+
+  const team = state.teams[focusIdx] || state.teams[0];
+  const scale = state.totalRounds / 36;
+  const targets = {
+    "投手": Math.round(17 * scale),
+    "捕手": Math.max(1, Math.round(3 * scale)),
+    "二遊": Math.max(1, Math.round(5 * scale)),
+    "一三": Math.max(1, Math.round(4 * scale)),
+    "外野": Math.max(1, Math.round(7 * scale))
+  };
+
+  const posCnt = { "投手": 0, "捕手": 0, "二遊": 0, "一三": 0, "外野": 0 };
+  const roleCnt = { "先発": 0, "中継ぎ": 0, "抑え": 0 };
+  const rankCnt = { S: 0, A: 0, B: 0, C: 0 };
+
+  team.roster.forEach(p => {
+    if (posCnt[p.subPos] !== undefined) posCnt[p.subPos]++;
+    const r = p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos);
+    if (roleCnt[r] !== undefined) roleCnt[r]++;
+    if (rankCnt[p.rank] !== undefined) rankCnt[p.rank]++;
+  });
+
+  const limit = state.firstTeamLimit || 31;
+  const totalPicked = team.roster.length;
+  const farmOverflow = Math.max(0, totalPicked - limit);
+  const missingWarnings = [];
+  if (posCnt["捕手"] < 2) missingWarnings.push("捕手");
+  if (posCnt["二遊"] < 3) missingWarnings.push("二遊間");
+  if (posCnt["一三"] < 2) missingWarnings.push("一三塁");
+  if (posCnt["外野"] < 3) missingWarnings.push("外野");
+  if (roleCnt["先発"] < 5) missingWarnings.push("先発投手");
+  if (roleCnt["抑え"] < 1) missingWarnings.push("抑え投手");
+
+  const warningText = missingWarnings.length > 0
+    ? `⚠️ 補強優先：${missingWarnings.join("・")}`
+    : "✅ スタメン＆先発ローテ・守護神の必須枠充足！";
+
+  card.innerHTML = `
+    <div class="my-team-status-header">
+      <div style="font-weight:900; font-size:0.94rem; color:#fff;">
+        📊 自チーム状況：${escapeHtml(team.name)}
+        <span style="font-size:0.78rem; color:var(--gold); margin-left:6px;">(${totalPicked}/${state.totalRounds}名獲得)</span>
+      </div>
+      <span class="first-team-badge ${farmOverflow > 0 ? 'over' : ''}">
+        1軍登録枠 ${Math.min(totalPicked, limit)}/${limit}名${farmOverflow > 0 ? `（2軍待機 ${farmOverflow}名）` : ''}
+      </span>
+    </div>
+    <div class="status-meter-grid">
+      <div class="status-meter-item ${posCnt['投手'] < targets['投手'] ? 'shortage' : 'ok'}">
+        <div>投手 <b>${posCnt['投手']}</b>/${targets['投手']}</div>
+        <div style="font-size:0.68rem; color:var(--text-muted);">先${roleCnt['先発']} 中${roleCnt['中継ぎ']} 抑${roleCnt['抑え']}</div>
+      </div>
+      <div class="status-meter-item ${posCnt['捕手'] < targets['捕手'] ? 'shortage' : 'ok'}">
+        <div>捕手 <b>${posCnt['捕手']}</b>/${targets['捕手']}</div>
+        <div style="font-size:0.68rem; color:var(--text-muted);">残${Math.max(0, targets['捕手'] - posCnt['捕手'])}目安</div>
+      </div>
+      <div class="status-meter-item ${posCnt['二遊'] < targets['二遊'] ? 'shortage' : 'ok'}">
+        <div>二遊間 <b>${posCnt['二遊']}</b>/${targets['二遊']}</div>
+        <div style="font-size:0.68rem; color:var(--text-muted);">残${Math.max(0, targets['二遊'] - posCnt['二遊'])}目安</div>
+      </div>
+      <div class="status-meter-item ${posCnt['一三'] < targets['一三'] ? 'shortage' : 'ok'}">
+        <div>一三塁 <b>${posCnt['一三']}</b>/${targets['一三']}</div>
+        <div style="font-size:0.68rem; color:var(--text-muted);">残${Math.max(0, targets['一三'] - posCnt['一三'])}目安</div>
+      </div>
+      <div class="status-meter-item ${posCnt['外野'] < targets['外野'] ? 'shortage' : 'ok'}">
+        <div>外野 <b>${posCnt['外野']}</b>/${targets['外野']}</div>
+        <div style="font-size:0.68rem; color:var(--text-muted);">残${Math.max(0, targets['外野'] - posCnt['外野'])}目安</div>
+      </div>
+      <div class="status-meter-item">
+        <div>戦力ランク</div>
+        <div style="font-size:0.72rem; color:var(--gold); font-weight:800;">S:${rankCnt.S} A:${rankCnt.A} B:${rankCnt.B} C:${rankCnt.C}</div>
+      </div>
+    </div>
+    <div style="margin-top:6px; font-size:0.75rem; color:${missingWarnings.length > 0 ? 'var(--gold)' : 'var(--success)'}; font-weight:700;">
+      ${warningText}
+    </div>
+  `;
 }
 
 function updateStatusAndUI() {
@@ -2854,6 +3595,8 @@ function updateStatusAndUI() {
       : `第${state.currentRound}巡目【同時入札抽選】`;
     statusEl.innerHTML = `<span class="round-tag">${label}</span> <span>対象 ${state.pendingTeams.length} 球団が入札中</span>`;
     renderBidSlots();
+  } else if (state.phase === "weber_roulette") {
+    statusEl.innerHTML = `<span class="round-tag">第${state.currentRound}巡目【ウェーバー順抽選】</span> <span>ルーレットで指名順を決定中...</span>`;
   } else if (state.phase === "normal") {
     const activeTeamIdx = state.turnQueue[state.turnPointer];
     const team = state.teams[activeTeamIdx];
@@ -2878,6 +3621,7 @@ function updateStatusAndUI() {
     }
   }
 
+  renderMyTeamStatusCard();
   renderPlayerTable();
   renderRosters("rosters-grid");
 }
@@ -2893,6 +3637,7 @@ function renderPlayerTable() {
   const keyword = document.getElementById("search-input").value.trim().toLowerCase();
   const teamFilter = document.getElementById("team-filter").value;
   const rankFilter = document.getElementById("rank-filter").value;
+  const roleFilter = document.getElementById("role-filter") ? document.getElementById("role-filter").value : "ALL";
   const hideDrafted = document.getElementById("hide-drafted").checked;
   const tbody = document.getElementById("player-tbody");
 
@@ -2908,9 +3653,12 @@ function renderPlayerTable() {
         disablePickButtons = true;
       }
     }
+  } else if (state.phase === "weber_roulette") {
+    disablePickButtons = true;
   }
 
   const filtered = ACTIVE_POOL.filter(p => {
+    const rDetail = p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos);
     if (hideDrafted && p.draftedBy !== null) return false;
     if (state.posFilter === "投手" && p.pos !== "投手") return false;
     if (state.posFilter === "捕手" && p.pos !== "捕手") return false;
@@ -2919,6 +3667,7 @@ function renderPlayerTable() {
     if (state.posFilter === "外野手" && p.pos !== "外野手") return false;
     if (teamFilter !== "ALL" && p.teamId !== teamFilter) return false;
     if (rankFilter !== "ALL" && p.rank !== rankFilter) return false;
+    if (roleFilter !== "ALL" && rDetail !== roleFilter) return false;
     if (keyword && !p.name.toLowerCase().includes(keyword)) return false;
     return true;
   });
@@ -2929,6 +3678,7 @@ function renderPlayerTable() {
   tbody.innerHTML = filtered.slice(0, 300).map(p => {
     const meta = TEAMS_META[p.teamId];
     const isDrafted = p.draftedBy !== null;
+    const rDetail = p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos);
     const isMySelectedBid = (state.phase === "bid" || state.phase === "rebid") &&
       ((net.playMode === "online" && state.bids[net.myTeamIdx] === p.id) ||
        (net.playMode === "local" && state.selectedBidSlot !== null && state.bids[state.selectedBidSlot] === p.id));
@@ -2938,13 +3688,16 @@ function renderPlayerTable() {
       : `<button class="btn btn-sm ${isMySelectedBid ? 'btn-gold' : ''}" ${disablePickButtons ? 'disabled' : ''} onclick="handleDraftClick(${p.id})">${isMySelectedBid ? '選択中' : '指名'}</button>`;
 
     const subBadge = p.pos === "内野手" ? `<span class="subpos-tag">${p.subPos}</span>` : "";
+    const roleBadge = (rDetail && rDetail !== p.pos && rDetail !== p.subPos)
+      ? `<span class="role-detail-tag">${rDetail}</span>`
+      : "";
 
     return `
       <tr class="${isDrafted ? 'drafted' : ''}">
         <td><span class="rank-badge rank-${p.rank}">${p.rank}</span></td>
         <td style="font-weight:700;">${escapeHtml(p.name)}</td>
         <td><span class="team-pill" style="background:${meta.color}; color:${meta.text};">${meta.name}</span></td>
-        <td><span class="pos-tag">${p.pos}</span>${subBadge}</td>
+        <td><span class="pos-tag">${p.pos}</span>${subBadge}${roleBadge}</td>
         <td>${actionHtml}</td>
       </tr>
     `;
@@ -2954,6 +3707,7 @@ function renderPlayerTable() {
 function renderRosters(containerId) {
   const container = document.getElementById(containerId);
   const activeTeamIdx = state.phase === "normal" ? state.turnQueue[state.turnPointer] : -1;
+  const limit = state.firstTeamLimit || 31;
 
   container.innerHTML = state.teams.map((t, idx) => {
     const counts = { "投手": 0, "捕手": 0, "二遊": 0, "一三": 0, "外野": 0 };
@@ -2961,14 +3715,18 @@ function renderRosters(containerId) {
 
     const listHtml = t.roster.length === 0
       ? `<li style="color:var(--text-muted); justify-content:center; padding:12px 0;">指名選手なし</li>`
-      : t.roster.map(p => `
+      : t.roster.map(p => {
+        const rDetail = p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos);
+        return `
         <li>
           <span><span class="pick-no">${p.round}位</span><strong>${escapeHtml(p.name)}</strong></span>
-          <span style="font-size:0.73rem; color:var(--text-muted);">${p.teamName}/${p.subPos} [${p.rank}]</span>
+          <span style="font-size:0.73rem; color:var(--text-muted);">${p.teamName}/${rDetail} [${p.rank}]</span>
         </li>
-      `).join("");
+      `;
+      }).join("");
 
     const isMe = net.playMode === "online" && idx === net.myTeamIdx;
+    const farmCount = Math.max(0, t.roster.length - limit);
 
     return `
       <div class="roster-card ${idx === activeTeamIdx ? 'active-turn' : ''}">
@@ -2985,6 +3743,7 @@ function renderRosters(containerId) {
           <span>二遊:${counts["二遊"]}</span>
           <span>一三:${counts["一三"]}</span>
           <span>外:${counts["外野"]}</span>
+          <span style="color:${farmCount > 0 ? '#fca5a5' : '#6ee7b7'}; font-weight:700;">1軍枠:${Math.min(t.roster.length, limit)}/${limit}</span>
         </div>
         <ul class="roster-list">${listHtml}</ul>
       </div>
@@ -3007,15 +3766,239 @@ function finishDraft() {
   state.phase = "finished";
   document.getElementById("draft-screen").classList.add("hidden");
   document.getElementById("result-screen").classList.remove("hidden");
+  renderLineupBuilder();
   renderRosters("result-rosters");
   broadcastStateToGuests();
+}
+
+// ============================================================================
+// ⑥ 結果画面：最終オーダー＆1軍登録枠（最大31名）編成工程
+// ============================================================================
+const BATTING_POSITIONS = ["捕", "一", "二", "三", "遊", "左", "中", "右", "DH"];
+
+function initLineupForTeam(teamIdx) {
+  if (!state.lineupDraft) state.lineupDraft = {};
+  if (state.lineupDraft[teamIdx]) return state.lineupDraft[teamIdx];
+
+  const team = state.teams[teamIdx];
+  const rankScore = { S: 4, A: 3, B: 2, C: 1 };
+  const sorted = [...team.roster].sort((a, b) => (rankScore[b.rank] || 0) - (rankScore[a.rank] || 0));
+
+  const batters = sorted.filter(p => p.pos !== "投手");
+  const pitchers = sorted.filter(p => p.pos === "投手");
+
+  const usedBatterIds = new Set();
+  const battingOrder = BATTING_POSITIONS.map(posCode => {
+    const match = batters.find(b => {
+      if (usedBatterIds.has(b.id)) return false;
+      const r = b.roleDetail || inferPlayerRole(b.name, b.pos, b.subPos);
+      if (posCode === "捕") return b.pos === "捕手";
+      if (posCode === "一") return r === "一塁" || b.subPos === "一三";
+      if (posCode === "二") return r === "二塁" || b.subPos === "二遊";
+      if (posCode === "三") return r === "三塁" || b.subPos === "一三";
+      if (posCode === "遊") return r === "遊撃" || b.subPos === "二遊";
+      if (["左", "中", "右"].includes(posCode)) return b.pos === "外野手";
+      return true;
+    }) || batters.find(b => !usedBatterIds.has(b.id));
+
+    if (match) usedBatterIds.add(match.id);
+    return { pos: posCode, playerId: match ? match.id : "" };
+  });
+
+  const starters = pitchers.filter(p => (p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos)) === "先発").slice(0, 6);
+  const usedPitcherIds = new Set(starters.map(p => p.id));
+  while (starters.length < 6) {
+    const nextP = pitchers.find(p => !usedPitcherIds.has(p.id));
+    if (!nextP) break;
+    starters.push(nextP);
+    usedPitcherIds.add(nextP.id);
+  }
+
+  const closer = pitchers.find(p => !usedPitcherIds.has(p.id) && (p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos)) === "抑え")
+    || pitchers.find(p => !usedPitcherIds.has(p.id));
+  if (closer) usedPitcherIds.add(closer.id);
+
+  const relievers = pitchers.filter(p => !usedPitcherIds.has(p.id)).slice(0, 6);
+  relievers.forEach(p => usedPitcherIds.add(p.id));
+
+  const benchBatters = batters.filter(b => !usedBatterIds.has(b.id)).slice(0, 5).map(b => b.id);
+
+  state.lineupDraft[teamIdx] = {
+    teamIdx,
+    battingOrder,
+    benchBatterIds: benchBatters,
+    starterIds: Array.from({ length: 6 }, (_, i) => starters[i] ? starters[i].id : ""),
+    relieverIds: Array.from({ length: 6 }, (_, i) => relievers[i] ? relievers[i].id : ""),
+    closerId: closer ? closer.id : ""
+  };
+  return state.lineupDraft[teamIdx];
+}
+
+function renderLineupBuilder(selectedTeamIdx = null) {
+  const box = document.getElementById("lineup-builder-box");
+  if (!box || state.teams.length === 0) return;
+
+  const defaultIdx = selectedTeamIdx !== null
+    ? selectedTeamIdx
+    : (net.playMode === "online" ? net.myTeamIdx : 0);
+
+  const team = state.teams[defaultIdx] || state.teams[0];
+  const lineup = initLineupForTeam(team.id);
+  const limit = state.firstTeamLimit || 31;
+
+  const batters = team.roster.filter(p => p.pos !== "投手");
+  const pitchers = team.roster.filter(p => p.pos === "投手");
+
+  const regIds = new Set([
+    ...lineup.battingOrder.map(s => s.playerId).filter(Boolean),
+    ...lineup.benchBatterIds.filter(Boolean),
+    ...lineup.starterIds.filter(Boolean),
+    ...lineup.relieverIds.filter(Boolean),
+    ...(lineup.closerId ? [lineup.closerId] : [])
+  ]);
+  const regCount = regIds.size;
+  const isOverLimit = regCount > limit;
+
+  const teamSelectorHtml = state.teams.map((t, idx) =>
+    `<option value="${idx}" ${idx === team.id ? 'selected' : ''}>${escapeHtml(t.name)}</option>`
+  ).join("");
+
+  const batterOptionsHtml = (selectedId) => {
+    return `<option value="">-- 未設定 --</option>` + batters.map(b => {
+      const r = b.roleDetail || inferPlayerRole(b.name, b.pos, b.subPos);
+      return `<option value="${b.id}" ${String(b.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(b.name)} (${r}/${b.rank})</option>`;
+    }).join("");
+  };
+
+  const pitcherOptionsHtml = (selectedId) => {
+    return `<option value="">-- 未設定 --</option>` + pitchers.map(p => {
+      const r = p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos);
+      return `<option value="${p.id}" ${String(p.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(p.name)} (${r}/${p.rank})</option>`;
+    }).join("");
+  };
+
+  const battingRowsHtml = lineup.battingOrder.map((slot, idx) => {
+    const posOpts = BATTING_POSITIONS.map(pos =>
+      `<option value="${pos}" ${slot.pos === pos ? 'selected' : ''}>${pos}</option>`
+    ).join("");
+    return `
+      <div class="lineup-row">
+        <strong style="color:var(--gold);">${idx + 1}番</strong>
+        <select onchange="updateLineupSlot(${team.id}, 'pos', ${idx}, this.value)">${posOpts}</select>
+        <select onchange="updateLineupSlot(${team.id}, 'batter', ${idx}, this.value)">${batterOptionsHtml(slot.playerId)}</select>
+      </div>
+    `;
+  }).join("");
+
+  const starterRowsHtml = lineup.starterIds.map((pid, idx) => `
+    <div class="lineup-row" style="grid-template-columns: 78px 1fr;">
+      <strong style="color:#93c5fd;">先発${idx + 1}番手</strong>
+      <select onchange="updateLineupSlot(${team.id}, 'starter', ${idx}, this.value)">${pitcherOptionsHtml(pid)}</select>
+    </div>
+  `).join("");
+
+  const relieverRowsHtml = lineup.relieverIds.map((pid, idx) => `
+    <div class="lineup-row" style="grid-template-columns: 78px 1fr;">
+      <span style="color:var(--text-muted);">中継ぎ${idx + 1}</span>
+      <select onchange="updateLineupSlot(${team.id}, 'reliever', ${idx}, this.value)">${pitcherOptionsHtml(pid)}</select>
+    </div>
+  `).join("");
+
+  const starterSelectedSet = new Set(lineup.battingOrder.map(s => String(s.playerId)));
+  const benchChipsHtml = batters
+    .filter(b => !starterSelectedSet.has(String(b.id)))
+    .map(b => {
+      const checked = lineup.benchBatterIds.includes(b.id);
+      const r = b.roleDetail || inferPlayerRole(b.name, b.pos, b.subPos);
+      return `
+        <label class="bench-chip ${checked ? 'active' : ''}">
+          <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleBenchBatter(${team.id}, ${b.id}, this.checked)">
+          ${escapeHtml(b.name)} (${r}/${b.rank})
+        </label>
+      `;
+    }).join("");
+
+  box.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div>
+        <h3 style="color:var(--gold); font-size:1.1rem;">📋 最終1軍オーダー＆投手ローテーション編成</h3>
+        <div style="font-size:0.8rem; color:var(--text-muted);">獲得選手からスタメン・控え野手・先発ローテ・救援陣を組み、1軍登録枠（最大${limit}名）を決定できます。</div>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <select style="background:var(--panel); border:1px solid var(--border); color:var(--text); padding:6px 10px; border-radius:6px; font-weight:700;" onchange="renderLineupBuilder(parseInt(this.value, 10))">
+          ${teamSelectorHtml}
+        </select>
+        <button type="button" class="btn btn-outline btn-sm" onclick="autoRebuildLineup(${team.id})">✨ おまかせ自動編成</button>
+        <span class="first-team-badge ${isOverLimit ? 'over' : ''}" style="font-size:0.82rem; padding:4px 10px;">
+          1軍登録人数：${regCount} / ${limit}名 ${isOverLimit ? '（枠超過！）' : '（登録OK）'}
+        </span>
+      </div>
+    </div>
+
+    <div class="lineup-grid">
+      <div class="lineup-subcard">
+        <h4>🏏 スタメン打順（1〜9番）</h4>
+        ${battingRowsHtml}
+      </div>
+      <div class="lineup-subcard">
+        <h4>⚾ 先発ローテーション（6枚）＆ 守護神</h4>
+        ${starterRowsHtml}
+        <div class="lineup-row" style="grid-template-columns: 78px 1fr; margin-top:10px; padding-top:8px; border-top:1px dashed var(--border);">
+          <strong style="color:var(--gold);">抑え(守護神)</strong>
+          <select onchange="updateLineupSlot(${team.id}, 'closer', 0, this.value)">${pitcherOptionsHtml(lineup.closerId)}</select>
+        </div>
+      </div>
+      <div class="lineup-subcard">
+        <h4>🔥 中継ぎ陣（6枠）＆ 1軍控え野手</h4>
+        ${relieverRowsHtml}
+        <div style="margin-top:10px; padding-top:8px; border-top:1px dashed var(--border);">
+          <div style="font-size:0.8rem; color:var(--gold); font-weight:700; margin-bottom:6px;">控え野手（1軍ベンチ登録）</div>
+          <div class="bench-checklist">${benchChipsHtml || '<span style="color:var(--text-muted); font-size:0.78rem;">控え候補なし</span>'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updateLineupSlot(teamIdx, kind, idx, rawVal) {
+  const lineup = initLineupForTeam(teamIdx);
+  const val = rawVal === "" ? "" : parseInt(rawVal, 10);
+  if (kind === "pos") lineup.battingOrder[idx].pos = rawVal;
+  else if (kind === "batter") lineup.battingOrder[idx].playerId = val;
+  else if (kind === "starter") lineup.starterIds[idx] = val;
+  else if (kind === "reliever") lineup.relieverIds[idx] = val;
+  else if (kind === "closer") lineup.closerId = val;
+  saveSessionToStorage();
+  renderLineupBuilder(teamIdx);
+}
+
+function toggleBenchBatter(teamIdx, playerId, checked) {
+  const lineup = initLineupForTeam(teamIdx);
+  if (checked) {
+    if (!lineup.benchBatterIds.includes(playerId)) lineup.benchBatterIds.push(playerId);
+  } else {
+    lineup.benchBatterIds = lineup.benchBatterIds.filter(id => id !== playerId);
+  }
+  saveSessionToStorage();
+  renderLineupBuilder(teamIdx);
+}
+
+function autoRebuildLineup(teamIdx) {
+  if (state.lineupDraft) delete state.lineupDraft[teamIdx];
+  initLineupForTeam(teamIdx);
+  saveSessionToStorage();
+  renderLineupBuilder(teamIdx);
 }
 
 function confirmReset() {
   if (confirm("現在のドラフトデータを破棄して設定画面に戻りますか？")) {
     clearCpuTimer();
+    if (weberSpinInterval) clearInterval(weberSpinInterval);
+    localStorage.removeItem(STORAGE_KEY);
+    state.phase = "setup";
     document.getElementById("draft-screen").classList.add("hidden");
     document.getElementById("result-screen").classList.add("hidden");
+    document.getElementById("weber-roulette-modal").classList.add("hidden");
     document.getElementById("btn-reset").classList.add("hidden");
     document.getElementById("btn-speed").classList.add("hidden");
     document.getElementById("btn-reroll-pool").classList.add("hidden");
@@ -3024,11 +4007,12 @@ function confirmReset() {
 }
 
 function exportCSV() {
-  let csv = "\uFEFFチーム名,区分,指名順位,選手名,所属球団,守備位置,詳細守備,ランク\n";
+  let csv = "\uFEFFチーム名,区分,指名順位,選手名,所属球団,守備位置,詳細守備,役割,ランク\n";
   state.teams.forEach(t => {
     const role = t.isCpu ? "CPU" : "プレイヤー";
     t.roster.forEach(p => {
-      csv += `"${t.name}","${role}",${p.round},"${p.name}","${p.teamName}","${p.pos}","${p.subPos}","${p.rank}"\n`;
+      const rDetail = p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos);
+      csv += `"${t.name}","${role}",${p.round},"${p.name}","${p.teamName}","${p.pos}","${p.subPos}","${rDetail}","${p.rank}"\n`;
     });
   });
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -3041,17 +4025,32 @@ function exportCSV() {
 }
 
 function copyResultText() {
-  const lines = ["【NPB 2026 パワプロ用ドラフト結果（36人編成）】"];
-  state.teams.forEach(t => {
+  const lines = ["【NPB 2026 パワプロ用ドラフト結果（36人編成・1軍オーダー付）】"];
+  state.teams.forEach((t, idx) => {
     lines.push(`\n■ ${t.name}（計${t.roster.length}名）`);
     const groups = ["投手", "捕手", "二遊", "一三", "外野"];
     groups.forEach(g => {
-      const members = t.roster.filter(p => p.subPos === g).map(p => `${p.name}(${p.teamName}/${p.round}位)`);
+      const members = t.roster.filter(p => p.subPos === g).map(p => {
+        const rDetail = p.roleDetail || inferPlayerRole(p.name, p.pos, p.subPos);
+        return `${p.name}(${p.teamName}/${rDetail}/${p.round}位)`;
+      });
       lines.push(`  [${g} ${members.length}名] ${members.join("、")}`);
     });
+
+    const lineup = initLineupForTeam(idx);
+    const findName = (pid) => {
+      const found = t.roster.find(p => String(p.id) === String(pid));
+      return found ? found.name : "未設定";
+    };
+    lines.push("  [1軍スタメン]");
+    lineup.battingOrder.forEach((s, i) => {
+      lines.push(`    ${i + 1}番(${s.pos}) ${findName(s.playerId)}`);
+    });
+    lines.push(`  [先発ローテ] ${lineup.starterIds.map(findName).join(" / ")}`);
+    lines.push(`  [中継ぎ] ${lineup.relieverIds.map(findName).join(" / ")} ｜ [抑え] ${findName(lineup.closerId)}`);
   });
   navigator.clipboard.writeText(lines.join("\n")).then(() => {
-    alert("パワプロ編成用にポジション別整理したドラフト結果をコピーしました！");
+    alert("パワプロ編成用にポジション別＆1軍オーダー整理したドラフト結果をコピーしました！");
   });
 }
 
@@ -3062,11 +4061,12 @@ function escapeHtml(str) {
 }
 
 // ============================================================================
-// 初期化（URLハッシュからの自動パスワード読込対応）
+// 初期化（URLハッシュからの自動パスワード読込＆自動保存セッション検出）
 // ============================================================================
 renderTeamInputs(false);
 updateQuotaSum();
 switchPlayMode("online");
+checkSavedSessionOnLoad();
 
 (function checkUrlRoomHash() {
   const hash = window.location.hash || "";
